@@ -32,52 +32,33 @@ input[type=checkbox],input[type=radio]{accent-color:#ef55b8}
 .quest label{flex:1;font-size:14px}
 .pts{color:#ffdc72;font-size:12px}
 
-/* 第二阶段 2A：立体棋盘 */
-.board{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:7px;
-padding:10px;
-border-radius:17px;
-background:linear-gradient(145deg,#241342,#392260);
-border:1px solid #a58add88;
-box-shadow:inset 0 3px 8px #0b061c99,0 7px 0 #130b29,0 12px 18px #08031977;
-perspective:900px
-}
-.space{
-position:relative;
-isolation:isolate;
-aspect-ratio:1;
-background:linear-gradient(145deg,#7658a5,#49356f 65%,#382553);
-border:1px solid #ffffff55;
-border-bottom:4px solid #211438;
-box-shadow:inset 0 2px 0 #ffffff55,inset 0 -3px 0 #00000022,0 4px 0 #1b1232,0 7px 9px #08031c66;
-border-radius:9px;
-display:grid;
-place-content:center;
-text-align:center;
-font-size:10px;
-overflow:hidden;
-transform:translateY(-1px);
-transition:transform .15s,filter .15s,box-shadow .15s
-}
+/* 立体棋盘 */
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:10px;border-radius:17px;background:linear-gradient(145deg,#241342,#392260);border:1px solid #a58add88;box-shadow:inset 0 3px 8px #0b061c99,0 7px 0 #130b29,0 12px 18px #08031977;perspective:900px}
+.space{position:relative;isolation:isolate;aspect-ratio:1;background:linear-gradient(145deg,#7658a5,#49356f 65%,#382553);border:1px solid #ffffff55;border-bottom:4px solid #211438;box-shadow:inset 0 2px 0 #ffffff55,inset 0 -3px 0 #00000022,0 4px 0 #1b1232,0 7px 9px #08031c66;border-radius:9px;display:grid;place-content:center;text-align:center;font-size:10px;overflow:hidden;transform:translateY(-1px);transition:transform .15s,filter .15s,box-shadow .15s}
 .space b,.space small{position:relative;z-index:1}
 .space b{font-size:14px;text-shadow:0 1px 2px #160b2d}
-.space:active{
-transform:translateY(2px);
-box-shadow:inset 0 2px 4px #0005,0 1px 0 #1b1232
-}
+.space:active{transform:translateY(2px);box-shadow:inset 0 2px 4px #0005,0 1px 0 #1b1232}
 .space small{font-size:10px;line-height:1;display:flex;align-items:flex-end;justify-content:center;gap:2px;min-height:38px;margin-top:2px;overflow:visible}
 .boost{background:linear-gradient(145deg,#f4d66a,#98711d 70%);border-color:#ffeaa0;border-bottom-color:#65470e}
 .glitch{background:linear-gradient(145deg,#f178b6,#792b5b 70%);border-color:#ffb4dd;border-bottom-color:#48152f}
 .loot{background:linear-gradient(145deg,#bd79f4,#63358f 70%);border-color:#e4c0ff;border-bottom-color:#382052}
 .boss{background:linear-gradient(145deg,#ef7777,#842c43 70%);border-color:#ffb0a9;border-bottom-color:#4e1728}
 .finish{background:linear-gradient(145deg,#ffe78c,#a77819 70%);border-color:#fff0b0;border-bottom-color:#63420d}
+.space.token-here{outline:3px solid #fff2a6;outline-offset:-3px;filter:brightness(1.2);animation:tokenGlow .7s ease-in-out infinite alternate}
+@keyframes tokenGlow{from{box-shadow:0 0 5px #ffe68a,0 4px 0 #1b1232}to{box-shadow:0 0 15px #ffe68a,0 4px 0 #1b1232}}
 
 .hidden{display:none}
 .bar{height:7px;background:#120b2b;border-radius:9px;margin-top:7px}
 .bar i{display:block;background:#ff65c4;height:7px;border-radius:9px}
 .full{width:100%}
+
+/* 骰子动画 */
+.dice-stage{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px auto 5px;min-height:76px}
+.dice-face{width:58px;height:58px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#fff,#d8c8ff);color:#39205f;font-size:38px;font-weight:900;border:3px solid #f5eaff;box-shadow:0 5px 0 #8060b3,0 9px 15px #09031c77}
+.dice-face.rolling{animation:diceRoll .13s linear infinite}
+@keyframes diceRoll{0%{transform:rotate(-12deg) scale(.94)}50%{transform:rotate(12deg) scale(1.08)}100%{transform:rotate(-12deg) scale(.94)}}
+.dice-hint{font-size:12px;color:#e1d3ff}
+
 .event{background:#35215e;border:2px solid #d49aff;border-radius:15px;padding:14px;margin-top:12px}
 .event h3{margin-top:3px}
 .option{display:block;background:#49356f;padding:11px;border-radius:9px;margin:7px 0}
@@ -87,68 +68,28 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 .avatar-panel{display:flex;align-items:center;gap:7px;background:#170f32aa;padding:6px;border-radius:14px;min-width:0}
 .avatar-stage{width:52px;height:72px;display:flex;align-items:center;justify-content:center;flex:0 0 52px;background:linear-gradient(#8f72c9,#39285e);border:1px solid #ffffff33;border-radius:11px;overflow:hidden}
 
-/* Roblox 方块人物升级版 */
-.doll{
-position:relative;
-width:78px;
-height:130px;
-}
-.doll .head{
-position:absolute;top:5px;left:21px;width:36px;height:36px;
-background:var(--skin);border:2px solid #35234c;border-radius:4px;
-z-index:4;box-shadow:inset -3px -3px 0 #00000012;
-}
-.doll .hair{
-position:absolute;top:0;left:17px;width:44px;height:19px;
-background:var(--hair);border:2px solid #35234c;border-radius:7px 7px 2px 2px;z-index:5;
-}
-.doll .hair:before{
-content:"";position:absolute;top:13px;left:0;width:10px;height:29px;
-background:var(--hair);border-left:2px solid #35234c;border-bottom:2px solid #35234c;
-}
-.doll .hair:after{
-content:"";position:absolute;top:13px;right:0;width:10px;height:29px;
-background:var(--hair);border-right:2px solid #35234c;border-bottom:2px solid #35234c;
-}
+/* Roblox 方块人物 */
+.doll{position:relative;width:78px;height:130px}
+.doll .head{position:absolute;top:5px;left:21px;width:36px;height:36px;background:var(--skin);border:2px solid #35234c;border-radius:4px;z-index:4;box-shadow:inset -3px -3px 0 #00000012}
+.doll .hair{position:absolute;top:0;left:17px;width:44px;height:19px;background:var(--hair);border:2px solid #35234c;border-radius:7px 7px 2px 2px;z-index:5}
+.doll .hair:before{content:"";position:absolute;top:13px;left:0;width:10px;height:29px;background:var(--hair);border-left:2px solid #35234c;border-bottom:2px solid #35234c}
+.doll .hair:after{content:"";position:absolute;top:13px;right:0;width:10px;height:29px;background:var(--hair);border-right:2px solid #35234c;border-bottom:2px solid #35234c}
 .doll.hair-brown .hair:before,.doll.hair-brown .hair:after{height:35px;width:13px}
 .doll.hair-pink .hair:before,.doll.hair-pink .hair:after{height:19px}
 .doll.hair-blue .hair:before,.doll.hair-blue .hair:after{height:43px}
 .doll.hair-gold .hair:before,.doll.hair-gold .hair:after{height:38px;width:13px}
-.doll .eyes{
-position:absolute;top:23px;left:25px;width:30px;display:flex;
-justify-content:space-around;font-size:9px;color:#302039;z-index:8;
-}
-.doll .mouth{
-position:absolute;top:34px;left:36px;width:9px;height:4px;
-border-bottom:2px solid #8e4055;border-radius:50%;z-index:6;
-}
-.doll .body{
-position:absolute;top:44px;left:19px;width:40px;height:38px;
-background:var(--top);border:2px solid #35234c;border-radius:3px;z-index:3;
-box-shadow:inset 0 -5px 0 #00000012;
-}
-.doll .body:after{
-content:"";position:absolute;top:7px;left:5px;width:26px;height:3px;
-background:#ffffff55;border-radius:3px;
-}
-.doll .arm{
-position:absolute;top:46px;width:10px;height:34px;background:var(--skin);
-border:2px solid #35234c;border-radius:2px;z-index:5;
-}
+.doll .eyes{position:absolute;top:23px;left:25px;width:30px;display:flex;justify-content:space-around;font-size:9px;color:#302039;z-index:8}
+.doll .mouth{position:absolute;top:34px;left:36px;width:9px;height:4px;border-bottom:2px solid #8e4055;border-radius:50%;z-index:6}
+.doll .body{position:absolute;top:44px;left:19px;width:40px;height:38px;background:var(--top);border:2px solid #35234c;border-radius:3px;z-index:3;box-shadow:inset 0 -5px 0 #00000012}
+.doll .body:after{content:"";position:absolute;top:7px;left:5px;width:26px;height:3px;background:#ffffff55;border-radius:3px}
+.doll .arm{position:absolute;top:46px;width:10px;height:34px;background:var(--skin);border:2px solid #35234c;border-radius:2px;z-index:5}
 .doll .arm.left{left:8px}
 .doll .arm.right{left:60px;right:auto}
 .doll .legs{position:absolute;top:79px;left:23px;display:flex;gap:5px}
-.doll .leg{
-width:13px;height:34px;background:var(--bottom);
-border:2px solid #35234c;border-radius:2px;
-}
-.doll .shoe{
-position:absolute;top:108px;left:20px;width:18px;height:9px;
-background:var(--shoe);border:1px solid #35234c;border-radius:3px;
-}
+.doll .leg{width:13px;height:34px;background:var(--bottom);border:2px solid #35234c;border-radius:2px}
+.doll .shoe{position:absolute;top:108px;left:20px;width:18px;height:9px;background:var(--shoe);border:1px solid #35234c;border-radius:3px}
 .doll .shoe.right{left:41px}
 .doll .accessory{position:absolute;top:-8px;left:27px;z-index:8;font-size:22px}
-
 .avatar-stage .doll{transform:scale(.48);transform-origin:center center}
 .avatar-mini{position:relative;width:25px;height:38px;display:inline-block;overflow:hidden;flex:0 0 25px;border-radius:5px 5px 2px 2px;background:#ffffff12}
 .avatar-mini .doll{position:absolute;left:50%;bottom:0;transform:translateX(-50%) scale(.28);transform-origin:bottom center}
@@ -251,6 +192,7 @@ nav button{font-size:10px;padding:9px 3px}
 <div class="panel">
 <h3>HABIT CITY · 50 SPACE BOARD</h3>
 <div id="boardgrid" class="board"></div>
+<div class="dice-stage"><div id="diceFace" class="dice-face">🎲</div><span id="diceHint" class="dice-hint">准备好了吗？</span></div>
 <button id="rollBtn" class="full" onclick="roll()">🎲 掷骰子</button>
 <p id="rollmsg" class="muted"></p>
 <div id="eventBox"></div>
@@ -444,7 +386,11 @@ localStorage.setItem("sqdata",JSON.stringify(data));
 }
 }
 checkDailyReset();
+
 let who="姐姐";
+let gameBusy=false;
+const diceFaces=["⚀","⚁","⚂","⚃","⚄","⚅"];
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
 
 const special={
 4:"BOOST",5:"LOOT",6:"GLITCH",8:"BOSS",
@@ -484,7 +430,6 @@ function itemOf(type,id){
 return (catalogs[type]||[]).find(x=>x.id===id)||catalogs[type][0];
 }
 
-/* 升级后的 Roblox 方块头像 */
 function avatarHTML(n,mini=false){
 let a=data[n].avatar;
 let hair=itemOf("hair",a.hair);
@@ -519,6 +464,7 @@ renderCollection();
 }
 
 function choose(n){
+if(gameBusy)return;
 checkDailyReset();
 who=n;
 document.getElementById("who").textContent=data[n].name;
@@ -565,6 +511,7 @@ renderTasks();
 }
 
 function tab(id,b){
+if(gameBusy)return;
 checkDailyReset();
 document.querySelectorAll("main>section").forEach(x=>x.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
@@ -577,13 +524,26 @@ renderWardrobe();
 renderCollection();
 }
 
-function resolveLanding(){
+/* 棋子逐格移动 */
+async function animateMoveTo(target,stepDelay=260){
+let p=data[who];
+target=Math.max(1,Math.min(50,target));
+while(p.pos!==target){
+p.pos+=p.pos<target?1:-1;
+renderBoard();
+await wait(stepDelay);
+}
+renderBoard();
+}
+
+/* 特殊格子效果 */
+async function resolveLanding(){
 let p=data[who],messages=[],guard=0;
 while(guard++<10){
 let type=special[p.pos]||"XP";
 if(type==="BOOST"){
 let from=p.pos;
-p.pos=Math.min(50,p.pos+3);
+await animateMoveTo(Math.min(50,p.pos+3),220);
 messages.push("⚡ BOOST！从第"+from+"格前进到第"+p.pos+"格（+3格）");
 if(p.pos===50){messages.push("🏁 到达终点！");break;}
 continue;
@@ -606,7 +566,7 @@ if(type==="GLITCH"){
 let effect=Math.floor(Math.random()*4);
 if(effect===0){
 let old=p.pos;
-p.pos=Math.max(1,p.pos-2);
+await animateMoveTo(Math.max(1,p.pos-2),220);
 messages.push("🌀 GLITCH！空间故障，倒退2格：第"+old+"格 → 第"+p.pos+"格");
 }else if(effect===1){
 p.skipTurn=true;
@@ -632,9 +592,11 @@ checkMilestones(who);
 return messages.join(" · ");
 }
 
-function roll(){
+/* 掷骰子：先滚动，再逐格移动 */
+async function roll(){
 checkDailyReset();
 let p=data[who];
+if(gameBusy)return;
 if(p.pending){
 document.getElementById("rollmsg").textContent="请先完成当前的特殊关卡！";
 return;
@@ -646,14 +608,44 @@ renderEvent();
 document.getElementById("rollmsg").textContent="⏳ "+data[who].name+" 的回合被 GLITCH 冻结了！这次跳过掷骰，下一回合可以继续。";
 return;
 }
+
+gameBusy=true;
+let btn=document.getElementById("rollBtn");
+let dice=document.getElementById("diceFace");
+let hint=document.getElementById("diceHint");
+
+btn.disabled=true;
+btn.textContent="🎲 骰子滚动中…";
+dice.classList.add("rolling");
+hint.textContent="Rolling...";
+
+for(let i=0;i<12;i++){
+dice.textContent=diceFaces[Math.floor(Math.random()*6)];
+await wait(85);
+}
+
 let d=1+Math.floor(Math.random()*6);
-p.pos=Math.min(50,p.pos+d);
+dice.textContent=diceFaces[d-1];
+dice.classList.remove("rolling");
+hint.textContent="掷出 "+d+" 点！";
+
+let destination=Math.min(50,p.pos+d);
+document.getElementById("rollmsg").textContent=data[who].name+" 掷到 "+d+" 点，开始逐格前进…";
+
+await animateMoveTo(destination,260);
+
 let message=data[who].name+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";
-let eventMessage=resolveLanding();
+let eventMessage=await resolveLanding();
 if(eventMessage)message+=" "+eventMessage;
+
 save();
 renderEvent();
 document.getElementById("rollmsg").textContent=message;
+
+gameBusy=false;
+btn.disabled=!!p.pending;
+btn.textContent="🎲 掷骰子";
+hint.textContent=p.pending?"完成当前特殊关卡后继续":"轮到下一次冒险！";
 }
 
 function renderBoard(){
@@ -662,13 +654,13 @@ let n=i+1,t=special[n]||"XP";
 let avatars="";
 if(data["姐姐"].pos===n)avatars+='<span class="avatar-mini" title="'+esc(data["姐姐"].name)+'">'+avatarHTML("姐姐",true)+'</span>';
 if(data["妹妹"].pos===n)avatars+='<span class="avatar-mini" title="'+esc(data["妹妹"].name)+'">'+avatarHTML("妹妹",true)+'</span>';
-return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+avatars+'</small></div>';
+return '<div class="space '+t.toLowerCase()+(data["姐姐"].pos===n||data["妹妹"].pos===n?" token-here":"")+'"><b>'+n+'</b>'+t+'<small>'+avatars+'</small></div>';
 }).join("");
 }
 
 function renderEvent(){
 let p=data[who],box=document.getElementById("eventBox");
-document.getElementById("rollBtn").disabled=!!p.pending;
+document.getElementById("rollBtn").disabled=gameBusy||!!p.pending;
 if(!p.pending){box.innerHTML="";return;}
 if(p.pending.type==="LOOT"){
 box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+esc(p.name)+' 来开启你的神秘奖励吧！</p><button class="full" onclick="drawLoot()">✨ 开启宝箱</button><p id="eventResult" class="reward"></p></div>';
@@ -694,19 +686,23 @@ if(!choices.length)return null;
 return choices[Math.floor(Math.random()*choices.length)];
 }
 
-function drawLoot(){
+async function drawLoot(){
 let p=data[who];
-if(!p.pending||p.pending.type!=="LOOT")return;
+if(gameBusy||!p.pending||p.pending.type!=="LOOT")return;
+gameBusy=true;
+
 let card=lootCards[Math.floor(Math.random()*lootCards.length)];
 let result=card.name+" — "+card.desc;
+
 if(card.type==="xp"){
 p.xp+=card.value;
 }else if(card.type==="item"){
 p.items.push(card.value);
 }else if(card.type==="move"){
-p.pos=Math.min(50,p.pos+card.value);
+await animateMoveTo(Math.min(50,p.pos+card.value),220);
 result+="（现在来到第"+p.pos+"格）";
 }
+
 let cosmetic=randomCosmetic();
 if(cosmetic&&Math.random()<0.55){
 if(!p.collection[cosmetic.type].includes(cosmetic.id)){
@@ -714,10 +710,13 @@ p.collection[cosmetic.type].push(cosmetic.id);
 result+=" · ✨ 额外掉落："+cosmetic.item.label+"！";
 }
 }
+
 p.pending=null;
 let eventMessage="";
-if(card.type==="move")eventMessage=resolveLanding();
+if(card.type==="move")eventMessage=await resolveLanding();
+
 checkMilestones(who);
+gameBusy=false;
 save();
 renderEvent();
 document.getElementById("rollmsg").textContent=data[who].name+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
