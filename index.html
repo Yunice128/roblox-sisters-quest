@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -129,6 +128,28 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 .chest-reward .reward-icon{font-size:35px}
 .chest-reward .reward-name{font-size:18px;font-weight:900;color:#ffe58b}
 @keyframes rewardReveal{0%{opacity:0;transform:translateY(18px) scale(.8)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Boss 战斗动画 */
+.boss-arena{position:relative;overflow:hidden;text-align:center;margin:12px 0;padding:15px 10px 18px;border-radius:16px;border:2px solid #ff8b9d;background:radial-gradient(circle at 50% 35%,#9b344f,#40172f 65%,#21102e);box-shadow:inset 0 0 25px #ff526455,0 5px 15px #10051e}
+.boss-arena:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 22px,#ffffff08 23px 24px);pointer-events:none}
+.boss-title{position:relative;color:#ffd0d5;font-weight:900;letter-spacing:2px;font-size:12px}
+.boss-monster{position:relative;display:block;font-size:82px;line-height:1.35;margin:7px auto;filter:drop-shadow(0 8px 8px #160611);transform-origin:center bottom}
+.boss-arena.entering .boss-monster{animation:bossEnter .8s cubic-bezier(.2,.8,.2,1)}
+.boss-arena.entering{animation:arenaFlash .8s ease-out}
+@keyframes bossEnter{0%{transform:translateY(-65px) scale(.1) rotate(-18deg);opacity:0}65%{transform:translateY(8px) scale(1.18) rotate(5deg);opacity:1}100%{transform:translateY(0) scale(1) rotate(0)}}
+@keyframes arenaFlash{0%{filter:brightness(2)}100%{filter:brightness(1)}}
+.boss-arena.attacked .boss-monster{animation:bossHit .65s ease-in-out}
+@keyframes bossHit{0%,100%{transform:translateX(0) rotate(0);filter:brightness(1)}15%,45%,75%{transform:translateX(-13px) rotate(-9deg);filter:brightness(2)}30%,60%,90%{transform:translateX(13px) rotate(9deg);filter:brightness(1.8)}}
+.boss-arena.victory .boss-monster{animation:bossDefeat .9s ease-in forwards}
+@keyframes bossDefeat{0%{transform:scale(1) rotate(0);opacity:1}35%{transform:scale(1.2) rotate(-12deg);filter:brightness(2)}100%{transform:scale(.15) rotate(35deg) translateY(100px);opacity:0}}
+.boss-spark{position:absolute;inset:15px 0 auto;font-size:24px;opacity:0;pointer-events:none}
+.boss-arena.victory .boss-spark{animation:bossSpark .9s ease-out}
+@keyframes bossSpark{0%{opacity:0;transform:scale(.2)}35%{opacity:1}100%{opacity:0;transform:scale(2.2) translateY(-20px)}}
+.boss-status{position:relative;color:#ffe28a;font-weight:900;margin:5px 0}
+.boss-win{display:none;text-align:center;padding:12px;margin-top:10px;border-radius:13px;background:linear-gradient(145deg,#7652a2,#34204e);border:2px solid #ffe28a}
+.boss-win.show{display:block;animation:rewardReveal .6s ease-out}
+.boss-win strong{display:block;font-size:23px;color:#ffe28a}
+
 </style>
 </head>
 <body>
@@ -148,7 +169,7 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 </nav>
 <section id="home">
 <div class="panel"><h3>PLAYER PANEL 玩家面板</h3><div id="players" class="players"></div><p class="muted">姐姐和妹妹独立累计 XP，共享同一个游戏世界。</p></div>
-<div class="panel"><h3>当前玩家</h3><button id="chooseSister" onclick="choose('姐姐')">姐姐</button><button id="chooseYounger" onclick="choose('妹妹')">妹妹</button><p id="who">姐姐</p><p id="today" class="xp">0 XP</p><p class="muted">完成任务获得 XP，然后到棋盘掷骰子。</p></div>
+<div class="panel"><h3>当前玩家</h3><button id="chooseSister" onclick="choose('姐姐')">姐姐</button><button id="chooseYounger" onclick="choose('妹妹')">妹妹</button><p id="who">姐姐</p><p id="today" class="xp">0 XP</p><p class="muted">完成每日任务获得 XP，然后到棋盘掷骰子。</p></div>
 <div class="panel"><h3>HOW TO PLAY 游戏规则</h3><p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。宝箱也有机会掉落新发型、服装和配件。</p></div>
 </section>
 <section id="quests" class="hidden"><div class="panel"><h3>DAILY QUESTS 每日任务</h3><p class="muted" id="resetDate"></p><div id="ql"></div></div></section>
@@ -159,6 +180,8 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 <p id="rollmsg" class="muted"></p><div id="eventBox"></div>
 <button class="full" onclick="testChestAnimation()">🎁 测试宝箱动画（不会影响游戏数据）</button>
 <div id="chestTestBox"></div>
+<button class="full" onclick="testBossAnimation()">👾 测试 Boss 战斗动画（不会影响游戏数据）</button>
+<div id="bossTestBox"></div>
 </div></section>
 <section id="cards" class="hidden">
 <div class="panel"><h3>LOOT BOX CARDS 宝箱奖励</h3><div id="loot" class="grid"></div></div>
@@ -218,7 +241,7 @@ function save(){localStorage.sqdata=JSON.stringify(data);render();renderBoard();
 function choose(n){if(gameBusy)return;checkDailyReset();who=n;document.getElementById("who").textContent=data[n].name;document.getElementById("chooseSister").classList.toggle("active",n==="姐姐");document.getElementById("chooseYounger").classList.toggle("active",n==="妹妹");renderTasks();render();renderBoard();renderEvent();renderInventory();renderAvatarEditor();renderWardrobe();renderCollection()}
 function render(){document.getElementById("players").innerHTML=["姐姐","妹妹"].map(n=>'<div class="player"><div class="avatar-panel"><div class="avatar-stage">'+avatarHTML(n)+'</div><div class="player-info"><b>'+esc(data[n].name)+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small><br><small>击败 Boss：'+data[n].defeated.length+'/7</small></div></div></div>').join("");document.getElementById("today").textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+" XP";document.getElementById("resetDate").textContent="今日任务日期："+malaysiaDateKey()+"（每天午夜自动重置）";document.getElementById("who").textContent=data[who].name}
 function renderTasks(){document.getElementById("ql").innerHTML=tasks.map((t,i)=>'<div class="quest"><input type="checkbox" '+(data[who].done.includes(i)?"checked":"")+' onchange="toggle('+i+',this.checked)"><label>'+t[0]+'<br><small class="muted">'+t[1]+'</small></label><b class="pts">+'+t[2]+' XP</b></div>').join("")}
-function toggle(i,v){checkDailyReset();let d=data[who].done;if(v&&!d.includes(i)){d.push(i);data[who].xp+=tasks[i][2]}else if(!v&&d.includes(i)){data[who].done=d.filter(x=>x!==i);data[who].xp=Math.max(0,data[who].xp-tasks[i][2])}checkMilestones(who);save();renderTasks()}
+function toggle(i,v){checkDailyReset();let d=data[who].done;if(v&&!d.includes(i)){d.push(i);data[who].xp+=tasks[i][2]}else if(!v&&d.includes(i)){data[who].done=data[who].done.filter(x=>x!==i);data[who].xp=Math.max(0,data[who].xp-tasks[i][2])}checkMilestones(who);save();renderTasks()}
 function tab(id,b){if(gameBusy)return;checkDailyReset();document.querySelectorAll("main>section").forEach(x=>x.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderTasks();render();renderAvatarEditor();renderWardrobe();renderCollection()}
 async function animateMoveTo(target,delay=260){let p=data[who];target=Math.max(1,Math.min(50,target));while(p.pos!==target){p.pos+=p.pos<target?1:-1;renderBoard();await wait(delay)}renderBoard()}
 async function resolveLanding(){let p=data[who],messages=[],guard=0;while(guard++<10){let type=special[p.pos]||"XP";if(type==="BOOST"){let from=p.pos;await animateMoveTo(Math.min(50,p.pos+3),220);messages.push("⚡ BOOST！从第"+from+"格前进到第"+p.pos+"格（+3格）");if(p.pos===50){messages.push("🏁 到达终点！");break}continue}if(type==="LOOT"){p.pending={type:"LOOT",space:p.pos};messages.push("🎁 停在第"+p.pos+"格，触发 Loot Box！");break}if(type==="BOSS"&&!p.defeated.includes(p.pos)){p.pending={type:"BOSS",space:p.pos};messages.push("👾 停在第"+p.pos+"格，触发 Boss 挑战！");break}if(type==="BOSS"&&p.defeated.includes(p.pos)){messages.push("这个 Boss 已经被打败！");break}if(type==="GLITCH"){let e=Math.floor(Math.random()*4);if(e===0){let old=p.pos;await animateMoveTo(Math.max(1,p.pos-2),220);messages.push("🌀 GLITCH！空间故障，倒退2格：第"+old+"格 → 第"+p.pos+"格")}else if(e===1){p.skipTurn=true;messages.push("🌀 GLITCH！时间冻结！下一回合需要跳过一次掷骰。")}else if(e===2){p.pending={type:"GLITCH",space:p.pos};messages.push("🌀 GLITCH！出现小挑战，答对可获得20 XP！")}else messages.push("🍀 GLITCH！幸运逃脱，没有受到惩罚！");break}if(type==="XP"){let bonus=[10,20,30][Math.floor(Math.random()*3)];p.xp+=bonus;messages.push("⭐ XP 格奖励！随机获得 "+bonus+" XP！");break}if(type==="FINISH")messages.push("🏁 到达终点！");break}checkMilestones(who);return messages.join(" · ")}
@@ -271,6 +294,33 @@ reward.classList.add("show");
 }catch(e){console.error(e)}
 finally{gameBusy=false}
 }
+async function testBossAnimation(){
+if(gameBusy)return;
+gameBusy=true;
+const box=document.getElementById("bossTestBox");
+box.innerHTML='<div class="event"><h3>👾 Boss 战斗动画测试</h3><p class="muted">演示模式：不会增加 XP、解锁造型或改变棋盘进度。</p><div id="testBossArena" class="boss-arena"><div class="boss-title">⚔️ BOSS ARENA · DEMO ⚔️</div><span class="boss-spark">✨ ⭐ 💎 ✨</span><div class="boss-monster">🐉</div><div id="testBossStatus" class="boss-status">Boss 即将登场……</div><div id="testBossWin" class="boss-win"><strong>🏆 VICTORY!</strong><p>演示胜利！+80 XP（不会实际加入游戏）</p></div></div></div>';
+try{
+const arena=document.getElementById("testBossArena");
+const status=document.getElementById("testBossStatus");
+const win=document.getElementById("testBossWin");
+arena.classList.add("entering");
+status.textContent="👾 Boss 强势登场！";
+await wait(1000);
+arena.classList.remove("entering");
+void arena.offsetWidth;
+arena.classList.add("attacked");
+status.textContent="💥 攻击命中！Boss 受到冲击！";
+await wait(750);
+arena.classList.remove("attacked");
+void arena.offsetWidth;
+arena.classList.add("victory");
+status.textContent="✨ Boss 被击败了！";
+await wait(950);
+win.classList.add("show");
+}catch(e){console.error(e)}
+finally{gameBusy=false}
+}
+
 function answerBoss(){let p=data[who];if(!p.pending||p.pending.type!=="BOSS")return;let s=document.querySelector('input[name="bossAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}let space=p.pending.space,b=bosses[space];if(Number(s.value)===b.correct){p.xp+=80;p.defeated.push(space);p.pending=null;let prize=bossRewards[space],item=itemOf(prize.type,prize.id),extra="";if(!p.collection[prize.type].includes(prize.id)){p.collection[prize.type].push(prize.id);extra=" 并解锁专属奖励："+item.label+"！"}else extra="（专属奖励已拥有）";checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🎉 "+p.name+" 成功打败 "+b.name+"！获得80 XP！"+extra}else r.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！"}
 function answerGlitch(){let p=data[who];if(!p.pending||p.pending.type!=="GLITCH")return;let s=document.querySelector('input[name="glitchAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}if(Number(s.value)===0){p.xp+=20;p.pending=null;checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🌟 GLITCH 挑战成功！获得20 XP！"}else r.textContent="再想一想：遇到问题时，先冷静下来会更容易找到办法。"}
 function renderInventory(){let a=data[who].items;document.getElementById("inventory").textContent=a.length?a.join("、"):"暂时没有道具，去 Loot Box 抽卡吧！"}
