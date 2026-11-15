@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -28,7 +29,7 @@ button.active{background:#ef55b8}
 .board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .space{aspect-ratio:1;background:#49356f;border-radius:9px;display:grid;place-content:center;text-align:center;font-size:11px}
 .space b{font-size:15px}
-.space small{font-size:27px;line-height:1.25;display:block;min-height:34px}
+.space small{font-size:40px;line-height:1;display:block;min-height:42px;margin-top:3px}
 .xpbox{background:#176071}
 .boost{background:#75601c}
 .glitch{background:#722e58}
@@ -47,17 +48,20 @@ button.active{background:#ef55b8}
 <img src="icon-192.png">
 <div><h1>ROBLOX SISTERS QUEST</h1><small>HABIT CITY · 姐妹成长大冒险</small></div>
 </header>
+
 <section class="panel hero">
 <small>SEASON 1 · JOURNEY OF GROWTH</small>
 <h2>Build Habits. Defeat Bosses.</h2>
 完成每日任务，收集 XP，一起升级！
 </section>
+
 <nav>
 <button class="active" onclick="tab('home',this)">🏠 首页</button>
 <button onclick="tab('quests',this)">⭐ 每日任务</button>
 <button onclick="tab('board',this)">🗺️ 棋盘</button>
 <button onclick="tab('cards',this)">🎁 卡牌</button>
 </nav>
+
 <section id="home">
 <div class="panel">
 <h3>PLAYER PANEL 玩家面板</h3>
@@ -77,9 +81,14 @@ button.active{background:#ef55b8}
 <p class="muted">完成任务获得 XP；每完成3项任务获得一次掷骰机会。停在 Loot Box 抽卡，停在 Boss 格挑战对应 Boss。目标是养成习惯，不是姐妹互相比赛。</p>
 </div>
 </section>
+
 <section id="quests" class="hidden">
-<div class="panel"><h3>DAILY QUESTS 每日任务</h3><div id="ql"></div></div>
+<div class="panel">
+<h3>DAILY QUESTS 每日任务</h3>
+<div id="ql"></div>
+</div>
 </section>
+
 <section id="board" class="hidden">
 <div class="panel">
 <h3>HABIT CITY · 50 SPACE BOARD</h3>
@@ -88,19 +97,23 @@ button.active{background:#ef55b8}
 <p id="rollmsg" class="muted"></p>
 </div>
 </section>
+
 <section id="cards" class="hidden">
 <div class="panel"><h3>LOOT BOX CARDS</h3><div id="loot" class="grid"></div></div>
 <div class="panel"><h3>BOSS BATTLE</h3><div id="boss" class="grid"></div></div>
 <div class="panel"><h3>SKILL CARDS</h3><div id="skills" class="grid"></div></div>
 </section>
+
 <div class="panel">
 <h3>☁️ 双手机同步</h3>
 <p class="muted">当前为本机原型。跨手机同步需配置免费的云端数据库；GitHub Pages 只负责发布网页。下一阶段接入家庭房间与云端同步。</p>
 <label class="muted">家庭邀请码</label>
 <input id="room" placeholder="例如 SISTERS2026" style="width:100%;padding:10px;border-radius:9px">
 </div>
+
 <p class="muted" style="text-align:center">Good habits make real heroes. 好习惯会创造真正的英雄。</p>
 </main>
+
 <script>
 const tasks=[
 ["不乱发脾气","Control my temper",25],
@@ -121,28 +134,48 @@ const tasks=[
 ["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],
 ["听写80分或以上","Dictation score 80%+",50]
 ];
+
 let data=JSON.parse(localStorage.sqdata||'{"姐姐":{"xp":0,"pos":1,"done":[]},"妹妹":{"xp":0,"pos":1,"done":[]}}'),who="姐姐";
-function save(){localStorage.sqdata=JSON.stringify(data);render()}
-function choose(n){who=n;document.getElementById('who').textContent=n;renderTasks();render()}
+
+function save(){
+localStorage.sqdata=JSON.stringify(data);
+render();
+}
+
+function choose(n){
+who=n;
+document.getElementById('who').textContent=n;
+renderTasks();
+render();
+}
+
 function render(){
-players.innerHTML=['姐姐','妹妹'].map((n,i)=>'<div class="player"><b>'+n+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small></div>').join('');
+players.innerHTML=['姐姐','妹妹'].map((n,i)=>
+'<div class="player"><b>'+n+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small></div>'
+).join('');
 today.textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+' XP';
 }
+
 function renderTasks(){
-ql.innerHTML=tasks.map((t,i)=>'<div class="quest"><input type="checkbox" '+(data[who].done.includes(i)?'checked':'')+' onchange="toggle('+i+',this.checked)"><label>'+t[0]+'<br><small class="muted">'+t[1]+'</small></label><b class="pts">+'+t[2]+' XP</b></div>').join('');
+ql.innerHTML=tasks.map((t,i)=>
+'<div class="quest"><input type="checkbox" '+(data[who].done.includes(i)?'checked':'')+' onchange="toggle('+i+',this.checked)"><label>'+t[0]+'<br><small class="muted">'+t[1]+'</small></label><b class="pts">+'+t[2]+' XP</b></div>'
+).join('');
 }
+
 function toggle(i,v){
 let d=data[who].done;
 data[who].done=v?[...new Set([...d,i])]:d.filter(x=>x!==i);
 data[who].xp+=v?tasks[i][2]:-tasks[i][2];
 save();
 }
+
 function tab(id,b){
 document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));
 document.getElementById(id).classList.remove('hidden');
 document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
 b.classList.add('active');
 }
+
 function roll(){
 let d=1+Math.floor(Math.random()*6);
 data[who].pos=Math.min(50,data[who].pos+d);
@@ -150,20 +183,30 @@ rollmsg.textContent=who+' 掷到 '+d+'，前进到第 '+data[who].pos+' 格';
 save();
 renderBoard();
 }
+
 function renderBoard(){
 let special={4:'BOOST',5:'LOOT',6:'GLITCH',8:'BOSS',10:'BOOST',12:'LOOT',13:'GLITCH',15:'BOSS',17:'BOOST',19:'LOOT',20:'GLITCH',22:'BOSS',24:'BOOST',26:'LOOT',27:'GLITCH',29:'BOSS',31:'BOOST',33:'GLITCH',34:'LOOT',36:'BOSS',38:'BOOST',40:'LOOT',41:'GLITCH',42:'BOSS',45:'BOOST',46:'GLITCH',47:'LOOT',48:'BOSS',50:'FINISH'};
+
 boardgrid.innerHTML=Array.from({length:50},(_,i)=>{
 let n=i+1,t=special[n]||'XP';
 return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+(data.姐姐.pos===n?'👧':'')+(data.妹妹.pos===n?'👧🏻':'')+'</small></div>';
 }).join('');
 }
-function cards(id,arr){document.getElementById(id).innerHTML=arr.map(x=>'<div class="card">'+x+'</div>').join('')}
+
+function cards(id,arr){
+document.getElementById(id).innerHTML=arr.map(x=>'<div class="card">'+x+'</div>').join('');
+}
+
 render();
 renderTasks();
 renderBoard();
+
 cards('loot',['+50 XP','+100 XP','Double Dice','Shield','Skip Snake','Roll Again','Advance 3 Spaces','Rainbow Rocket']);
+
 cards('skills',['Mini Shield · 挡蛇一次','XP x2 · 双倍 XP','Lucky Dice · 自选点数','Team Power · 姐妹前进3格','Rainbow Pass · 免疫蛇一次','Boss Freeze · 冻结 Boss']);
+
 cards('boss',['Rage Monster · 情绪怪','Delay Slime · 拖延史莱姆','Trash Goblin · 垃圾哥布林','Sleep Zombie · 晚睡僵尸','Chaos Dragon · 混乱巨龙','Slow Eater · 慢吞吞怪','Lazy Titan · 懒惰泰坦']);
+
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
