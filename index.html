@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -47,38 +48,69 @@ nav{display:flex;flex-wrap:wrap;gap:4px;position:sticky;top:0;z-index:10;backgro
 nav button{flex:1;font-size:11px;padding:10px 5px}
 .avatar-panel{display:flex;align-items:center;gap:7px;background:#170f32aa;padding:6px;border-radius:14px;min-width:0}
 .avatar-stage{width:52px;height:72px;display:flex;align-items:center;justify-content:center;flex:0 0 52px;background:linear-gradient(#8f72c9,#39285e);border:1px solid #ffffff33;border-radius:11px;overflow:hidden}
-.doll{position:relative;width:78px;height:130px}
-.doll .head{position:absolute;top:5px;left:22px;width:34px;height:34px;border-radius:5px;background:var(--skin);border:2px solid #35234c;z-index:4}
-.doll .hair{position:absolute;top:0;left:18px;width:42px;height:18px;border-radius:7px 7px 2px 2px;background:var(--hair);z-index:5}
-.doll .hair:after{content:"";position:absolute;top:12px;left:0;width:10px;height:29px;background:var(--hair)}
-.doll .hair:before{content:"";position:absolute;top:12px;right:0;width:10px;height:29px;background:var(--hair)}
-.doll .eyes{position:absolute;top:17px;left:8px;width:18px;text-align:center;font-size:11px;color:#32213e;z-index:6}
-.doll .body{position:absolute;top:43px;left:19px;width:40px;height:38px;background:var(--top);border:2px solid #35234c;border-radius:3px;z-index:3}
 
-/* Roblox 方块人物：左右手臂固定在身体两侧 */
+/* Roblox 方块人物升级版 */
+.doll{
+position:relative;
+width:78px;
+height:130px;
+}
+.doll .head{
+position:absolute;top:5px;left:21px;width:36px;height:36px;
+background:var(--skin);border:2px solid #35234c;border-radius:4px;
+z-index:4;box-shadow:inset -3px -3px 0 #00000012;
+}
+.doll .hair{
+position:absolute;top:0;left:17px;width:44px;height:19px;
+background:var(--hair);border:2px solid #35234c;border-radius:7px 7px 2px 2px;z-index:5;
+}
+.doll .hair:before{
+content:"";position:absolute;top:13px;left:0;width:10px;height:29px;
+background:var(--hair);border-left:2px solid #35234c;border-bottom:2px solid #35234c;
+}
+.doll .hair:after{
+content:"";position:absolute;top:13px;right:0;width:10px;height:29px;
+background:var(--hair);border-right:2px solid #35234c;border-bottom:2px solid #35234c;
+}
+.doll.hair-brown .hair:before,.doll.hair-brown .hair:after{height:35px;width:13px}
+.doll.hair-pink .hair:before,.doll.hair-pink .hair:after{height:19px}
+.doll.hair-blue .hair:before,.doll.hair-blue .hair:after{height:43px}
+.doll.hair-gold .hair:before,.doll.hair-gold .hair:after{height:38px;width:13px}
+.doll .eyes{
+position:absolute;top:19px;left:25px;width:30px;display:flex;
+justify-content:space-around;font-size:9px;color:#302039;z-index:6;
+}
+.doll .mouth{
+position:absolute;top:31px;left:36px;width:9px;height:4px;
+border-bottom:2px solid #8e4055;border-radius:50%;z-index:6;
+}
+.doll .body{
+position:absolute;top:44px;left:19px;width:40px;height:38px;
+background:var(--top);border:2px solid #35234c;border-radius:3px;z-index:3;
+box-shadow:inset 0 -5px 0 #00000012;
+}
+.doll .body:after{
+content:"";position:absolute;top:7px;left:5px;width:26px;height:3px;
+background:#ffffff55;border-radius:3px;
+}
 .doll .arm{
-position:absolute;
-top:46px;
-width:10px;
-height:34px;
-background:var(--skin);
-border:2px solid #35234c;
-border-radius:2px;
-z-index:5;
+position:absolute;top:46px;width:10px;height:34px;background:var(--skin);
+border:2px solid #35234c;border-radius:2px;z-index:5;
 }
-.doll .arm.left{
-left:9px;
-}
-.doll .arm.right{
-left:59px;
-right:auto;
-}
-
+.doll .arm.left{left:8px}
+.doll .arm.right{left:60px;right:auto}
 .doll .legs{position:absolute;top:79px;left:23px;display:flex;gap:5px}
-.doll .leg{width:13px;height:34px;background:var(--bottom);border:2px solid #35234c;border-radius:2px}
-.doll .shoe{position:absolute;top:108px;left:20px;width:18px;height:9px;background:var(--shoe);border-radius:3px}
+.doll .leg{
+width:13px;height:34px;background:var(--bottom);
+border:2px solid #35234c;border-radius:2px;
+}
+.doll .shoe{
+position:absolute;top:108px;left:20px;width:18px;height:9px;
+background:var(--shoe);border:1px solid #35234c;border-radius:3px;
+}
 .doll .shoe.right{left:41px}
 .doll .accessory{position:absolute;top:-8px;left:27px;z-index:8;font-size:22px}
+
 .avatar-stage .doll{transform:scale(.48);transform-origin:center center}
 .avatar-mini{position:relative;width:18px;height:28px;display:inline-block;overflow:visible;flex:0 0 18px}
 .avatar-mini .doll{position:absolute;left:50%;bottom:0;transform:translateX(-50%) scale(.21);transform-origin:bottom center}
@@ -414,6 +446,7 @@ function itemOf(type,id){
 return (catalogs[type]||[]).find(x=>x.id===id)||catalogs[type][0];
 }
 
+/* 升级后的 Roblox 方块头像 */
 function avatarHTML(n,mini=false){
 let a=data[n].avatar;
 let hair=itemOf("hair",a.hair);
@@ -422,12 +455,19 @@ let top=itemOf("top",a.top);
 let bottom=itemOf("bottom",a.bottom);
 let shoe=itemOf("shoe",a.shoe);
 let acc=itemOf("accessory",a.accessory);
-return '<div class="doll" style="--skin:'+skin.color+';--hair:'+hair.color+';--top:'+top.color+';--bottom:'+bottom.color+';--shoe:'+shoe.color+'">'+
-'<div class="hair"></div><div class="head"></div><div class="eyes">● ●</div>'+
-'<div class="arm left"></div><div class="arm right"></div><div class="body"></div>'+
+let hairStyle=(a.hair||"hair-basic").replace("hair-","");
+return '<div class="doll hair-'+hairStyle+'" style="--skin:'+skin.color+';--hair:'+hair.color+';--top:'+top.color+';--bottom:'+bottom.color+';--shoe:'+shoe.color+'">'+
+'<div class="hair"></div>'+
+'<div class="head"></div>'+
+'<div class="eyes"><span>●</span><span>●</span></div>'+
+'<div class="mouth"></div>'+
+'<div class="arm left"></div>'+
+'<div class="arm right"></div>'+
+'<div class="body"></div>'+
 '<div class="legs"><div class="leg"></div><div class="leg"></div></div>'+
 '<div class="shoe"></div><div class="shoe right"></div>'+
-'<div class="accessory">'+(acc.emoji||"")+'</div></div>';
+'<div class="accessory">'+(acc.emoji||"")+'</div>'+
+'</div>';
 }
 
 function save(){
