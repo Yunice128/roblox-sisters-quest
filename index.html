@@ -82,7 +82,7 @@ button:disabled{opacity:.5}
 </div>
 <div class="panel">
 <h3>HOW TO PLAY 游戏规则</h3>
-<p class="muted">完成每日任务获得 XP。停在 BOOST 格自动前进3格；停在 Loot Box 可以抽取奖励；停在 Boss 格需要回答挑战题。答对即可打败 Boss。目标是养成习惯，不是姐妹互相比赛。</p>
+<p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。目标是养成习惯，不是姐妹互相比赛。</p>
 </div>
 </section>
 
@@ -107,10 +107,7 @@ button:disabled{opacity:.5}
 <div class="panel"><h3>LOOT BOX CARDS 宝箱奖励</h3><div id="loot" class="grid"></div></div>
 <div class="panel"><h3>BOSS BATTLE 怪物挑战</h3><div id="boss" class="grid"></div></div>
 <div class="panel"><h3>SKILL CARDS 技能卡</h3><div id="skills" class="grid"></div></div>
-<div class="panel">
-<h3>🎒 我的道具</h3>
-<div id="inventory" class="muted"></div>
-</div>
+<div class="panel"><h3>🎒 我的道具</h3><div id="inventory" class="muted"></div></div>
 </section>
 
 <div class="panel">
@@ -145,20 +142,21 @@ const tasks=[
 ];
 
 const initial={
-"姐姐":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null},
-"妹妹":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null}
+"姐姐":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null,skipTurn:false},
+"妹妹":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null,skipTurn:false}
 };
 
 let data;
 try{
 data=JSON.parse(localStorage.sqdata||'null')||initial;
-}catch(e){data=initial;}
+}catch(e){data=JSON.parse(JSON.stringify(initial));}
 
 ["姐姐","妹妹"].forEach(n=>{
 data[n]=Object.assign({},initial[n],data[n]||{});
 data[n].items=data[n].items||[];
 data[n].defeated=data[n].defeated||[];
 data[n].done=data[n].done||[];
+data[n].skipTurn=!!data[n].skipTurn;
 });
 
 let who="姐姐";
@@ -244,7 +242,7 @@ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
 b.classList.add("active");
 }
 
-/* 检查棋子落点，处理 BOOST、Loot Box 和 Boss */
+/* 落点效果：XP、BOOST、LOOT、BOSS、GLITCH */
 function resolveLanding(){
 let p=data[who],messages=[],guard=0;
 
@@ -276,6 +274,32 @@ break;
 
 if(type==="BOSS"&&p.defeated.includes(p.pos)){
 messages.push("这个 Boss 已经被打败！");
+break;
+}
+
+if(type==="GLITCH"){
+let effect=Math.floor(Math.random()*4);
+if(effect===0){
+let old=p.pos;
+p.pos=Math.max(1,p.pos-2);
+messages.push("🌀 GLITCH！空间故障，倒退2格：第"+old+"格 → 第"+p.pos+"格");
+}else if(effect===1){
+p.skipTurn=true;
+messages.push("🌀 GLITCH！时间冻结！下一回合需要跳过一次掷骰。");
+}else if(effect===2){
+p.pending={type:"GLITCH",space:p.pos};
+messages.push("🌀 GLITCH！出现小挑战，答对可获得20 XP！");
+}else{
+messages.push("🍀 GLITCH！幸运逃脱，没有受到惩罚！");
+}
+break;
+}
+
+if(type==="XP"){
+let bonus=[10,20,30][Math.floor(Math.random()*3)];
+p.xp+=bonus;
+messages.push("⭐ XP 格奖励！随机获得 "+bonus+" XP！");
+break;
 }
 
 if(type==="FINISH"){
@@ -283,7 +307,6 @@ messages.push("🏁 到达终点！");
 }
 break;
 }
-
 return messages.join(" · ");
 }
 
@@ -295,12 +318,18 @@ document.getElementById("rollmsg").textContent="请先完成当前的特殊关�
 return;
 }
 
+if(p.skipTurn){
+p.skipTurn=false;
+save();
+renderEvent();
+document.getElementById("rollmsg").textContent="⏳ "+who+" 的回合被 GLITCH 冻结了！这次跳过掷骰，下一回合可以继续。";
+return;
+}
+
 let d=1+Math.floor(Math.random()*6);
 p.pos=Math.min(50,p.pos+d);
-
 let message=who+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";
 let eventMessage=resolveLanding();
-
 if(eventMessage)message+=" "+eventMessage;
 
 save();
@@ -327,15 +356,16 @@ return;
 
 if(p.pending.type==="LOOT"){
 box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+who+' 来开启你的神秘奖励吧！</p><button class="full" onclick="drawLoot()">✨ 开启宝箱</button><p id="eventResult" class="reward"></p></div>';
-}else{
+}else if(p.pending.type==="BOSS"){
 let b=bosses[p.pending.space];
 box.innerHTML='<div class="event"><h3>👾 BOSS BATTLE</h3><h3>'+b.name+'</h3><p>'+b.q+'</p>'+b.a.map((x,i)=>'<label class="option"><input type="radio" name="bossAnswer" value="'+i+'"> '+x+'</label>').join("")+'<button class="full" onclick="answerBoss()">⚔️ 提交答案</button><p id="eventResult" class="reward"></p></div>';
+}else if(p.pending.type==="GLITCH"){
+box.innerHTML='<div class="event"><h3>🌀 GLITCH 小挑战</h3><p>遇到问题时，最好的做法是什么？</p><label class="option"><input type="radio" name="glitchAnswer" value="0"> 冷静想办法，一步一步解决</label><label class="option"><input type="radio" name="glitchAnswer" value="1"> 生气放弃</label><label class="option"><input type="radio" name="glitchAnswer" value="2"> 把问题留给别人</label><button class="full" onclick="answerGlitch()">✨ 提交答案</button><p id="eventResult" class="reward"></p></div>';
 }
 }
 
 function drawLoot(){
 let p=data[who];
-
 if(!p.pending||p.pending.type!=="LOOT")return;
 
 let card=lootCards[Math.floor(Math.random()*lootCards.length)];
@@ -351,45 +381,56 @@ result+="（现在来到第"+p.pos+"格）";
 }
 
 p.pending=null;
-
 let eventMessage="";
-if(card.type==="move"){
-eventMessage=resolveLanding();
-}
+if(card.type==="move")eventMessage=resolveLanding();
 
 save();
 renderEvent();
-
 document.getElementById("rollmsg").textContent=who+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
 renderInventory();
 }
 
 function answerBoss(){
 let p=data[who];
-
 if(!p.pending||p.pending.type!=="BOSS")return;
 
 let selected=document.querySelector('input[name="bossAnswer"]:checked');
 let result=document.getElementById("eventResult");
-
 if(!selected){
 result.textContent="请先选择一个答案。";
 return;
 }
 
 let b=bosses[p.pending.space];
-
 if(Number(selected.value)===b.correct){
 p.xp+=80;
 p.defeated.push(p.pending.space);
 p.pending=null;
-
 save();
 renderEvent();
-
 document.getElementById("rollmsg").textContent="🎉 "+who+" 成功打败 "+b.name+"！获得80 XP！";
 }else{
 result.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！";
+}
+}
+
+function answerGlitch(){
+let p=data[who];
+if(!p.pending||p.pending.type!=="GLITCH")return;
+let selected=document.querySelector('input[name="glitchAnswer"]:checked');
+let result=document.getElementById("eventResult");
+if(!selected){
+result.textContent="请先选择一个答案。";
+return;
+}
+if(Number(selected.value)===0){
+p.xp+=20;
+p.pending=null;
+save();
+renderEvent();
+document.getElementById("rollmsg").textContent="🌟 GLITCH 挑战成功！获得20 XP！";
+}else{
+result.textContent="再想一想：遇到问题时，先冷静下来会更容易找到办法。";
 }
 }
 
