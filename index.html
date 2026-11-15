@@ -82,7 +82,7 @@ button:disabled{opacity:.5}
 </div>
 <div class="panel">
 <h3>HOW TO PLAY 游戏规则</h3>
-<p class="muted">完成每日任务获得 XP。停在 Loot Box 可以抽取奖励；停在 Boss 格需要回答挑战题。答对即可打败 Boss。目标是养成习惯，不是姐妹互相比赛。</p>
+<p class="muted">完成每日任务获得 XP。停在 BOOST 格自动前进3格；停在 Loot Box 可以抽取奖励；停在 Boss 格需要回答挑战题。答对即可打败 Boss。目标是养成习惯，不是姐妹互相比赛。</p>
 </div>
 </section>
 
@@ -214,14 +214,14 @@ renderInventory();
 function render(){
 document.getElementById("players").innerHTML=["姐姐","妹妹"].map(n=>
 '<div class="player"><b>'+n+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small><br><small>击败 Boss：'+data[n].defeated.length+'/7</small></div>'
-).join('');
-document.getElementById("today").textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+' XP';
+).join("");
+document.getElementById("today").textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+" XP";
 }
 
 function renderTasks(){
 document.getElementById("ql").innerHTML=tasks.map((t,i)=>
-'<div class="quest"><input type="checkbox" '+(data[who].done.includes(i)?'checked':'')+' onchange="toggle('+i+',this.checked)"><label>'+t[0]+'<br><small class="muted">'+t[1]+'</small></label><b class="pts">+'+t[2]+' XP</b></div>'
-).join('');
+'<div class="quest"><input type="checkbox" '+(data[who].done.includes(i)?"checked":"")+' onchange="toggle('+i+',this.checked)"><label>'+t[0]+'<br><small class="muted">'+t[1]+'</small></label><b class="pts">+'+t[2]+' XP</b></div>'
+).join("");
 }
 
 function toggle(i,v){
@@ -244,39 +244,87 @@ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
 b.classList.add("active");
 }
 
+/* 检查棋子落点，处理 BOOST、Loot Box 和 Boss */
+function resolveLanding(){
+let p=data[who],messages=[],guard=0;
+
+while(guard++<10){
+let type=special[p.pos]||"XP";
+
+if(type==="BOOST"){
+let from=p.pos;
+p.pos=Math.min(50,p.pos+3);
+messages.push("⚡ BOOST！从第"+from+"格前进到第"+p.pos+"格（+3格）");
+if(p.pos===50){
+messages.push("🏁 到达终点！");
+break;
+}
+continue;
+}
+
+if(type==="LOOT"){
+p.pending={type:"LOOT",space:p.pos};
+messages.push("🎁 停在第"+p.pos+"格，触发 Loot Box！");
+break;
+}
+
+if(type==="BOSS"&&!p.defeated.includes(p.pos)){
+p.pending={type:"BOSS",space:p.pos};
+messages.push("👾 停在第"+p.pos+"格，触发 Boss 挑战！");
+break;
+}
+
+if(type==="BOSS"&&p.defeated.includes(p.pos)){
+messages.push("这个 Boss 已经被打败！");
+}
+
+if(type==="FINISH"){
+messages.push("🏁 到达终点！");
+}
+break;
+}
+
+return messages.join(" · ");
+}
+
 function roll(){
 let p=data[who];
+
 if(p.pending){
 document.getElementById("rollmsg").textContent="请先完成当前的特殊关卡！";
 return;
 }
+
 let d=1+Math.floor(Math.random()*6);
 p.pos=Math.min(50,p.pos+d);
-let type=special[p.pos]||"XP";
-document.getElementById("rollmsg").textContent=who+" 掷到 "+d+"，前进到第 "+p.pos+" 格（"+type+"）";
-if(type==="LOOT"){
-p.pending={type:"LOOT",space:p.pos};
-}else if(type==="BOSS"&&!p.defeated.includes(p.pos)){
-p.pending={type:"BOSS",space:p.pos};
-}else if(type==="BOSS"){
-document.getElementById("rollmsg").textContent+=" · 这个 Boss 已经被打败！";
-}
+
+let message=who+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";
+let eventMessage=resolveLanding();
+
+if(eventMessage)message+=" "+eventMessage;
+
 save();
 renderEvent();
+document.getElementById("rollmsg").textContent=message;
 }
 
 function renderBoard(){
 document.getElementById("boardgrid").innerHTML=Array.from({length:50},(_,i)=>{
 let n=i+1,t=special[n]||"XP";
-return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+(data.姐姐.pos===n?'👧':'')+(data.妹妹.pos===n?'👧🏻':'')+'</small></div>';
-}).join('');
+return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+(data.姐姐.pos===n?"👧":"")+(data.妹妹.pos===n?"👧🏻":"")+'</small></div>';
+}).join("");
 }
 
 function renderEvent(){
 let p=data[who],box=document.getElementById("eventBox");
 let btn=document.getElementById("rollBtn");
 btn.disabled=!!p.pending;
-if(!p.pending){box.innerHTML="";return;}
+
+if(!p.pending){
+box.innerHTML="";
+return;
+}
+
 if(p.pending.type==="LOOT"){
 box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+who+' 来开启你的神秘奖励吧！</p><button class="full" onclick="drawLoot()">✨ 开启宝箱</button><p id="eventResult" class="reward"></p></div>';
 }else{
@@ -287,9 +335,12 @@ box.innerHTML='<div class="event"><h3>👾 BOSS BATTLE</h3><h3>'+b.name+'</h3><p
 
 function drawLoot(){
 let p=data[who];
+
 if(!p.pending||p.pending.type!=="LOOT")return;
+
 let card=lootCards[Math.floor(Math.random()*lootCards.length)];
 let result=card.name+" — "+card.desc;
+
 if(card.type==="xp"){
 p.xp+=card.value;
 }else if(card.type==="item"){
@@ -298,29 +349,44 @@ p.items.push(card.value);
 p.pos=Math.min(50,p.pos+card.value);
 result+="（现在来到第"+p.pos+"格）";
 }
+
 p.pending=null;
+
+let eventMessage="";
+if(card.type==="move"){
+eventMessage=resolveLanding();
+}
+
 save();
 renderEvent();
-document.getElementById("rollmsg").textContent=who+" 抽到了："+result;
+
+document.getElementById("rollmsg").textContent=who+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
 renderInventory();
 }
 
 function answerBoss(){
 let p=data[who];
+
 if(!p.pending||p.pending.type!=="BOSS")return;
+
 let selected=document.querySelector('input[name="bossAnswer"]:checked');
 let result=document.getElementById("eventResult");
+
 if(!selected){
 result.textContent="请先选择一个答案。";
 return;
 }
+
 let b=bosses[p.pending.space];
+
 if(Number(selected.value)===b.correct){
 p.xp+=80;
 p.defeated.push(p.pending.space);
 p.pending=null;
+
 save();
 renderEvent();
+
 document.getElementById("rollmsg").textContent="🎉 "+who+" 成功打败 "+b.name+"！获得80 XP！";
 }else{
 result.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！";
