@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -89,7 +90,6 @@ button:disabled{opacity:.5}
 <div class="panel">
 <h3>DAILY QUESTS 每日任务</h3>
 <p class="muted" id="resetDate"></p>
-<button class="full" onclick="simulateNewDay()">🧪 模拟新的一天（测试用）</button>
 <div id="ql"></div>
 </div>
 </section>
@@ -182,22 +182,6 @@ data["妹妹"].done=[];
 localStorage.setItem("sqTaskDate",todayKey);
 localStorage.setItem("sqdata",JSON.stringify(data));
 }
-}
-
-/* 测试按钮：模拟新的一天，只重置每日任务 */
-function simulateNewDay(){
-if(!confirm("确定模拟新的一天吗？姐姐和妹妹的每日任务会清空，但XP和游戏进度保留。"))return;
-
-localStorage.setItem("sqTaskDate","2000-01-01");
-checkDailyReset();
-
-render();
-renderTasks();
-renderBoard();
-renderInventory();
-renderEvent();
-
-alert("新的一天开始了！每日任务已重置，XP和游戏进度已保留。");
 }
 
 checkDailyReset();
