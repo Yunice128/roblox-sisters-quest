@@ -9,18 +9,21 @@
 <title>Roblox Sisters Quest</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:16px;background:linear-gradient(145deg,#120b2b,#38206d);color:white;font-family:system-ui,sans-serif}
-main{max-width:700px;margin:auto}
+body{margin:0;padding:14px;background:linear-gradient(145deg,#120b2b,#38206d);color:white;font-family:system-ui,sans-serif}
+main{max-width:720px;margin:auto}
 header{display:flex;gap:12px;align-items:center;margin-bottom:16px}
-header img{width:64px;border-radius:15px}
+header img{width:58px;border-radius:15px}
 h1{font-size:19px;margin:0}
-.panel{background:#241744;border:1px solid #7252a8;border-radius:18px;padding:15px;margin:12px 0}
+h2,h3{margin-top:5px}
+.panel{background:#241744;border:1px solid #7252a8;border-radius:18px;padding:14px;margin:12px 0}
 .hero{background:linear-gradient(120deg,#8037bd,#234b85)}
 button{border:0;border-radius:10px;padding:11px;background:#9b55ec;color:white;font-weight:bold;margin:3px;cursor:pointer}
 button.active{background:#ef55b8}
 button:disabled{opacity:.5}
+input,select{max-width:100%;padding:10px;border-radius:9px;border:1px solid #8066ad;background:#21143e;color:white}
+input[type=checkbox],input[type=radio]{accent-color:#ef55b8}
 .players,.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.player,.card{background:#3a2864;border-radius:12px;padding:12px}
+.player,.card{background:#3a2864;border-radius:12px;padding:12px;min-width:0}
 .player:nth-child(2){background:#293d70}
 .xp{font-size:22px;color:#ffdc72;font-weight:900}
 .muted{color:#cbbde7;font-size:13px}
@@ -28,14 +31,10 @@ button:disabled{opacity:.5}
 .quest label{flex:1;font-size:14px}
 .pts{color:#ffdc72;font-size:12px}
 .board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
-.space{aspect-ratio:1;background:#49356f;border-radius:9px;display:grid;place-content:center;text-align:center;font-size:11px}
-.space b{font-size:15px}
-.space small{font-size:40px;line-height:1;display:block;min-height:42px;margin-top:3px}
-.boost{background:#75601c}
-.glitch{background:#722e58}
-.loot{background:#66358a}
-.boss{background:#7c303c}
-.finish{background:#92701b}
+.space{aspect-ratio:1;background:#49356f;border-radius:9px;display:grid;place-content:center;text-align:center;font-size:10px;overflow:hidden}
+.space b{font-size:14px}
+.space small{font-size:27px;line-height:1.1;display:block;min-height:29px;margin-top:3px}
+.boost{background:#75601c}.glitch{background:#722e58}.loot{background:#66358a}.boss{background:#7c303c}.finish{background:#92701b}
 .hidden{display:none}
 .bar{height:7px;background:#120b2b;border-radius:9px;margin-top:7px}
 .bar i{display:block;background:#ff65c4;height:7px;border-radius:9px}
@@ -44,19 +43,46 @@ button:disabled{opacity:.5}
 .event h3{margin-top:3px}
 .option{display:block;background:#49356f;padding:11px;border-radius:9px;margin:7px 0}
 .reward{color:#ffdc72;font-weight:bold}
+nav{display:flex;flex-wrap:wrap;gap:4px}
+nav button{flex:1;font-size:12px;padding:10px 5px}
+.avatar-panel{display:flex;align-items:center;gap:15px;background:#34245b;padding:12px;border-radius:14px}
+.avatar-stage{width:116px;height:150px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(#64479a,#302052);border-radius:14px;overflow:hidden}
+.doll{position:relative;width:78px;height:130px}
+.doll .head{position:absolute;top:5px;left:22px;width:34px;height:34px;border-radius:9px;background:var(--skin);border:2px solid #35234c;z-index:4}
+.doll .hair{position:absolute;top:0;left:18px;width:42px;height:18px;border-radius:12px 12px 5px 5px;background:var(--hair);z-index:5}
+.doll .hair:after{content:"";position:absolute;top:12px;left:0;width:10px;height:29px;border-radius:8px;background:var(--hair)}
+.doll .hair:before{content:"";position:absolute;top:12px;right:0;width:10px;height:29px;border-radius:8px;background:var(--hair)}
+.doll .eyes{position:absolute;top:17px;left:8px;width:18px;text-align:center;font-size:11px;color:#32213e;z-index:6}
+.doll .body{position:absolute;top:43px;left:19px;width:40px;height:38px;background:var(--top);border:2px solid #35234c;border-radius:8px;z-index:3}
+.doll .arm{position:absolute;top:46px;width:10px;height:34px;background:var(--skin);border:2px solid #35234c;border-radius:7px;z-index:2}
+.doll .arm.left{left:9px;transform:rotate(8deg)}
+.doll .arm.right{right:9px;transform:rotate(-8deg)}
+.doll .legs{position:absolute;top:79px;left:23px;display:flex;gap:5px}
+.doll .leg{width:13px;height:34px;background:var(--bottom);border:2px solid #35234c;border-radius:5px}
+.doll .shoe{position:absolute;top:108px;left:20px;width:18px;height:9px;background:var(--shoe);border-radius:7px}
+.doll .shoe.right{left:41px}
+.doll .accessory{position:absolute;top:-8px;left:27px;z-index:8;font-size:22px}
+.avatar-mini{display:inline-flex;align-items:center;justify-content:center;width:30px;height:34px;font-size:25px;vertical-align:middle}
+.field{display:flex;flex-direction:column;gap:5px;margin:9px 0}
+.field label{font-size:13px;color:#e4d8ff}
+.field select,.field input{width:100%}
+.wardrobe-item{background:#3a2864;border-radius:10px;padding:9px;margin:5px 0;font-size:13px}
+.locked{opacity:.55}
+.small-title{color:#ffdc72;font-weight:bold}
+.notice{background:#49356f;padding:10px;border-radius:10px;font-size:13px;margin-top:8px}
 </style>
 </head>
 <body>
 <main>
 <header>
-<img src="icon-192.png">
+<img src="icon-192.png" onerror="this.style.display='none'">
 <div><h1>ROBLOX SISTERS QUEST</h1><small>HABIT CITY · 姐妹成长大冒险</small></div>
 </header>
 
 <section class="panel hero">
 <small>SEASON 1 · JOURNEY OF GROWTH</small>
 <h2>Build Habits. Defeat Bosses.</h2>
-完成每日任务，收集 XP，一起升级！
+完成每日任务，收集 XP，升级角色，解锁更多造型！
 </section>
 
 <nav>
@@ -64,6 +90,7 @@ button:disabled{opacity:.5}
 <button onclick="tab('quests',this)">⭐ 每日任务</button>
 <button onclick="tab('board',this)">🗺️ 棋盘</button>
 <button onclick="tab('cards',this)">🎁 卡牌</button>
+<button onclick="tab('avatarPage',this)">👗 角色衣柜</button>
 </nav>
 
 <section id="home">
@@ -74,15 +101,15 @@ button:disabled{opacity:.5}
 </div>
 <div class="panel">
 <h3>当前玩家</h3>
-<button onclick="choose('姐姐')">姐姐</button>
-<button onclick="choose('妹妹')">妹妹</button>
+<button id="chooseSister" onclick="choose('姐姐')">姐姐</button>
+<button id="chooseYounger" onclick="choose('妹妹')">妹妹</button>
 <p id="who">姐姐</p>
 <p id="today" class="xp">0 XP</p>
 <p class="muted">完成任务获得 XP，然后到棋盘掷骰子。</p>
 </div>
 <div class="panel">
 <h3>HOW TO PLAY 游戏规则</h3>
-<p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。目标是养成习惯，不是姐妹互相比赛。</p>
+<p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。宝箱也有机会掉落新发型、服装和配件。</p>
 </div>
 </section>
 
@@ -111,11 +138,28 @@ button:disabled{opacity:.5}
 <div class="panel"><h3>🎒 我的道具</h3><div id="inventory" class="muted"></div></div>
 </section>
 
+<section id="avatarPage" class="hidden">
+<div class="panel">
+<h3>👗 MY AVATAR 我的角色</h3>
+<p class="muted">选择姐姐或妹妹，修改昵称和角色造型。换装不会影响 XP 或游戏进度。</p>
+<button onclick="choose('姐姐')">姐姐</button>
+<button onclick="choose('妹妹')">妹妹</button>
+<div id="avatarEditor"></div>
+</div>
+<div class="panel">
+<h3>🧥 WARDROBE 我的衣柜</h3>
+<p class="muted">已解锁的发型、服装和配件会永久保存在各自的收藏中。</p>
+<div id="wardrobe"></div>
+</div>
+<div class="panel">
+<h3>🏆 COLLECTION 收藏与解锁</h3>
+<div id="collection"></div>
+</div>
+</section>
+
 <div class="panel">
 <h3>☁️ 双手机同步</h3>
-<p class="muted">目前数据保存在本机。跨手机同步需要连接云端数据库。</p>
-<label class="muted">家庭邀请码</label>
-<input id="room" placeholder="例如 SISTERS2026" style="width:100%;padding:10px;border-radius:9px">
+<p class="muted">目前数据保存在这部设备的浏览器中。你们使用同一部平板即可共享游戏进度；不同设备之间暂时不会自动同步。</p>
 </div>
 
 <p class="muted" style="text-align:center">Good habits make real heroes. 好习惯会创造真正的英雄。</p>
@@ -149,33 +193,124 @@ const initial={
 
 let data;
 try{
-data=JSON.parse(localStorage.sqdata||'null')||JSON.parse(JSON.stringify(initial));
+data=JSON.parse(localStorage.sqdata||"null")||JSON.parse(JSON.stringify(initial));
 }catch(e){
 data=JSON.parse(JSON.stringify(initial));
 }
 
-["姐姐","妹妹"].forEach(n=>{
+["姐姐","妹妹"].forEach((n,i)=>{
 data[n]=Object.assign({},initial[n],data[n]||{});
-data[n].items=data[n].items||[];
-data[n].defeated=data[n].defeated||[];
-data[n].done=data[n].done||[];
-data[n].skipTurn=!!data[n].skipTurn;
+let p=data[n];
+p.items=p.items||[];
+p.defeated=p.defeated||[];
+p.done=p.done||[];
+p.skipTurn=!!p.skipTurn;
+p.name=p.name||(i===0?"姐姐":"妹妹");
+p.avatar=p.avatar||{};
+p.collection=p.collection||{};
+p.milestones=p.milestones||[];
 });
 
-/* 每日任务自动重置：按马来西亚时间日期判断 */
+const catalogs={
+hair:[
+{id:"hair-basic",label:"经典黑长发",color:"#21152e",emoji:""},
+{id:"hair-brown",label:"棕色双马尾",color:"#8b4b2e",emoji:""},
+{id:"hair-pink",label:"粉色短发",color:"#f078bd",emoji:""},
+{id:"hair-blue",label:"梦幻蓝长发",color:"#4389db",emoji:""},
+{id:"hair-gold",label:"金色公主发",color:"#f5c64d",emoji:""},
+{id:"hair-purple",label:"紫色星光发",color:"#9b67d8",emoji:""}
+],
+skin:[
+{id:"skin-light",label:"浅肤色",color:"#f5c6a5"},
+{id:"skin-peach",label:"蜜桃肤色",color:"#df9b76"},
+{id:"skin-tan",label:"健康小麦色",color:"#b97850"},
+{id:"skin-deep",label:"暖棕肤色",color:"#87543d"}
+],
+top:[
+{id:"top-basic",label:"紫色基础上衣",color:"#9c65e8"},
+{id:"top-pink",label:"粉色爱心上衣",color:"#f06cba"},
+{id:"top-blue",label:"蓝色星星上衣",color:"#4d91e8"},
+{id:"top-yellow",label:"阳光黄色上衣",color:"#f0c64f"},
+{id:"top-green",label:"薄荷绿上衣",color:"#55c5a0"},
+{id:"top-gold",label:"黄金公主礼服",color:"#e5b83f"},
+{id:"top-wizard",label:"魔法师紫袍",color:"#6942b5"}
+],
+bottom:[
+{id:"bottom-basic",label:"紫色长裤",color:"#674b9d"},
+{id:"bottom-pink",label:"粉色裙子",color:"#ef80c4"},
+{id:"bottom-blue",label:"蓝色短裤",color:"#4384cf"},
+{id:"bottom-black",label:"黑色长裤",color:"#302d45"},
+{id:"bottom-gold",label:"金色公主裙",color:"#dcae37"},
+{id:"bottom-rainbow",label:"彩虹裙",color:"#c66bd5"}
+],
+shoe:[
+{id:"shoe-basic",label:"白色运动鞋",color:"#f4f1ff"},
+{id:"shoe-pink",label:"粉色鞋子",color:"#f18ac7"},
+{id:"shoe-gold",label:"黄金舞鞋",color:"#f3c84f"},
+{id:"shoe-blue",label:"蓝色魔法鞋",color:"#55a9ed"}
+],
+accessory:[
+{id:"acc-none",label:"不佩戴",emoji:""},
+{id:"acc-star",label:"星星发夹",emoji:"⭐"},
+{id:"acc-crown",label:"小皇冠",emoji:"👑"},
+{id:"acc-bow",label:"蝴蝶结",emoji:"🎀"},
+{id:"acc-wings",label:"魔法翅膀",emoji:"🪽"},
+{id:"acc-flower",label:"花朵发饰",emoji:"🌸"},
+{id:"acc-wizard",label:"魔法师帽",emoji:"🪄"},
+{id:"acc-rainbow",label:"彩虹光环",emoji:"🌈"},
+{id:"acc-dragon",label:"巨龙头饰",emoji:"🐉"},
+{id:"acc-angel",label:"天使光环",emoji:"😇"}
+]
+};
+
+const defaults={
+hair:["hair-basic","hair-brown"],
+skin:["skin-light","skin-peach","skin-tan","skin-deep"],
+top:["top-basic","top-pink","top-blue"],
+bottom:["bottom-basic","bottom-pink","bottom-blue"],
+shoe:["shoe-basic","shoe-pink"],
+accessory:["acc-none","acc-star","acc-bow"]
+};
+
+const bossRewards={
+8:{type:"accessory",id:"acc-flower"},
+15:{type:"hair",id:"hair-purple"},
+22:{type:"top",id:"top-green"},
+29:{type:"accessory",id:"acc-angel"},
+36:{type:"bottom",id:"bottom-rainbow"},
+42:{type:"accessory",id:"acc-dragon"},
+48:{type:"top",id:"top-wizard"}
+};
+
+function setupProfile(n){
+let p=data[n];
+Object.keys(defaults).forEach(type=>{
+p.collection[type]=Array.isArray(p.collection[type])?p.collection[type]:[];
+defaults[type].forEach(id=>{
+if(!p.collection[type].includes(id))p.collection[type].push(id);
+});
+});
+let a=p.avatar;
+a.hair=a.hair||"hair-basic";
+a.skin=a.skin|| (n==="姐姐"?"skin-light":"skin-peach");
+a.top=a.top||"top-basic";
+a.bottom=a.bottom||"bottom-basic";
+a.shoe=a.shoe||"shoe-basic";
+a.accessory=a.accessory||"acc-none";
+}
+setupProfile("姐姐");
+setupProfile("妹妹");
+
 function malaysiaDateKey(){
 return new Intl.DateTimeFormat("en-CA",{
 timeZone:"Asia/Kuala_Lumpur",
-year:"numeric",
-month:"2-digit",
-day:"2-digit"
+year:"numeric",month:"2-digit",day:"2-digit"
 }).format(new Date());
 }
 
 function checkDailyReset(){
 const todayKey=malaysiaDateKey();
 const lastTaskDate=localStorage.getItem("sqTaskDate");
-
 if(lastTaskDate!==todayKey){
 data["姐姐"].done=[];
 data["妹妹"].done=[];
@@ -185,7 +320,6 @@ localStorage.setItem("sqdata",JSON.stringify(data));
 }
 
 checkDailyReset();
-
 let who="姐姐";
 
 const special={
@@ -219,30 +353,63 @@ const bosses={
 48:{name:"Lazy Titan 懒惰泰坦",q:"看到家里有事情需要帮忙，应该怎样做？",a:["主动帮忙","假装没看到","等别人叫很多次"],correct:0}
 };
 
+function esc(s){
+return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function itemOf(type,id){
+return (catalogs[type]||[]).find(x=>x.id===id)||catalogs[type][0];
+}
+
+function avatarHTML(n,mini=false){
+let a=data[n].avatar;
+let hair=itemOf("hair",a.hair);
+let skin=itemOf("skin",a.skin);
+let top=itemOf("top",a.top);
+let bottom=itemOf("bottom",a.bottom);
+let shoe=itemOf("shoe",a.shoe);
+let acc=itemOf("accessory",a.accessory);
+return '<div class="doll" style="--skin:'+skin.color+';--hair:'+hair.color+';--top:'+top.color+';--bottom:'+bottom.color+';--shoe:'+shoe.color+'">'+
+'<div class="hair"></div><div class="head"></div><div class="eyes">● ●</div>'+
+'<div class="arm left"></div><div class="arm right"></div><div class="body"></div>'+
+'<div class="legs"><div class="leg"></div><div class="leg"></div></div>'+
+'<div class="shoe"></div><div class="shoe right"></div>'+
+'<div class="accessory">'+(acc.emoji||"")+'</div></div>';
+}
+
 function save(){
 localStorage.sqdata=JSON.stringify(data);
 render();
 renderBoard();
 renderInventory();
+renderAvatarEditor();
+renderWardrobe();
+renderCollection();
 }
 
 function choose(n){
 checkDailyReset();
 who=n;
-document.getElementById("who").textContent=n;
+document.getElementById("who").textContent=data[n].name;
+document.getElementById("chooseSister").classList.toggle("active",n==="姐姐");
+document.getElementById("chooseYounger").classList.toggle("active",n==="妹妹");
 renderTasks();
 render();
 renderBoard();
 renderEvent();
 renderInventory();
+renderAvatarEditor();
+renderWardrobe();
+renderCollection();
 }
 
 function render(){
 document.getElementById("players").innerHTML=["姐姐","妹妹"].map(n=>
-'<div class="player"><b>'+n+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small><br><small>击败 Boss：'+data[n].defeated.length+'/7</small></div>'
+'<div class="player"><div class="avatar-panel"><div class="avatar-stage">'+avatarHTML(n)+'</div><div><b>'+esc(data[n].name)+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small><br><small>击败 Boss：'+data[n].defeated.length+'/7</small></div></div></div>'
 ).join("");
 document.getElementById("today").textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+" XP";
 document.getElementById("resetDate").textContent="今日任务日期："+malaysiaDateKey()+"（每天午夜自动重置）";
+document.getElementById("who").textContent=data[who].name;
 }
 
 function renderTasks(){
@@ -261,6 +428,7 @@ data[who].xp+=tasks[i][2];
 data[who].done=d.filter(x=>x!==i);
 data[who].xp=Math.max(0,data[who].xp-tasks[i][2]);
 }
+checkMilestones(who);
 save();
 renderTasks();
 }
@@ -273,42 +441,36 @@ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
 b.classList.add("active");
 renderTasks();
 render();
+renderAvatarEditor();
+renderWardrobe();
+renderCollection();
 }
 
 function resolveLanding(){
 let p=data[who],messages=[],guard=0;
-
 while(guard++<10){
 let type=special[p.pos]||"XP";
-
 if(type==="BOOST"){
 let from=p.pos;
 p.pos=Math.min(50,p.pos+3);
 messages.push("⚡ BOOST！从第"+from+"格前进到第"+p.pos+"格（+3格）");
-if(p.pos===50){
-messages.push("🏁 到达终点！");
-break;
-}
+if(p.pos===50){messages.push("🏁 到达终点！");break;}
 continue;
 }
-
 if(type==="LOOT"){
 p.pending={type:"LOOT",space:p.pos};
 messages.push("🎁 停在第"+p.pos+"格，触发 Loot Box！");
 break;
 }
-
 if(type==="BOSS"&&!p.defeated.includes(p.pos)){
 p.pending={type:"BOSS",space:p.pos};
 messages.push("👾 停在第"+p.pos+"格，触发 Boss 挑战！");
 break;
 }
-
 if(type==="BOSS"&&p.defeated.includes(p.pos)){
 messages.push("这个 Boss 已经被打败！");
 break;
 }
-
 if(type==="GLITCH"){
 let effect=Math.floor(Math.random()*4);
 if(effect===0){
@@ -326,45 +488,38 @@ messages.push("🍀 GLITCH！幸运逃脱，没有受到惩罚！");
 }
 break;
 }
-
 if(type==="XP"){
 let bonus=[10,20,30][Math.floor(Math.random()*3)];
 p.xp+=bonus;
 messages.push("⭐ XP 格奖励！随机获得 "+bonus+" XP！");
 break;
 }
-
-if(type==="FINISH"){
-messages.push("🏁 到达终点！");
-}
+if(type==="FINISH")messages.push("🏁 到达终点！");
 break;
 }
+checkMilestones(who);
 return messages.join(" · ");
 }
 
 function roll(){
 checkDailyReset();
 let p=data[who];
-
 if(p.pending){
 document.getElementById("rollmsg").textContent="请先完成当前的特殊关卡！";
 return;
 }
-
 if(p.skipTurn){
 p.skipTurn=false;
 save();
 renderEvent();
-document.getElementById("rollmsg").textContent="⏳ "+who+" 的回合被 GLITCH 冻结了！这次跳过掷骰，下一回合可以继续。";
+document.getElementById("rollmsg").textContent="⏳ "+data[who].name+" 的回合被 GLITCH 冻结了！这次跳过掷骰，下一回合可以继续。";
 return;
 }
-
 let d=1+Math.floor(Math.random()*6);
 p.pos=Math.min(50,p.pos+d);
-let message=who+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";
+let message=data[who].name+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";
 let eventMessage=resolveLanding();
 if(eventMessage)message+=" "+eventMessage;
-
 save();
 renderEvent();
 document.getElementById("rollmsg").textContent=message;
@@ -373,22 +528,19 @@ document.getElementById("rollmsg").textContent=message;
 function renderBoard(){
 document.getElementById("boardgrid").innerHTML=Array.from({length:50},(_,i)=>{
 let n=i+1,t=special[n]||"XP";
-return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+(data.姐姐.pos===n?"👧":"")+(data.妹妹.pos===n?"👧🏻":"")+'</small></div>';
+let avatars="";
+if(data["姐姐"].pos===n)avatars+='<span class="avatar-mini" title="'+esc(data["姐姐"].name)+'">'+avatarHTML("姐姐",true)+'</span>';
+if(data["妹妹"].pos===n)avatars+='<span class="avatar-mini" title="'+esc(data["妹妹"].name)+'">'+avatarHTML("妹妹",true)+'</span>';
+return '<div class="space '+t.toLowerCase()+'"><b>'+n+'</b>'+t+'<small>'+avatars+'</small></div>';
 }).join("");
 }
 
 function renderEvent(){
 let p=data[who],box=document.getElementById("eventBox");
-let btn=document.getElementById("rollBtn");
-btn.disabled=!!p.pending;
-
-if(!p.pending){
-box.innerHTML="";
-return;
-}
-
+document.getElementById("rollBtn").disabled=!!p.pending;
+if(!p.pending){box.innerHTML="";return;}
 if(p.pending.type==="LOOT"){
-box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+who+' 来开启你的神秘奖励吧！</p><button class="full" onclick="drawLoot()">✨ 开启宝箱</button><p id="eventResult" class="reward"></p></div>';
+box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+esc(p.name)+' 来开启你的神秘奖励吧！</p><button class="full" onclick="drawLoot()">✨ 开启宝箱</button><p id="eventResult" class="reward"></p></div>';
 }else if(p.pending.type==="BOSS"){
 let b=bosses[p.pending.space];
 box.innerHTML='<div class="event"><h3>👾 BOSS BATTLE</h3><h3>'+b.name+'</h3><p>'+b.q+'</p>'+b.a.map((x,i)=>'<label class="option"><input type="radio" name="bossAnswer" value="'+i+'"> '+x+'</label>').join("")+'<button class="full" onclick="answerBoss()">⚔️ 提交答案</button><p id="eventResult" class="reward"></p></div>';
@@ -397,13 +549,25 @@ box.innerHTML='<div class="event"><h3>🌀 GLITCH 小挑战</h3><p>遇到问题�
 }
 }
 
+function randomCosmetic(){
+let choices=[];
+Object.keys(catalogs).forEach(type=>{
+catalogs[type].forEach(item=>{
+if(item.id==="acc-none")return;
+if(!data[who].collection[type].includes(item.id)){
+choices.push({type,id:item.id,item});
+}
+});
+});
+if(!choices.length)return null;
+return choices[Math.floor(Math.random()*choices.length)];
+}
+
 function drawLoot(){
 let p=data[who];
 if(!p.pending||p.pending.type!=="LOOT")return;
-
 let card=lootCards[Math.floor(Math.random()*lootCards.length)];
 let result=card.name+" — "+card.desc;
-
 if(card.type==="xp"){
 p.xp+=card.value;
 }else if(card.type==="item"){
@@ -412,36 +576,47 @@ p.items.push(card.value);
 p.pos=Math.min(50,p.pos+card.value);
 result+="（现在来到第"+p.pos+"格）";
 }
-
+let cosmetic=randomCosmetic();
+if(cosmetic&&Math.random()<0.55){
+if(!p.collection[cosmetic.type].includes(cosmetic.id)){
+p.collection[cosmetic.type].push(cosmetic.id);
+result+=" · ✨ 额外掉落："+cosmetic.item.label+"！";
+}
+}
 p.pending=null;
 let eventMessage="";
 if(card.type==="move")eventMessage=resolveLanding();
-
+checkMilestones(who);
 save();
 renderEvent();
-document.getElementById("rollmsg").textContent=who+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
+document.getElementById("rollmsg").textContent=data[who].name+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
 renderInventory();
 }
 
 function answerBoss(){
 let p=data[who];
 if(!p.pending||p.pending.type!=="BOSS")return;
-
 let selected=document.querySelector('input[name="bossAnswer"]:checked');
 let result=document.getElementById("eventResult");
-if(!selected){
-result.textContent="请先选择一个答案。";
-return;
-}
-
-let b=bosses[p.pending.space];
+if(!selected){result.textContent="请先选择一个答案。";return;}
+let space=p.pending.space,b=bosses[space];
 if(Number(selected.value)===b.correct){
 p.xp+=80;
-p.defeated.push(p.pending.space);
+p.defeated.push(space);
 p.pending=null;
+let prize=bossRewards[space];
+let rewardItem=itemOf(prize.type,prize.id);
+let extra="";
+if(!p.collection[prize.type].includes(prize.id)){
+p.collection[prize.type].push(prize.id);
+extra=" 并解锁专属奖励："+rewardItem.label+"！";
+}else{
+extra="（专属奖励已拥有）";
+}
+checkMilestones(who);
 save();
 renderEvent();
-document.getElementById("rollmsg").textContent="🎉 "+who+" 成功打败 "+b.name+"！获得80 XP！";
+document.getElementById("rollmsg").textContent="🎉 "+p.name+" 成功打败 "+b.name+"！获得80 XP！"+extra;
 }else{
 result.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！";
 }
@@ -452,13 +627,11 @@ let p=data[who];
 if(!p.pending||p.pending.type!=="GLITCH")return;
 let selected=document.querySelector('input[name="glitchAnswer"]:checked');
 let result=document.getElementById("eventResult");
-if(!selected){
-result.textContent="请先选择一个答案。";
-return;
-}
+if(!selected){result.textContent="请先选择一个答案。";return;}
 if(Number(selected.value)===0){
 p.xp+=20;
 p.pending=null;
+checkMilestones(who);
 save();
 renderEvent();
 document.getElementById("rollmsg").textContent="🌟 GLITCH 挑战成功！获得20 XP！";
@@ -472,8 +645,115 @@ let items=data[who].items;
 document.getElementById("inventory").textContent=items.length?items.join("、"):"暂时没有道具，去 Loot Box 抽卡吧！";
 }
 
+function changeName(value){
+let name=value.trim().slice(0,16);
+if(!name)return;
+data[who].name=name;
+save();
+}
+
+function changeAvatar(field,value){
+let p=data[who];
+if(!p.collection[field]||!p.collection[field].includes(value))return;
+p.avatar[field]=value;
+save();
+}
+
+function selectHTML(type,current){
+let owned=data[who].collection[type]||[];
+return catalogs[type].filter(x=>owned.includes(x.id)).map(x=>
+'<option value="'+x.id+'" '+(x.id===current?"selected":"")+'>'+x.label+'</option>'
+).join("");
+}
+
+function renderAvatarEditor(){
+let p=data[who],a=p.avatar;
+let el=document.getElementById("avatarEditor");
+if(!el)return;
+el.innerHTML=
+'<div class="avatar-panel" style="margin-top:12px"><div class="avatar-stage">'+avatarHTML(who)+'</div><div><b>'+esc(p.name)+'</b><p class="muted">LEVEL '+(Math.floor(p.xp/200)+1)+' · '+p.xp+' XP</p><small class="muted">目前角色造型预览</small></div></div>'+
+'<div class="field"><label>角色昵称</label><input id="nickname" maxlength="16" value="'+esc(p.name)+'" placeholder="输入角色昵称" onchange="changeName(this.value)"></div>'+
+'<div class="field"><label>发型</label><select onchange="changeAvatar(\'hair\',this.value)">'+selectHTML("hair",a.hair)+'</select></div>'+
+'<div class="field"><label>肤色</label><select onchange="changeAvatar(\'skin\',this.value)">'+selectHTML("skin",a.skin)+'</select></div>'+
+'<div class="field"><label>上衣</label><select onchange="changeAvatar(\'top\',this.value)">'+selectHTML("top",a.top)+'</select></div>'+
+'<div class="field"><label>裤子 / 裙子</label><select onchange="changeAvatar(\'bottom\',this.value)">'+selectHTML("bottom",a.bottom)+'</select></div>'+
+'<div class="field"><label>鞋子</label><select onchange="changeAvatar(\'shoe\',this.value)">'+selectHTML("shoe",a.shoe)+'</select></div>'+
+'<div class="field"><label>配件</label><select onchange="changeAvatar(\'accessory\',this.value)">'+selectHTML("accessory",a.accessory)+'</select></div>'+
+'<div class="notice">换装会自动保存。未解锁的造型不能选择，可以通过 Loot Box、Boss 挑战和 XP 里程碑获得。</div>';
+}
+
+function renderWardrobe(){
+let el=document.getElementById("wardrobe");
+if(!el)return;
+let html="";
+Object.keys(catalogs).forEach(type=>{
+let title={hair:"💇 发型",skin:"🎨 肤色",top:"👕 上衣",bottom:"👗 裤子与裙子",shoe:"👟 鞋子",accessory:"✨ 配件"}[type];
+html+='<h4>'+title+'</h4>';
+catalogs[type].forEach(item=>{
+let owned=data[who].collection[type].includes(item.id);
+html+='<div class="wardrobe-item '+(owned?"":"locked")+'">'+(owned?"🔓 ":"🔒 ")+item.label+(owned?" · 已拥有":" · 尚未解锁")+'</div>';
+});
+});
+el.innerHTML=html;
+}
+
+function renderCollection(){
+let el=document.getElementById("collection");
+if(!el)return;
+let total=0,owned=0;
+Object.keys(catalogs).forEach(type=>{
+total+=catalogs[type].length;
+owned+=data[who].collection[type].length;
+});
+el.innerHTML='<p><b>'+esc(data[who].name)+'</b> 的造型收藏</p>'+
+'<p class="xp">'+owned+' / '+total+'</p>'+
+'<div class="bar"><i style="width:'+(owned/total*100)+'%"></i></div>'+
+'<p class="muted">解锁更多发型、服装和配件，打造自己的专属角色。</p>'+
+'<p class="muted">Boss 击败数：'+data[who].defeated.length+'/7</p>'+
+'<p class="muted">累计 XP：'+data[who].xp+' XP</p>';
+}
+
+function unlockItem(n,type,id,reason){
+let p=data[n];
+if(!p.collection[type].includes(id)){
+p.collection[type].push(id);
+p.milestones.push(reason);
+}
+}
+
+function checkMilestones(n){
+let p=data[n];
+if(p.xp>=300&&!p.milestones.includes("xp300")){
+unlockItem(n,"accessory","acc-crown","xp300");
+}
+if(p.xp>=600&&!p.milestones.includes("xp600")){
+unlockItem(n,"top","top-yellow","xp600");
+}
+if(p.xp>=1000&&!p.milestones.includes("xp1000")){
+unlockItem(n,"hair","hair-gold","xp1000");
+}
+}
+
 function cards(id,arr){
 document.getElementById(id).innerHTML=arr.map(x=>'<div class="card">'+x+'</div>').join("");
+}
+
+function renderCardInfo(){
+cards("loot",[
+"⭐ 普通宝箱：XP、道具、随机服装",
+"✨ 稀有掉落：新发型、鞋子、配件",
+"🎀 每次抽奖都有机会获得新造型"
+]);
+cards("boss",[
+"👾 击败 Boss 可获得80 XP",
+"🏆 每个 Boss 首次击败可解锁专属造型",
+"🌈 收集7个 Boss 专属奖励"
+]);
+cards("skills",[
+"🛡️ Shield：防护盾道具",
+"🎲 Roll Again：额外掷骰",
+"🚀 Rainbow Rocket：前进5格"
+]);
 }
 
 render();
@@ -481,10 +761,13 @@ renderTasks();
 renderBoard();
 renderEvent();
 renderInventory();
+renderAvatarEditor();
+renderWardrobe();
+renderCollection();
+renderCardInfo();
 
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
 
-/* App 回到前台时也检查是否跨日 */
 document.addEventListener("visibilitychange",()=>{
 if(!document.hidden){
 checkDailyReset();
