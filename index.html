@@ -55,9 +55,21 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 .doll .hair:before{content:"";position:absolute;top:12px;right:0;width:10px;height:29px;background:var(--hair)}
 .doll .eyes{position:absolute;top:17px;left:8px;width:18px;text-align:center;font-size:11px;color:#32213e;z-index:6}
 .doll .body{position:absolute;top:43px;left:19px;width:40px;height:38px;background:var(--top);border:2px solid #35234c;border-radius:3px;z-index:3}
-.doll .arm{position:absolute;top:46px;width:10px;height:34px;background:var(--skin);border:2px solid #35234c;border-radius:2px;z-index:2}
-.doll .arm.left{left:9px}
-.doll .arm.right{right:9px}
+
+/* 修正：手臂显示在身体前方 */
+.doll .arm{
+position:absolute;
+top:46px;
+width:10px;
+height:34px;
+background:var(--skin);
+border:2px solid #35234c;
+border-radius:2px;
+z-index:5;
+}
+.doll .arm.left{left:8px}
+.doll .arm.right{right:8px}
+
 .doll .legs{position:absolute;top:79px;left:23px;display:flex;gap:5px}
 .doll .leg{width:13px;height:34px;background:var(--bottom);border:2px solid #35234c;border-radius:2px}
 .doll .shoe{position:absolute;top:108px;left:20px;width:18px;height:9px;background:var(--shoe);border-radius:3px}
