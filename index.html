@@ -31,11 +31,49 @@ input[type=checkbox],input[type=radio]{accent-color:#ef55b8}
 .quest{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid #ffffff22}
 .quest label{flex:1;font-size:14px}
 .pts{color:#ffdc72;font-size:12px}
-.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
-.space{aspect-ratio:1;background:#49356f;border:1px solid #ffffff30;box-shadow:inset 0 2px #ffffff22,0 3px 0 #1b1232;border-radius:8px;display:grid;place-content:center;text-align:center;font-size:10px;overflow:hidden}
-.space b{font-size:14px}
+
+/* 第二阶段 2A：立体棋盘 */
+.board{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:7px;
+padding:10px;
+border-radius:17px;
+background:linear-gradient(145deg,#241342,#392260);
+border:1px solid #a58add88;
+box-shadow:inset 0 3px 8px #0b061c99,0 7px 0 #130b29,0 12px 18px #08031977;
+perspective:900px
+}
+.space{
+position:relative;
+isolation:isolate;
+aspect-ratio:1;
+background:linear-gradient(145deg,#7658a5,#49356f 65%,#382553);
+border:1px solid #ffffff55;
+border-bottom:4px solid #211438;
+box-shadow:inset 0 2px 0 #ffffff55,inset 0 -3px 0 #00000022,0 4px 0 #1b1232,0 7px 9px #08031c66;
+border-radius:9px;
+display:grid;
+place-content:center;
+text-align:center;
+font-size:10px;
+overflow:hidden;
+transform:translateY(-1px);
+transition:transform .15s,filter .15s,box-shadow .15s
+}
+.space b,.space small{position:relative;z-index:1}
+.space b{font-size:14px;text-shadow:0 1px 2px #160b2d}
+.space:active{
+transform:translateY(2px);
+box-shadow:inset 0 2px 4px #0005,0 1px 0 #1b1232
+}
 .space small{font-size:10px;line-height:1;display:flex;align-items:flex-end;justify-content:center;gap:2px;min-height:38px;margin-top:2px;overflow:visible}
-.boost{background:#75601c}.glitch{background:#722e58}.loot{background:#66358a}.boss{background:#7c303c}.finish{background:#92701b}
+.boost{background:linear-gradient(145deg,#f4d66a,#98711d 70%);border-color:#ffeaa0;border-bottom-color:#65470e}
+.glitch{background:linear-gradient(145deg,#f178b6,#792b5b 70%);border-color:#ffb4dd;border-bottom-color:#48152f}
+.loot{background:linear-gradient(145deg,#bd79f4,#63358f 70%);border-color:#e4c0ff;border-bottom-color:#382052}
+.boss{background:linear-gradient(145deg,#ef7777,#842c43 70%);border-color:#ffb0a9;border-bottom-color:#4e1728}
+.finish{background:linear-gradient(145deg,#ffe78c,#a77819 70%);border-color:#fff0b0;border-bottom-color:#63420d}
+
 .hidden{display:none}
 .bar{height:7px;background:#120b2b;border-radius:9px;margin-top:7px}
 .bar i{display:block;background:#ff65c4;height:7px;border-radius:9px}
