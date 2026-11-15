@@ -106,8 +106,7 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 .scene-castle{position:absolute;right:13px;top:48px;font-size:72px}
 .scene-chest{position:absolute;right:85px;bottom:10px;font-size:35px}
 @media(max-width:390px){.scene-banner{min-height:180px}.scene-banner h2{font-size:21px}.scene-copy{max-width:78%}.scene-castle{font-size:58px;right:5px;top:56px}.scene-chest{right:65px;font-size:28px}.avatar-stage{width:45px;height:66px;flex-basis:45px}.avatar-stage .doll{transform:scale(.42)}.player{padding:5px}.player .xp{font-size:14px}nav button{font-size:10px;padding:9px 3px}}
-
-/* 3A 宝箱开启动画 */
+/* 宝箱动画 */
 .chest-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:190px;margin:12px 0;padding:12px;border-radius:15px;background:radial-gradient(circle,#7047a5 0%,#30204f 70%);overflow:hidden;position:relative}
 .chest-icon{font-size:82px;line-height:1.2;filter:drop-shadow(0 8px 5px #09031c99);transform-origin:center bottom}
 .chest-stage.opening .chest-icon{animation:chestShake .16s ease-in-out infinite}
@@ -135,13 +134,11 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 <body>
 <main>
 <header><img src="icon-192.png" onerror="this.style.display='none'"><div><h1>ROBLOX SISTERS QUEST</h1><small>HABIT CITY · 姐妹成长大冒险</small></div></header>
-
 <section class="panel hero scene-banner">
 <div class="scene-top"><span>SEASON 1</span><span>HABIT CITY</span></div>
 <div class="scene-copy"><div class="scene-kicker">✨ SISTERS ADVENTURE</div><h2>姐妹成长大冒险</h2><p>完成每日任务 · 收集 XP · 解锁专属 Roblox 风格造型</p><div class="scene-tags"><span>⭐ DAILY QUESTS</span><span>🎁 LOOT BOX</span><span>👑 BOSS BATTLE</span></div></div>
 <div class="scene-castle">🏰</div><div class="scene-chest">🎁</div>
 </section>
-
 <nav>
 <button class="active" onclick="tab('home',this)">🏠 首页</button>
 <button onclick="tab('quests',this)">⭐ 每日任务</button>
@@ -149,38 +146,34 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 <button onclick="tab('cards',this)">🎁 卡牌</button>
 <button onclick="tab('avatarPage',this)">👗 角色衣柜</button>
 </nav>
-
 <section id="home">
 <div class="panel"><h3>PLAYER PANEL 玩家面板</h3><div id="players" class="players"></div><p class="muted">姐姐和妹妹独立累计 XP，共享同一个游戏世界。</p></div>
 <div class="panel"><h3>当前玩家</h3><button id="chooseSister" onclick="choose('姐姐')">姐姐</button><button id="chooseYounger" onclick="choose('妹妹')">妹妹</button><p id="who">姐姐</p><p id="today" class="xp">0 XP</p><p class="muted">完成任务获得 XP，然后到棋盘掷骰子。</p></div>
 <div class="panel"><h3>HOW TO PLAY 游戏规则</h3><p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。宝箱也有机会掉落新发型、服装和配件。</p></div>
 </section>
-
 <section id="quests" class="hidden"><div class="panel"><h3>DAILY QUESTS 每日任务</h3><p class="muted" id="resetDate"></p><div id="ql"></div></div></section>
-
 <section id="board" class="hidden">
 <div class="panel"><h3>HABIT CITY · 50 SPACE BOARD</h3><div id="boardgrid" class="board"></div>
 <div class="dice-stage"><div id="diceFace" class="dice-face">🎲</div><span id="diceHint" class="dice-hint">准备好了吗？</span></div>
-<button id="rollBtn" class="full" onclick="roll()">🎲 掷骰子</button><p id="rollmsg" class="muted"></p><div id="eventBox"></div>
+<button id="rollBtn" class="full" onclick="roll()">🎲 掷骰子</button>
+<p id="rollmsg" class="muted"></p><div id="eventBox"></div>
+<button class="full" onclick="testChestAnimation()">🎁 测试宝箱动画（不会影响游戏数据）</button>
+<div id="chestTestBox"></div>
 </div></section>
-
 <section id="cards" class="hidden">
 <div class="panel"><h3>LOOT BOX CARDS 宝箱奖励</h3><div id="loot" class="grid"></div></div>
 <div class="panel"><h3>BOSS BATTLE 怪物挑战</h3><div id="boss" class="grid"></div></div>
 <div class="panel"><h3>SKILL CARDS 技能卡</h3><div id="skills" class="grid"></div></div>
 <div class="panel"><h3>🎒 我的道具</h3><div id="inventory" class="muted"></div></div>
 </section>
-
 <section id="avatarPage" class="hidden">
 <div class="panel"><h3>👗 MY AVATAR 我的角色</h3><p class="muted">选择姐姐或妹妹，修改昵称和角色造型。换装不会影响 XP 或游戏进度。</p><button onclick="choose('姐姐')">姐姐</button><button onclick="choose('妹妹')">妹妹</button><div id="avatarEditor"></div></div>
 <div class="panel"><h3>🧥 WARDROBE 我的衣柜</h3><p class="muted">已解锁的发型、服装和配件会永久保存在各自的收藏中。</p><div id="wardrobe"></div></div>
 <div class="panel"><h3>🏆 COLLECTION 收藏与解锁</h3><div id="collection"></div></div>
 </section>
-
 <div class="panel"><h3>☁️ 双手机同步</h3><p class="muted">目前数据保存在这部设备的浏览器中。你们使用同一部平板即可共享游戏进度；不同设备之间暂时不会自动同步。</p></div>
 <p class="muted" style="text-align:center">Good habits make real heroes. 好习惯会创造真正的英雄。</p>
 </main>
-
 <script>
 const tasks=[
 ["不乱发脾气","Control my temper",25],["10点前睡觉","Sleep before 10pm",30],["主动温习功课","Revise proactively",35],["30分钟内吃完饭","Finish meal within 30 min",25],["东西放回原位","Put things back",20],["不乱丢垃圾","Use the bin",20],["吃完自己洗碗","Wash own dishes",25],["整理书包和书本","Pack bag & books",25],["水壶餐具拿去厨房","Take bottle & utensils to kitchen",20],["主动帮忙做家务","Help with chores",30],["没有看短视频","No short videos",40],["8:15pm前吃完晚餐","Finish dinner by 8:15pm",30],["两姐妹没有吵架","Peaceful sister teamwork",40],["念国语/英语故事书","Read BM/English storybook",25],["讲英语","Speak English",20],["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],["听写80分或以上","Dictation score 80%+",50]
@@ -188,7 +181,7 @@ const tasks=[
 const initial={"姐姐":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null,skipTurn:false},"妹妹":{xp:0,pos:1,done:[],items:[],defeated:[],pending:null,skipTurn:false}};
 let data;
 try{data=JSON.parse(localStorage.sqdata||"null")||JSON.parse(JSON.stringify(initial))}catch(e){data=JSON.parse(JSON.stringify(initial))}
-["姐姐","妹妹"].forEach((n,i)=>{data[n]=Object.assign({},initial[n],data[n]||{});let p=data[n];p.items=p.items||[];p.defeated=p.defeated||[];p.done=p.done||[];p.skipTurn=!!p.skipTurn;p.name=p.name||(i===0?"姐姐":"妹妹");p.avatar=p.avatar||{};p.collection=p.collection||{};});
+["姐姐","妹妹"].forEach((n,i)=>{data[n]=Object.assign({},initial[n],data[n]||{});let p=data[n];p.items=p.items||[];p.defeated=p.defeated||[];p.done=p.done||[];p.skipTurn=!!p.skipTurn;p.name=p.name||(i===0?"姐姐":"妹妹");p.avatar=p.avatar||{};p.collection=p.collection||{};p.milestones=p.milestones||[]});
 const catalogs={
 hair:[{id:"hair-basic",label:"经典黑长发",color:"#21152e",emoji:""},{id:"hair-brown",label:"棕色双马尾",color:"#8b4b2e",emoji:""},{id:"hair-pink",label:"粉色短发",color:"#f078bd",emoji:""},{id:"hair-blue",label:"梦幻蓝长发",color:"#4389db",emoji:""},{id:"hair-gold",label:"金色公主发",color:"#f5c64d",emoji:""},{id:"hair-purple",label:"紫色星光发",color:"#9b67d8",emoji:""}],
 skin:[{id:"skin-light",label:"浅肤色",color:"#f5c6a5"},{id:"skin-peach",label:"蜜桃肤色",color:"#df9b76"},{id:"skin-tan",label:"健康小麦色",color:"#b97850"},{id:"skin-deep",label:"暖棕肤色",color:"#87543d"}],
@@ -233,8 +226,6 @@ async function roll(){checkDailyReset();let p=data[who];if(gameBusy)return;if(p.
 function renderBoard(){document.getElementById("boardgrid").innerHTML=Array.from({length:50},(_,i)=>{let n=i+1,t=special[n]||"XP",a="";if(data["姐姐"].pos===n)a+='<span class="avatar-mini">'+avatarHTML("姐姐")+'</span>';if(data["妹妹"].pos===n)a+='<span class="avatar-mini">'+avatarHTML("妹妹")+'</span>';return '<div class="space '+t.toLowerCase()+(data["姐姐"].pos===n||data["妹妹"].pos===n?" token-here":"")+'"><b>'+n+'</b>'+t+'<small>'+a+'</small></div>'}).join("")}
 function renderEvent(){let p=data[who],box=document.getElementById("eventBox");document.getElementById("rollBtn").disabled=gameBusy||!!p.pending;if(!p.pending){box.innerHTML="";return}if(p.pending.type==="LOOT"){box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+esc(p.name)+' 来开启你的神秘奖励吧！</p><div id="chestStage" class="chest-stage"><div class="chest-rays"></div><span class="chest-sparkle spark-a">✨</span><span class="chest-sparkle spark-b">⭐</span><span class="chest-sparkle spark-c">💎</span><div id="chestIcon" class="chest-icon">🎁</div><div id="chestCaption" class="chest-caption">神秘宝箱等待开启</div></div><div id="chestReward" class="chest-reward"></div><button id="openChestBtn" class="full" onclick="drawLoot()">✨ 开启宝箱</button></div>'}else if(p.pending.type==="BOSS"){let b=bosses[p.pending.space];box.innerHTML='<div class="event"><h3>👾 BOSS BATTLE</h3><h3>'+b.name+'</h3><p>'+b.q+'</p>'+b.a.map((x,i)=>'<label class="option"><input type="radio" name="bossAnswer" value="'+i+'"> '+x+'</label>').join("")+'<button class="full" onclick="answerBoss()">⚔️ 提交答案</button><p id="eventResult" class="reward"></p></div>'}else if(p.pending.type==="GLITCH"){box.innerHTML='<div class="event"><h3>🌀 GLITCH 小挑战</h3><p>遇到问题时，最好的做法是什么？</p><label class="option"><input type="radio" name="glitchAnswer" value="0"> 冷静想办法，一步一步解决</label><label class="option"><input type="radio" name="glitchAnswer" value="1"> 生气放弃</label><label class="option"><input type="radio" name="glitchAnswer" value="2"> 把问题留给别人</label><button class="full" onclick="answerGlitch()">✨ 提交答案</button><p id="eventResult" class="reward"></p></div>'}}
 function randomCosmetic(){let c=[];Object.keys(catalogs).forEach(t=>catalogs[t].forEach(x=>{if(x.id!=="acc-none"&&!data[who].collection[t].includes(x.id))c.push({type:t,id:x.id,item:x})}));return c.length?c[Math.floor(Math.random()*c.length)]:null}
-
-/* 3A：先播放宝箱动画，再揭晓并发放奖励 */
 async function drawLoot(){
 let p=data[who];if(gameBusy||!p.pending||p.pending.type!=="LOOT")return;
 gameBusy=true;
@@ -262,6 +253,23 @@ save();renderEvent();
 document.getElementById("rollmsg").textContent=data[who].name+" 抽到了："+result+(eventMessage?" · "+eventMessage:"");
 renderInventory();
 }catch(e){console.error(e)}finally{gameBusy=false;let rollBtn=document.getElementById("rollBtn");if(rollBtn)rollBtn.disabled=!!data[who].pending}
+}
+async function testChestAnimation(){
+if(gameBusy)return;
+gameBusy=true;
+const box=document.getElementById("chestTestBox");
+box.innerHTML='<div class="event"><h3>🎁 宝箱动画测试</h3><p class="muted">这是演示模式，不会发放任何游戏奖励。</p><div id="testChestStage" class="chest-stage"><div class="chest-rays"></div><span class="chest-sparkle spark-a">✨</span><span class="chest-sparkle spark-b">⭐</span><span class="chest-sparkle spark-c">💎</span><div id="testChestIcon" class="chest-icon">🎁</div><div id="testChestCaption" class="chest-caption">神秘宝箱等待开启</div></div><div id="testChestReward" class="chest-reward"></div></div>';
+try{
+const stage=document.getElementById("testChestStage"),icon=document.getElementById("testChestIcon"),caption=document.getElementById("testChestCaption"),reward=document.getElementById("testChestReward");
+stage.classList.add("opening");caption.textContent="宝箱正在摇晃……";
+await wait(1100);
+stage.classList.remove("opening");stage.classList.add("opened");icon.textContent="🧰";caption.textContent="✨ 宝箱开启！";
+await wait(750);
+icon.textContent="⭐";caption.textContent="🎉 奖励揭晓！";
+reward.innerHTML='<div class="reward-icon">⭐</div><div class="reward-name">+50 XP</div><p>获得50 XP（演示奖励，不会实际加入游戏）</p>';
+reward.classList.add("show");
+}catch(e){console.error(e)}
+finally{gameBusy=false}
 }
 function answerBoss(){let p=data[who];if(!p.pending||p.pending.type!=="BOSS")return;let s=document.querySelector('input[name="bossAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}let space=p.pending.space,b=bosses[space];if(Number(s.value)===b.correct){p.xp+=80;p.defeated.push(space);p.pending=null;let prize=bossRewards[space],item=itemOf(prize.type,prize.id),extra="";if(!p.collection[prize.type].includes(prize.id)){p.collection[prize.type].push(prize.id);extra=" 并解锁专属奖励："+item.label+"！"}else extra="（专属奖励已拥有）";checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🎉 "+p.name+" 成功打败 "+b.name+"！获得80 XP！"+extra}else r.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！"}
 function answerGlitch(){let p=data[who];if(!p.pending||p.pending.type!=="GLITCH")return;let s=document.querySelector('input[name="glitchAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}if(Number(s.value)===0){p.xp+=20;p.pending=null;checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🌟 GLITCH 挑战成功！获得20 XP！"}else r.textContent="再想一想：遇到问题时，先冷静下来会更容易找到办法。"}
