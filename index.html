@@ -89,6 +89,7 @@ button:disabled{opacity:.5}
 <section id="quests" class="hidden">
 <div class="panel">
 <h3>DAILY QUESTS 每日任务</h3>
+<p class="muted" id="resetDate"></p>
 <div id="ql"></div>
 </div>
 </section>
@@ -112,7 +113,7 @@ button:disabled{opacity:.5}
 
 <div class="panel">
 <h3>☁️ 双手机同步</h3>
-<p class="muted">目前数据保存在本机。跨手机同步需要下一阶段连接云端数据库。</p>
+<p class="muted">目前数据保存在本机。跨手机同步需要连接云端数据库。</p>
 <label class="muted">家庭邀请码</label>
 <input id="room" placeholder="例如 SISTERS2026" style="width:100%;padding:10px;border-radius:9px">
 </div>
@@ -148,8 +149,10 @@ const initial={
 
 let data;
 try{
-data=JSON.parse(localStorage.sqdata||'null')||initial;
-}catch(e){data=JSON.parse(JSON.stringify(initial));}
+data=JSON.parse(localStorage.sqdata||'null')||JSON.parse(JSON.stringify(initial));
+}catch(e){
+data=JSON.parse(JSON.stringify(initial));
+}
 
 ["姐姐","妹妹"].forEach(n=>{
 data[n]=Object.assign({},initial[n],data[n]||{});
@@ -158,6 +161,30 @@ data[n].defeated=data[n].defeated||[];
 data[n].done=data[n].done||[];
 data[n].skipTurn=!!data[n].skipTurn;
 });
+
+/* 每日任务自动重置：按马来西亚时间日期判断 */
+function malaysiaDateKey(){
+return new Intl.DateTimeFormat("en-CA",{
+timeZone:"Asia/Kuala_Lumpur",
+year:"numeric",
+month:"2-digit",
+day:"2-digit"
+}).format(new Date());
+}
+
+function checkDailyReset(){
+const todayKey=malaysiaDateKey();
+const lastTaskDate=localStorage.getItem("sqTaskDate");
+
+if(lastTaskDate!==todayKey){
+data["姐姐"].done=[];
+data["妹妹"].done=[];
+localStorage.setItem("sqTaskDate",todayKey);
+localStorage.setItem("sqdata",JSON.stringify(data));
+}
+}
+
+checkDailyReset();
 
 let who="姐姐";
 
@@ -200,6 +227,7 @@ renderInventory();
 }
 
 function choose(n){
+checkDailyReset();
 who=n;
 document.getElementById("who").textContent=n;
 renderTasks();
@@ -214,6 +242,7 @@ document.getElementById("players").innerHTML=["姐姐","妹妹"].map(n=>
 '<div class="player"><b>'+n+' · LEVEL '+(Math.floor(data[n].xp/200)+1)+'</b><div class="xp">'+data[n].xp+' XP</div><div class="bar"><i style="width:'+(data[n].xp%200/2)+'%"></i></div><small>棋子：第'+data[n].pos+'格</small><br><small>击败 Boss：'+data[n].defeated.length+'/7</small></div>'
 ).join("");
 document.getElementById("today").textContent=data[who].done.reduce((s,i)=>s+tasks[i][2],0)+" XP";
+document.getElementById("resetDate").textContent="今日任务日期："+malaysiaDateKey()+"（每天午夜自动重置）";
 }
 
 function renderTasks(){
@@ -223,6 +252,7 @@ document.getElementById("ql").innerHTML=tasks.map((t,i)=>
 }
 
 function toggle(i,v){
+checkDailyReset();
 let d=data[who].done;
 if(v&&!d.includes(i)){
 d.push(i);
@@ -236,13 +266,15 @@ renderTasks();
 }
 
 function tab(id,b){
+checkDailyReset();
 document.querySelectorAll("main>section").forEach(x=>x.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
 b.classList.add("active");
+renderTasks();
+render();
 }
 
-/* 落点效果：XP、BOOST、LOOT、BOSS、GLITCH */
 function resolveLanding(){
 let p=data[who],messages=[],guard=0;
 
@@ -311,6 +343,7 @@ return messages.join(" · ");
 }
 
 function roll(){
+checkDailyReset();
 let p=data[who];
 
 if(p.pending){
@@ -449,11 +482,21 @@ renderBoard();
 renderEvent();
 renderInventory();
 
-cards("loot",lootCards.map(x=>"🎁 "+x.name+" · "+x.desc));
-cards("skills",["Mini Shield · 挡蛇一次","XP x2 · 双倍 XP","Lucky Dice · 自选点数","Team Power · 姐妹前进3格","Rainbow Pass · 免疫蛇一次","Boss Freeze · 冻结 Boss"]);
-cards("boss",Object.values(bosses).map(x=>"👾 "+x.name));
-
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+
+/* App 回到前台时也检查是否跨日 */
+document.addEventListener("visibilitychange",()=>{
+if(!document.hidden){
+checkDailyReset();
+render();
+renderTasks();
+}
+});
+window.addEventListener("focus",()=>{
+checkDailyReset();
+render();
+renderTasks();
+});
 </script>
 </body>
 </html>
