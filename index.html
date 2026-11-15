@@ -148,7 +148,6 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 .boss-win{display:none;text-align:center;padding:12px;margin-top:10px;border-radius:13px;background:linear-gradient(145deg,#7652a2,#34204e);border:2px solid #ffe28a}
 .boss-win.show{display:block;animation:rewardReveal .6s ease-out}
 .boss-win strong{display:block;font-size:23px;color:#ffe28a}
-
 /* Stage 3C 角色展示与商店 */
 .shop-hero{display:grid;grid-template-columns:145px 1fr;gap:12px;align-items:center;padding:14px;border-radius:16px;background:linear-gradient(145deg,#53358a,#243c69);border:1px solid #c4a1ff;box-shadow:inset 0 2px #ffffff22,0 6px 0 #1a1033}
 .shop-avatar-stage{height:220px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:13px;background:radial-gradient(circle,#a783e0,#39265e 72%);border:1px solid #ffffff55}
@@ -236,8 +235,7 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 </section>
 <div class="panel"><h3>☁️ 双手机同步</h3><p class="muted">目前数据保存在这部设备的浏览器中。你们使用同一部平板即可共享游戏进度；不同设备之间暂时不会自动同步。</p></div>
 <p class="muted" style="text-align:center">Good habits make real heroes. 好习惯会创造真正的英雄。</p>
-</main>
-<script>
+</main><script>
 const tasks=[
 ["不乱发脾气","Control my temper",25],["10点前睡觉","Sleep before 10pm",30],["主动温习功课","Revise proactively",35],["30分钟内吃完饭","Finish meal within 30 min",25],["东西放回原位","Put things back",20],["不乱丢垃圾","Use the bin",20],["吃完自己洗碗","Wash own dishes",25],["整理书包和书本","Pack bag & books",25],["水壶餐具拿去厨房","Take bottle & utensils to kitchen",20],["主动帮忙做家务","Help with chores",30],["没有看短视频","No short videos",40],["8:15pm前吃完晚餐","Finish dinner by 8:15pm",30],["两姐妹没有吵架","Peaceful sister teamwork",40],["念国语/英语故事书","Read BM/English storybook",25],["讲英语","Speak English",20],["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],["听写80分或以上","Dictation score 80%+",50]
 ];
@@ -263,13 +261,7 @@ checkDailyReset();
 let who="姐姐",gameBusy=false;
 let shopCategory="hair",shopSelected=null;
 const shopCategoryNames={hair:"💇 发型",top:"👕 上衣",bottom:"👗 下装",shoe:"👟 鞋子",accessory:"✨ 配件"};
-const shopPrices={
-"hair-pink":100,"hair-blue":200,"hair-purple":200,"hair-gold":300,
-"top-green":200,"top-gold":300,"top-wizard":300,
-"bottom-black":100,"bottom-gold":200,"bottom-rainbow":300,
-"shoe-blue":100,"shoe-gold":200,
-"acc-wings":300,"acc-flower":100,"acc-wizard":200,"acc-rainbow":300,"acc-dragon":300,"acc-angel":200,"acc-crown":200
-};
+const shopPrices={"hair-pink":100,"hair-blue":200,"hair-purple":200,"hair-gold":300,"top-green":200,"top-gold":300,"top-wizard":300,"bottom-black":100,"bottom-gold":200,"bottom-rainbow":300,"shoe-blue":100,"shoe-gold":200,"acc-wings":300,"acc-flower":100,"acc-wizard":200,"acc-rainbow":300,"acc-dragon":300,"acc-angel":200,"acc-crown":200};
 function shopPrice(id){return shopPrices[id]||100}
 const diceFaces=["⚀","⚁","⚂","⚃","⚄","⚅"];
 function wait(ms){return new Promise(r=>setTimeout(r,ms))}
@@ -297,7 +289,7 @@ async function animateMoveTo(target,delay=260){let p=data[who];target=Math.max(1
 async function resolveLanding(){let p=data[who],messages=[],guard=0;while(guard++<10){let type=special[p.pos]||"XP";if(type==="BOOST"){let from=p.pos;await animateMoveTo(Math.min(50,p.pos+3),220);messages.push("⚡ BOOST！从第"+from+"格前进到第"+p.pos+"格（+3格）");if(p.pos===50){messages.push("🏁 到达终点！");break}continue}if(type==="LOOT"){p.pending={type:"LOOT",space:p.pos};messages.push("🎁 停在第"+p.pos+"格，触发 Loot Box！");break}if(type==="BOSS"&&!p.defeated.includes(p.pos)){p.pending={type:"BOSS",space:p.pos};messages.push("👾 停在第"+p.pos+"格，触发 Boss 挑战！");break}if(type==="BOSS"&&p.defeated.includes(p.pos)){messages.push("这个 Boss 已经被打败！");break}if(type==="GLITCH"){let e=Math.floor(Math.random()*4);if(e===0){let old=p.pos;await animateMoveTo(Math.max(1,p.pos-2),220);messages.push("🌀 GLITCH！空间故障，倒退2格：第"+old+"格 → 第"+p.pos+"格")}else if(e===1){p.skipTurn=true;messages.push("🌀 GLITCH！时间冻结！下一回合需要跳过一次掷骰。")}else if(e===2){p.pending={type:"GLITCH",space:p.pos};messages.push("🌀 GLITCH！出现小挑战，答对可获得20 XP！")}else messages.push("🍀 GLITCH！幸运逃脱，没有受到惩罚！");break}if(type==="XP"){let bonus=[10,20,30][Math.floor(Math.random()*3)];p.xp+=bonus;messages.push("⭐ XP 格奖励！随机获得 "+bonus+" XP！");break}if(type==="FINISH")messages.push("🏁 到达终点！");break}checkMilestones(who);return messages.join(" · ")}
 async function roll(){checkDailyReset();let p=data[who];if(gameBusy)return;if(p.pending){document.getElementById("rollmsg").textContent="请先完成当前的特殊关卡！";return}if(p.skipTurn){p.skipTurn=false;save();renderEvent();document.getElementById("rollmsg").textContent="⏳ "+data[who].name+" 的回合被 GLITCH 冻结了！这次跳过掷骰，下一回合可以继续。";return}gameBusy=true;let btn=document.getElementById("rollBtn"),dice=document.getElementById("diceFace"),hint=document.getElementById("diceHint");btn.disabled=true;btn.textContent="🎲 骰子滚动中…";dice.classList.add("rolling");hint.textContent="Rolling...";try{for(let i=0;i<12;i++){dice.textContent=diceFaces[Math.floor(Math.random()*6)];await wait(85)}let d=1+Math.floor(Math.random()*6);dice.textContent=diceFaces[d-1];dice.classList.remove("rolling");hint.textContent="掷出 "+d+" 点！";let destination=Math.min(50,p.pos+d);document.getElementById("rollmsg").textContent=data[who].name+" 掷到 "+d+" 点，开始逐格前进…";await animateMoveTo(destination,260);let message=data[who].name+" 掷到 "+d+"，前进到第 "+p.pos+" 格。";let eventMessage=await resolveLanding();if(eventMessage)message+=" "+eventMessage;save();renderEvent();document.getElementById("rollmsg").textContent=message}finally{gameBusy=false;btn.disabled=!!p.pending;btn.textContent="🎲 掷骰子";hint.textContent=p.pending?"完成当前特殊关卡后继续":"轮到下一次冒险！"}}
 function renderBoard(){document.getElementById("boardgrid").innerHTML=Array.from({length:50},(_,i)=>{let n=i+1,t=special[n]||"XP",a="";if(data["姐姐"].pos===n)a+='<span class="avatar-mini">'+avatarHTML("姐姐")+'</span>';if(data["妹妹"].pos===n)a+='<span class="avatar-mini">'+avatarHTML("妹妹")+'</span>';return '<div class="space '+t.toLowerCase()+(data["姐姐"].pos===n||data["妹妹"].pos===n?" token-here":"")+'"><b>'+n+'</b>'+t+'<small>'+a+'</small></div>'}).join("")}
-function renderEvent(){let p=data[who],box=document.getElementById("eventBox");document.getElementById("rollBtn").disabled=gameBusy||!!p.pending;if(!p.pending){box.innerHTML="";return}if(p.pending.type==="LOOT"){box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+esc(p.name)+' 来开启你的神秘奖励吧！</p><div id="chestStage" class="chest-stage"><div class="chest-rays"></div><span class="chest-sparkle spark-a">✨</span><span class="chest-sparkle spark-b">⭐</span><span class="chest-sparkle spark-c">💎</span><div id="chestIcon" class="chest-icon">🎁</div><div id="chestCaption" class="chest-caption">神秘宝箱等待开启</div></div><div id="chestReward" class="chest-reward"></div><button id="openChestBtn" class="full" onclick="drawLoot()">✨ 开启宝箱</button></div>'}else if(p.pending.type==="BOSS"){let b=bosses[p.pending.space];box.innerHTML='<div class="event"><h3>👾 BOSS BATTLE</h3><h3>'+b.name+'</h3><p>'+b.q+'</p>'+b.a.map((x,i)=>'<label class="option"><input type="radio" name="bossAnswer" value="'+i+'"> '+x+'</label>').join("")+'<button class="full" onclick="answerBoss()">⚔️ 提交答案</button><p id="eventResult" class="reward"></p></div>'}else if(p.pending.type==="GLITCH"){box.innerHTML='<div class="event"><h3>🌀 GLITCH 小挑战</h3><p>遇到问题时，最好的做法是什么？</p><label class="option"><input type="radio" name="glitchAnswer" value="0"> 冷静想办法，一步一步解决</label><label class="option"><input type="radio" name="glitchAnswer" value="1"> 生气放弃</label><label class="option"><input type="radio" name="glitchAnswer" value="2"> 把问题留给别人</label><button class="full" onclick="answerGlitch()">✨ 提交答案</button><p id="eventResult" class="reward"></p></div>'}}
+function renderEvent(){let p=data[who],box=document.getElementById("eventBox");document.getElementById("rollBtn").disabled=gameBusy||!!p.pending;if(!p.pending){box.innerHTML="";return}if(p.pending.type==="LOOT"){box.innerHTML='<div class="event"><h3>🎁 LOOT BOX 宝箱出现了！</h3><p>'+esc(p.name)+' 来开启你的神秘奖励吧！</p><div id="chestStage" class="chest-stage"><div class="chest-rays"></div><span class="chest-sparkle spark-a">✨</span><span class="chest-sparkle spark-b">⭐</span><span class="chest-sparkle spark-c">💎</span><div id="chestIcon" class="chest-icon">🎁</div><div id="chestCaption" class="chest-caption">神秘宝箱等待开启</div></div><div id="chestReward" class="chest-reward"></div><button id="openChestBtn" class="full" onclick="drawLoot()">✨ 开启宝箱</button></div>'}else if(p.pending.type==="BOSS"){let b=bosses[p.pending.space],monster={8:"👹",15:"🟢",22:"👺",29:"🧟",36:"🐉",42:"🐌",48:"🗿"}[p.pending.space]||"👾";box.innerHTML='<div class="event"><div id="liveBossArena" class="boss-arena entering"><div class="boss-title">⚔️ BOSS ARENA · '+esc(b.name)+' ⚔️</div><span class="boss-spark">✨ ⭐ 💎 ✨</span><div class="boss-monster">'+monster+'</div><div id="liveBossStatus" class="boss-status">👾 '+esc(b.name)+' 登场！准备接受挑战！</div><div id="liveBossWin" class="boss-win"><strong>🏆 VICTORY!</strong><p id="liveBossReward"></p></div></div><h3>挑战问题</h3><p>'+esc(b.q)+'</p>'+b.a.map((x,i)=>'<label class="option"><input type="radio" name="bossAnswer" value="'+i+'"> '+esc(x)+'</label>').join("")+'<button id="bossSubmitBtn" class="full" onclick="answerBoss()">⚔️ 提交答案</button><p id="eventResult" class="reward"></p></div>'}else if(p.pending.type==="GLITCH"){box.innerHTML='<div class="event"><h3>🌀 GLITCH 小挑战</h3><p>遇到问题时，最好的做法是什么？</p><label class="option"><input type="radio" name="glitchAnswer" value="0"> 冷静想办法，一步一步解决</label><label class="option"><input type="radio" name="glitchAnswer" value="1"> 生气放弃</label><label class="option"><input type="radio" name="glitchAnswer" value="2"> 把问题留给别人</label><button class="full" onclick="answerGlitch()">✨ 提交答案</button><p id="eventResult" class="reward"></p></div>'}}
 function randomCosmetic(){let c=[];Object.keys(catalogs).forEach(t=>catalogs[t].forEach(x=>{if(x.id!=="acc-none"&&!data[who].collection[t].includes(x.id))c.push({type:t,id:x.id,item:x})}));return c.length?c[Math.floor(Math.random()*c.length)]:null}
 async function drawLoot(){
 let p=data[who];if(gameBusy||!p.pending||p.pending.type!=="LOOT")return;
@@ -350,27 +342,59 @@ gameBusy=true;
 const box=document.getElementById("bossTestBox");
 box.innerHTML='<div class="event"><h3>👾 Boss 战斗动画测试</h3><p class="muted">演示模式：不会增加 XP、解锁造型或改变棋盘进度。</p><div id="testBossArena" class="boss-arena"><div class="boss-title">⚔️ BOSS ARENA · DEMO ⚔️</div><span class="boss-spark">✨ ⭐ 💎 ✨</span><div class="boss-monster">🐉</div><div id="testBossStatus" class="boss-status">Boss 即将登场……</div><div id="testBossWin" class="boss-win"><strong>🏆 VICTORY!</strong><p>演示胜利！+80 XP（不会实际加入游戏）</p></div></div></div>';
 try{
-const arena=document.getElementById("testBossArena");
-const status=document.getElementById("testBossStatus");
-const win=document.getElementById("testBossWin");
-arena.classList.add("entering");
-status.textContent="👾 Boss 强势登场！";
+const arena=document.getElementById("testBossArena"),status=document.getElementById("testBossStatus"),win=document.getElementById("testBossWin");
+arena.classList.add("entering");status.textContent="👾 Boss 强势登场！";
 await wait(1000);
-arena.classList.remove("entering");
-void arena.offsetWidth;
-arena.classList.add("attacked");
+arena.classList.remove("entering");void arena.offsetWidth;arena.classList.add("attacked");
 status.textContent="💥 攻击命中！Boss 受到冲击！";
 await wait(750);
-arena.classList.remove("attacked");
-void arena.offsetWidth;
-arena.classList.add("victory");
+arena.classList.remove("attacked");void arena.offsetWidth;arena.classList.add("victory");
 status.textContent="✨ Boss 被击败了！";
-await wait(950);
-win.classList.add("show");
-}catch(e){console.error(e)}
-finally{gameBusy=false}
+await wait(950);win.classList.add("show");
+}catch(e){console.error(e)}finally{gameBusy=false}
 }
-function answerBoss(){let p=data[who];if(!p.pending||p.pending.type!=="BOSS")return;let s=document.querySelector('input[name="bossAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}let space=p.pending.space,b=bosses[space];if(Number(s.value)===b.correct){p.xp+=80;p.defeated.push(space);p.pending=null;let prize=bossRewards[space],item=itemOf(prize.type,prize.id),extra="";if(!p.collection[prize.type].includes(prize.id)){p.collection[prize.type].push(prize.id);extra=" 并解锁专属奖励："+item.label+"！"}else extra="（专属奖励已拥有）";checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🎉 "+p.name+" 成功打败 "+b.name+"！获得80 XP！"+extra}else r.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！"}
+async function answerBoss(){
+let p=data[who];if(gameBusy||!p.pending||p.pending.type!=="BOSS")return;
+let s=document.querySelector('input[name="bossAnswer"]:checked'),r=document.getElementById("eventResult"),btn=document.getElementById("bossSubmitBtn"),arena=document.getElementById("liveBossArena"),status=document.getElementById("liveBossStatus");
+if(!s){r.textContent="请先选择一个答案。";return}
+let space=p.pending.space,b=bosses[space];
+if(Number(s.value)!==b.correct){
+r.textContent="还差一点！Boss 还没被打败，再想一想，重新挑战！";
+if(arena){arena.classList.remove("attacked");void arena.offsetWidth;arena.classList.add("attacked")}
+if(status)status.textContent="💢 Boss 还没有被击败，再试一次！";
+return;
+}
+gameBusy=true;if(btn)btn.disabled=true;
+try{
+if(status)status.textContent="⚔️ "+p.name+" 发动攻击！";
+if(arena){arena.classList.remove("entering");void arena.offsetWidth;arena.classList.add("attacked")}
+await wait(750);
+if(arena){arena.classList.remove("attacked");void arena.offsetWidth;arena.classList.add("victory")}
+if(status)status.textContent="✨ 命中！"+b.name+" 被击败了！";
+await wait(950);
+p.xp+=80;if(!p.defeated.includes(space))p.defeated.push(space);
+let prize=bossRewards[space],item=itemOf(prize.type,prize.id),extra="";
+if(!p.collection[prize.type].includes(prize.id)){p.collection[prize.type].push(prize.id);extra=" 并解锁专属奖励："+item.label+"！"}
+else extra="（专属奖励已拥有）";
+p.pending=null;checkMilestones(who);save();
+let win=document.getElementById("liveBossWin"),reward=document.getElementById("liveBossReward");
+if(status)status.textContent="🏆 VICTORY！"+b.name+" 挑战成功！";
+if(reward)reward.textContent="获得 +80 XP！"+extra;
+if(win)win.classList.add("show");
+document.getElementById("rollmsg").textContent="🎉 "+p.name+" 成功打败 "+b.name+"！获得80 XP！"+extra;
+renderEventAfterBoss();
+}catch(e){console.error(e)}
+finally{gameBusy=false;let rollBtn=document.getElementById("rollBtn");if(rollBtn)rollBtn.disabled=!!p.pending}
+}
+function renderEventAfterBoss(){
+const box=document.getElementById("eventBox");if(!box)return;
+const arena=document.getElementById("liveBossArena");
+if(arena){
+box.querySelectorAll('input[name="bossAnswer"]').forEach(x=>x.disabled=true);
+const btn=document.getElementById("bossSubmitBtn");if(btn)btn.remove();
+const result=document.getElementById("eventResult");if(result)result.textContent="Boss 已击败，奖励已保存。";
+}
+}
 function answerGlitch(){let p=data[who];if(!p.pending||p.pending.type!=="GLITCH")return;let s=document.querySelector('input[name="glitchAnswer"]:checked'),r=document.getElementById("eventResult");if(!s){r.textContent="请先选择一个答案。";return}if(Number(s.value)===0){p.xp+=20;p.pending=null;checkMilestones(who);save();renderEvent();document.getElementById("rollmsg").textContent="🌟 GLITCH 挑战成功！获得20 XP！"}else r.textContent="再想一想：遇到问题时，先冷静下来会更容易找到办法。"}
 function renderInventory(){let a=data[who].items;document.getElementById("inventory").textContent=a.length?a.join("、"):"暂时没有道具，去 Loot Box 抽卡吧！"}
 function changeName(v){let n=v.trim().slice(0,16);if(!n)return;data[who].name=n;save()}
@@ -379,7 +403,6 @@ function selectHTML(t,c){return catalogs[t].filter(x=>data[who].collection[t].in
 function renderAvatarEditor(){let p=data[who],a=p.avatar,el=document.getElementById("avatarEditor");if(!el)return;el.innerHTML='<div class="avatar-panel" style="margin-top:12px"><div class="avatar-stage">'+avatarHTML(who)+'</div><div><b>'+esc(p.name)+'</b><p class="muted">LEVEL '+(Math.floor(p.xp/200)+1)+' · '+p.xp+' XP</p><small class="muted">目前角色造型预览</small></div></div><div class="field"><label>角色昵称</label><input maxlength="16" value="'+esc(p.name)+'" onchange="changeName(this.value)"></div>'+[['hair','发型'],['skin','肤色'],['top','上衣'],['bottom','裤子 / 裙子'],['shoe','鞋子'],['accessory','配件']].map(x=>'<div class="field"><label>'+x[1]+'</label><select onchange="changeAvatar(\''+x[0]+'\',this.value)">'+selectHTML(x[0],a[x[0]])+'</select></div>').join("")+'<div class="notice">换装会自动保存。未解锁的造型不能选择，可以通过 Loot Box、Boss 挑战和 XP 里程碑获得。</div>'}
 function renderWardrobe(){let el=document.getElementById("wardrobe");if(!el)return;let h="";Object.keys(catalogs).forEach(t=>{h+='<h4>'+({hair:"💇 发型",skin:"🎨 肤色",top:"👕 上衣",bottom:"👗 裤子与裙子",shoe:"👟 鞋子",accessory:"✨ 配件"}[t])+'</h4>';catalogs[t].forEach(x=>{let o=data[who].collection[t].includes(x.id);h+='<div class="wardrobe-item '+(o?"":"locked")+'">'+(o?"🔓 ":"🔒 ")+x.label+(o?" · 已拥有":" · 尚未解锁")+'</div>'})});el.innerHTML=h}
 function renderCollection(){let el=document.getElementById("collection");if(!el)return;let total=0,owned=0;Object.keys(catalogs).forEach(t=>{total+=catalogs[t].length;owned+=data[who].collection[t].length});el.innerHTML='<p><b>'+esc(data[who].name)+'</b> 的造型收藏</p><p class="xp">'+owned+' / '+total+'</p><div class="bar"><i style="width:'+(owned/total*100)+'%"></i></div><p class="muted">解锁更多发型、服装和配件，打造自己的专属角色。</p><p class="muted">Boss 击败数：'+data[who].defeated.length+'/7</p><p class="muted">累计 XP：'+data[who].xp+' XP</p>'}
-
 /* Stage 3C 商店逻辑 */
 function shopSelect(type,id){shopCategory=type;shopSelected=id;renderShop()}
 function renderShop(){
@@ -395,34 +418,17 @@ if(!shopSelected&&available.length)shopSelected=available[0].id;
 if(shopSelected){
 let chosen=itemOf(shopCategory,shopSelected),price=shopPrice(chosen.id);
 document.getElementById("shopPreview").innerHTML='<div class="shop-preview-title">✨ 当前预览：'+esc(chosen.label)+'</div><p class="muted">购买后会加入 '+esc(p.name)+' 的衣柜。预览不会改变已保存的角色造型。</p><div class="shop-price">价格：'+price+' XP</div>';
-}else{
-document.getElementById("shopPreview").innerHTML='<div class="shop-empty">这个分类的造型已经全部拥有了！</div>';
-}
+}else{document.getElementById("shopPreview").innerHTML='<div class="shop-empty">这个分类的造型已经全部拥有了！</div>'}
 if(!available.length){itemsEl.innerHTML='<div class="shop-empty" style="grid-column:1/-1">🎉 这个分类已经全部收集完成！</div>';return}
-itemsEl.innerHTML=available.map(x=>{
-let price=shopPrice(x.id),selected=x.id===shopSelected;
-return '<div class="shop-item '+(selected?"selected":"")+'"><small>'+shopCategoryNames[shopCategory]+'</small><strong>'+esc(x.label)+'</strong><div class="shop-price">'+price+' XP</div><button onclick="shopSelect(\''+shopCategory+'\',\''+x.id+'\')">'+(selected?"✓ 正在预览":"👀 预览造型")+'</button><button '+(p.xp<price?"disabled":"")+' onclick="buyShopItem(\''+shopCategory+'\',\''+x.id+'\')">'+(p.xp<price?"XP 不足":"🛍️ 购买解锁")+'</button></div>';
-}).join("");
+itemsEl.innerHTML=available.map(x=>{let price=shopPrice(x.id),selected=x.id===shopSelected;return '<div class="shop-item '+(selected?"selected":"")+'"><small>'+shopCategoryNames[shopCategory]+'</small><strong>'+esc(x.label)+'</strong><div class="shop-price">'+price+' XP</div><button onclick="shopSelect(\''+shopCategory+'\',\''+x.id+'\')">'+(selected?"✓ 正在预览":"👀 预览造型")+'</button><button '+(p.xp<price?"disabled":"")+' onclick="buyShopItem(\''+shopCategory+'\',\''+x.id+'\')">'+(p.xp<price?"XP 不足":"🛍️ 购买解锁")+'</button></div>'}).join("");
 }
 function buyShopItem(type,id){
-let p=data[who],item=itemOf(type,id);
-if(!item||!p.collection[type]||p.collection[type].includes(id))return;
-let price=shopPrice(id);
-if(p.xp<price){alert("XP 不足！还需要 "+(price-p.xp)+" XP。");return}
+let p=data[who],item=itemOf(type,id);if(!item||!p.collection[type]||p.collection[type].includes(id))return;
+let price=shopPrice(id);if(p.xp<price){alert("XP 不足！还需要 "+(price-p.xp)+" XP。");return}
 if(!confirm("确定购买「"+item.label+"」吗？\n\n价格："+price+" XP\n购买后会永久加入 "+p.name+" 的衣柜。"))return;
 if(p.xp<price||p.collection[type].includes(id))return;
-p.xp-=price;
-p.collection[type].push(id);
-shopCategory=type;
-shopSelected=null;
-save();
-renderAvatarEditor();
-renderWardrobe();
-renderCollection();
-renderShop();
-alert("购买成功！「"+item.label+"」已经加入你的衣柜。");
+p.xp-=price;p.collection[type].push(id);shopCategory=type;shopSelected=null;save();renderAvatarEditor();renderWardrobe();renderCollection();renderShop();alert("购买成功！「"+item.label+"」已经加入你的衣柜。");
 }
-
 function unlockItem(n,t,id,reason){let p=data[n];if(!p.collection[t].includes(id)){p.collection[t].push(id);p.milestones.push(reason)}}
 function checkMilestones(n){let p=data[n];if(p.xp>=300&&!p.milestones.includes("xp300"))unlockItem(n,"accessory","acc-crown","xp300");if(p.xp>=600&&!p.milestones.includes("xp600"))unlockItem(n,"top","top-yellow","xp600");if(p.xp>=1000&&!p.milestones.includes("xp1000"))unlockItem(n,"hair","hair-gold","xp1000")}
 function cards(id,arr){document.getElementById(id).innerHTML=arr.map(x=>'<div class="card">'+x+'</div>').join("")}
