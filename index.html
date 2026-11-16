@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -189,6 +190,11 @@ nav button{flex:1;font-size:11px;padding:10px 5px}
 <section id="home">
 <div class="panel"><h3>PLAYER PANEL 玩家面板</h3><div id="players" class="players"></div><p class="muted">姐姐和妹妹独立累计 XP，共享同一个游戏世界。</p></div>
 <div class="panel"><h3>当前玩家</h3><button id="chooseSister" onclick="choose('姐姐')">姐姐</button><button id="chooseYounger" onclick="choose('妹妹')">妹妹</button><p id="who">姐姐</p><p id="today" class="xp">0 XP</p><p class="muted">完成每日任务获得 XP，然后到棋盘掷骰子。</p></div>
+<div class="panel">
+<h3>🔄 NEW GAME 全新游戏</h3>
+<p class="muted">重新开始冒险。姐姐和妹妹的 XP、服饰、收藏品、卡牌及游戏进度都会全部重置。</p>
+<button class="full" onclick="startNewGame()">🆕 开始全新游戏</button>
+</div>
 <div class="panel"><h3>HOW TO PLAY 游戏规则</h3><p class="muted">完成每日任务获得 XP。停在 XP 格随机获得奖励；BOOST 自动前进3格；Loot Box 可以抽取奖励；Boss 格需要回答挑战题；Glitch 格会随机触发事件。宝箱也有机会掉落新发型、服装和配件。</p></div>
 </section>
 <section id="quests" class="hidden"><div class="panel"><h3>DAILY QUESTS 每日任务</h3><p class="muted" id="resetDate"></p><div id="ql"></div></div></section>
@@ -255,6 +261,48 @@ const defaults={hair:["hair-basic","hair-brown"],skin:["skin-light","skin-peach"
 const bossRewards={8:{type:"accessory",id:"acc-flower"},15:{type:"hair",id:"hair-purple"},22:{type:"top",id:"top-green"},29:{type:"accessory",id:"acc-angel"},36:{type:"bottom",id:"bottom-rainbow"},42:{type:"accessory",id:"acc-dragon"},48:{type:"top",id:"top-wizard"}};
 function setupProfile(n){let p=data[n];Object.keys(defaults).forEach(t=>{p.collection[t]=Array.isArray(p.collection[t])?p.collection[t]:[];defaults[t].forEach(id=>{if(!p.collection[t].includes(id))p.collection[t].push(id)})});let a=p.avatar;a.hair=a.hair||"hair-basic";a.skin=a.skin||(n==="姐姐"?"skin-light":"skin-peach");a.top=a.top||"top-basic";a.bottom=a.bottom||"bottom-basic";a.shoe=a.shoe||"shoe-basic";a.accessory=a.accessory||"acc-none"}
 setupProfile("姐姐");setupProfile("妹妹");
+
+/* NEW GAME：重置两位玩家全部游戏资料 */
+function startNewGame(){
+  if(gameBusy){
+    alert("目前动画或游戏事件正在进行，请完成后再重启。");
+    return;
+  }
+  if(!confirm("确定开始全新游戏吗？\n\n姐姐和妹妹的 XP、服饰、收藏品、卡牌、道具、Boss 记录及棋盘进度都会全部清零。\n\n两人将回到第 1 格。这个操作无法撤销。"))return;
+
+  data=JSON.parse(JSON.stringify(initial));
+  setupProfile("姐姐");
+  setupProfile("妹妹");
+  who="姐姐";
+  shopCategory="hair";
+  shopSelected=null;
+
+  localStorage.setItem("sqdata",JSON.stringify(data));
+  localStorage.setItem("sqTaskDate",malaysiaDateKey());
+
+  document.getElementById("chestTestBox").innerHTML="";
+  document.getElementById("bossTestBox").innerHTML="";
+  document.getElementById("diceFace").textContent="🎲";
+  document.getElementById("diceHint").textContent="准备好了吗？";
+  document.getElementById("rollmsg").textContent="🎉 全新冒险开始！姐姐和妹妹从第 1 格出发！";
+
+  document.getElementById("chooseSister").classList.add("active");
+  document.getElementById("chooseYounger").classList.remove("active");
+
+  render();
+  renderTasks();
+  renderBoard();
+  renderEvent();
+  renderInventory();
+  renderAvatarEditor();
+  renderWardrobe();
+  renderCollection();
+  renderShop();
+  renderCardInfo();
+
+  alert("全新游戏已经准备好了！姐姐和妹妹可以开始冒险了！");
+}
+
 function malaysiaDateKey(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kuala_Lumpur",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
 function checkDailyReset(){let d=malaysiaDateKey();if(localStorage.getItem("sqTaskDate")!==d){data["姐姐"].done=[];data["妹妹"].done=[];localStorage.setItem("sqTaskDate",d);localStorage.setItem("sqdata",JSON.stringify(data))}}
 checkDailyReset();
@@ -435,8 +483,6 @@ function cards(id,arr){document.getElementById(id).innerHTML=arr.map(x=>'<div cl
 function renderCardInfo(){cards("loot",["⭐ 普通宝箱：XP、道具、随机服装","✨ 稀有掉落：新发型、鞋子、配件","🎀 每次抽奖都有机会获得新造型"]);cards("boss",["👾 击败 Boss 可获得80 XP","🏆 每个 Boss 首次击败可解锁专属造型","🌈 收集7个 Boss 专属奖励"]);cards("skills",["🛡️ Shield：防护盾道具","🎲 Roll Again：额外掷骰","🚀 Rainbow Rocket：前进5格"])}
 render();renderTasks();renderBoard();renderEvent();renderInventory();renderAvatarEditor();renderWardrobe();renderCollection();renderShop();renderCardInfo();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkDailyReset();render();renderTasks()}});
-window.addEventListener("focus",()=>{checkDailyReset();render();renderTasks()});
 </script>
 </body>
 </html>
