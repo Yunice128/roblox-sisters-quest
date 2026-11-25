@@ -21,6 +21,11 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 #interact{display:none;width:92px;height:58px;border-radius:18px;background:linear-gradient(145deg,#ffcf65,#c27c19);color:#3d2605}
 #reward{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(310px,86vw);padding:20px;text-align:center;background:#29194c;border:2px solid #ffd66b;border-radius:20px;display:none;z-index:5}
 #reward h2{color:#ffdc7a;margin:0 0 8px}#reward p{font-weight:900}
+#petPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,90vw);padding:18px;background:#29194c;border:2px solid #c4a3ff;border-radius:20px;display:none;z-index:7;text-align:center;box-shadow:0 12px 35px #0008}
+#petPanel h2{margin:0 0 8px;color:#f2d7ff}#petPanel p{margin:8px 0;font-weight:800}
+#petPanel button{margin:5px;min-width:110px;padding:11px 14px}
+#feedPet{background:linear-gradient(145deg,#ffd66b,#c78322);color:#402900}
+#closePet{background:#65458d}
 #start{position:fixed;inset:0;background:linear-gradient(#1c1640cc,#142f4dcc);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
 #startcard{width:min(420px,94vw);background:#29194c;border:2px solid #c3a0ff;border-radius:22px;padding:22px;text-align:center}
 #startcard h1{font-size:23px}#startcard p{font-size:13px;line-height:1.6;color:#e4d8ff}
@@ -33,13 +38,14 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 <body>
 <div id="game"></div>
 <div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">当前：姐姐</span> <button id="switch">切换角色</button></div></div>
-<div id="stats"><div class="stat">⭐ XP：<span id="xp">0</span></div><div class="stat">💎 宝石：<span id="gems">0</span></div></div>
+<div id="stats"><div class="stat">⭐ XP：<span id="xp">0</span></div><div class="stat">💎 宝石：<span id="gems">0</span></div><div class="stat">🪙 金币：<span id="coins">30</span></div></div>
 <div id="hint">探索小岛：走近宝箱，按「开启宝箱」</div>
 <div id="petTag">🐾 点击宠物互动</div>
 <div id="joystick"><div id="stick"></div></div>
 <div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
 <div id="tip">左侧摇杆移动 · 拖动右侧画面旋转镜头</div>
-<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><button id="rewardOK">收下奖励</button></div>
+<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><p>🪙 +30 金币</p><button id="rewardOK">收下奖励</button></div>
+<div id="petPanel"><h2 id="petTitle">宠物资料</h2><p id="petLevel">等级：Lv.1</p><p id="petExperience">宠物经验：0 / 100</p><p id="petWallet">🪙 金币：30</p><p>喂食一次：消耗 10 金币，增加 25 宠物经验</p><button id="feedPet">喂食宠物</button><button id="closePet">关闭</button></div>
 <div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。右上角可切换角色。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
 <script type="module">
 const loading=document.getElementById('loading');
@@ -102,17 +108,48 @@ function playPetAction(index){
  action.baseY=pet.group.position.y;action.baseRotation=pet.group.rotation.y;
  hint(index===0?'兔兔开心地跳起来了！':'小狐狸开心地转圈了！');
 }
+let selectedPet=0;
+function openPetPanel(index){
+ selectedPet=index;
+ renderPetPanel();
+ document.getElementById('petPanel').style.display='block';
+ playPetAction(index);
+}
 let leader=sisters[0],follower=sisters[1],active='姐姐';
 function hint(t){document.getElementById('hint').textContent=t;document.getElementById('hint').style.display='block'}
 let hintTimer=null;
 function showRewardHint(){const el=document.getElementById('hint');hint('宝箱奖励已领取，继续探索小岛！');if(hintTimer)clearTimeout(hintTimer);hintTimer=setTimeout(()=>{el.style.display='none'},3000)}
 document.getElementById('switch').onclick=()=>{[leader,follower]=[follower,leader];active=active==='姐姐'?'妹妹':'姐姐';document.getElementById('playerName').textContent='当前：'+active;hint(active+'带队，另一位自动跟随！')};
 for(let i=0;i<7;i++){const cloud=new THREE.Group();cloud.position.set(-22+i*7,10+(i%3),-22-(i%2)*8);scene.add(cloud);for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(1.2,7,5),white);c.scale.set(1.5,.65,1);c.position.x=j*1.15;cloud.add(c)}}
-const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,chestClaimed:false};try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
-const xp=document.getElementById('xp'),gems=document.getElementById('gems'),interact=document.getElementById('interact');
-function stats(){xp.textContent=data.xp;gems.textContent=data.gems}stats();
+const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,coins:30,chestClaimed:false,petGrowth:[{level:1,xp:0},{level:1,xp:0}]};
+try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
+if(!Number.isFinite(data.coins)){data.coins=30;data.starterCoinsGranted=true}
+if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2)data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
+data.petGrowth=data.petGrowth.map(p=>({level:Math.max(1,Number(p?.level)||1),xp:Math.max(0,Number(p?.xp)||0)}));
+const xp=document.getElementById('xp'),gems=document.getElementById('gems'),coins=document.getElementById('coins'),interact=document.getElementById('interact');
+function saveData(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){hint('无法保存：请检查浏览器储存空间')}}
+function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
+function renderPetPanel(){
+ const p=data.petGrowth[selectedPet],name=selectedPet===0?'紫色兔兔（姐姐）':'蓝色狐狸（妹妹）',need=p.level*100;
+ document.getElementById('petTitle').textContent=(selectedPet===0?'🐰 ':'🦊 ')+name;
+ document.getElementById('petLevel').textContent='等级：Lv.'+p.level;
+ document.getElementById('petExperience').textContent='宠物经验：'+p.xp+' / '+need;
+ document.getElementById('petWallet').textContent='🪙 金币：'+data.coins;
+ document.getElementById('feedPet').disabled=data.coins<10;
+ document.getElementById('feedPet').textContent=data.coins<10?'金币不足':'喂食宠物（10 金币）';
+}
+stats();
+document.getElementById('closePet').onclick=()=>document.getElementById('petPanel').style.display='none';
+document.getElementById('feedPet').onclick=()=>{
+ if(data.coins<10){hint('金币不足，先去探索和领取宝箱奖励！');return}
+ const p=data.petGrowth[selectedPet],oldLevel=p.level;
+ data.coins-=10;p.xp+=25;
+ while(p.xp>=p.level*100){p.xp-=p.level*100;p.level++}
+ saveData();stats();renderPetPanel();playPetAction(selectedPet);
+ hint(p.level>oldLevel?'宠物升级了！现在是 Lv.'+p.level:'喂食成功！宠物获得 25 经验值');
+};
 let opened=!!data.chestClaimed;if(opened){lid.rotation.x=-1.05;chestLight.intensity=2.8}
-function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.chestClaimed=true;opened=true;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
+function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.coins+=30;data.chestClaimed=true;opened=true;saveData();stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
 document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=collect;
 let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
@@ -131,7 +168,7 @@ renderer.domElement.onpointerup=e=>{
   );
   const raycaster=new THREE.Raycaster();raycaster.setFromCamera(pointer,camera);
   const hit=raycaster.intersectObjects(petMeshes,false)[0];
-  if(hit&&Number.isInteger(hit.object.userData.petIndex))playPetAction(hit.object.userData.petIndex);
+  if(hit&&Number.isInteger(hit.object.userData.petIndex))openPetPanel(hit.object.userData.petIndex);
  }
  lp=null;
 };
