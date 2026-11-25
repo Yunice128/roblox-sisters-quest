@@ -107,7 +107,38 @@ const pets=[makePet('bunny'),makePet('fox')];pets[0].group.position.set(-1.2,0,6
 const petMeshes=[];
 pets.forEach((pet,index)=>pet.group.traverse(o=>{if(o.isMesh){o.userData.petIndex=index;petMeshes.push(o)}}));
 const petActions=pets.map(()=>({type:'',start:0,until:0,baseY:0,baseRotation:0}));
-function playPetAction(index){
+const heartParticles=[];
+function spawnPetHearts(index){
+ const pet=pets[index];
+ for(let i=0;i<5;i++){
+  const shape=new THREE.Shape();
+  shape.moveTo(0,.12);
+  shape.bezierCurveTo(-.35,.42,-.72,.12,-.45,-.18);
+  shape.bezierCurveTo(-.25,-.42,0,-.22,0,-.12);
+  shape.bezierCurveTo(0,-.22,.25,-.42,.45,-.18);
+  shape.bezierCurveTo(.72,.12,.35,.42,0,.12);
+  const material=new THREE.MeshBasicMaterial({
+   color:index===0?0xff83c9:0x79d9ff,
+   transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false
+  });
+  const heart=new THREE.Mesh(new THREE.ShapeGeometry(shape),material);
+  heart.scale.setScalar(.32);
+  heart.position.copy(pet.group.position);
+  heart.position.y+=1.2;
+  heart.position.x+=(Math.random()-.5)*.6;
+  scene.add(heart);
+  heartParticles.push({mesh:heart,life:1});
+ }
+}
+function playPetEat(index){
+ const action=petActions[index],pet=pets[index],now=clock.elapsedTime;
+ action.type='eat';
+ action.start=now;
+ action.until=now+.9;
+ action.baseY=pet.group.position.y;
+ action.baseRotation=pet.group.rotation.y;
+ spawnPetHearts(index);
+}function playPetAction(index){
  const pet=pets[index],action=petActions[index],now=clock.elapsedTime;
  if(now<action.until)return;
  action.type=index===0?'hop':'spin';action.start=now;action.until=now+(index===0?1.05:1.15);
@@ -253,10 +284,22 @@ function collectPickup(target){
  if(data.dailyCollection.collectedItems.includes(item.id))return;
  data.dailyCollection.collectedItems.push(item.id);
  if(!data.collectedItems.includes(item.id))data.collectedItems.push(item.id);
- if(item.kind==='gem')data.gems+=1;
- else data.coins+=5;
- target.group.visible=false;saveData();stats();renderCollection();
- hint(item.emoji+' '+item.name+' 已收集！'+(item.kind==='gem'?'宝石 +1':'金币 +5'));
+ if(item.kind==='gem'){
+  data.gems+=1;
+ }else{
+  data.coins+=5;
+  const petIndex=item.id==='food_fish'?1:0;
+  const petData=data.petGrowth[petIndex],oldLevel=petData.level;
+  petData.xp+=10;
+  while(petData.xp>=petData.level*100){
+   petData.xp-=petData.level*100;
+   petData.level++;
+  }
+  playPetEat(petIndex);
+  hint((petIndex===0?'兔兔':'小狐狸')+'吃掉了'+item.name+'！金币 +5，宠物经验 +10'+(petData.level>oldLevel?'，升级至 Lv.'+petData.level:''));
+ }
+ target.group.visible=false;
+ saveData();stats();renderCollection();renderPetPanel();
  nearbyTarget=null;interact.style.display='none';
 }
 function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.coins+=30;data.chestClaimed=true;opened=true;saveData();stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
@@ -313,14 +356,31 @@ function animate(){
    petGroup.position.y+=Math.sin(progress*Math.PI)*.95;
    petGroup.rotation.z=Math.sin(progress*Math.PI*2)*.12;
   }else if(action.type==='spin'){
-   petGroup.rotation.y=action.baseRotation+progress*Math.PI*4;
-   petGroup.position.y+=Math.sin(progress*Math.PI*2)*.12;
-  }
+ petGroup.rotation.y=action.baseRotation+progress*Math.PI*4;
+ petGroup.position.y+=Math.sin(progress*Math.PI*2)*.12;
+}else if(action.type==='eat'){
+ petGroup.position.y+=Math.sin(progress*Math.PI)*.16;
+ petGroup.rotation.x=Math.sin(progress*Math.PI*4)*.12;
+}
  }else if(action.type){
-  action.type='';
-  petGroup.rotation.z=0;
- }
+ action.type='';
+ petGroup.rotation.z=0;
+ petGroup.rotation.x=0;
+}
  });
+ for(let i=heartParticles.length-1;i>=0;i--){
+ const h=heartParticles[i];
+ h.life-=dt*1.15;
+ h.mesh.position.y+=dt*1.25;
+ h.mesh.material.opacity=Math.max(0,h.life);
+ h.mesh.scale.multiplyScalar(1+dt*.18);
+ if(h.life<=0){
+  scene.remove(h.mesh);
+  h.mesh.geometry.dispose();
+  h.mesh.material.dispose();
+  heartParticles.splice(i,1);
+ }
+}
  if(skillMarker.visible){
   if(t>=skillMarkerExpires)skillMarker.visible=false;
   else{markerRing.rotation.z=t*1.8;markerStar.rotation.y=t*2.6;markerStar.position.y=3.15+Math.sin(t*4)*.22;markerBeam.material.opacity=.28+Math.sin(t*5)*.12}
