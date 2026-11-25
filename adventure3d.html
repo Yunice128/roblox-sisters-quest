@@ -13,6 +13,7 @@
 button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:white;font-weight:900}
 #stats{position:fixed;top:52px;left:10px;display:flex;gap:7px;pointer-events:none}
 #hint{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:8px 12px;font-size:13px;text-align:center;max-width:90%;pointer-events:none}
+#petTag{position:fixed;top:92px;right:10px;background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:7px 10px;font-size:12px;font-weight:900;pointer-events:none}
 #joystick{position:fixed;left:22px;bottom:22px;width:126px;height:126px;border-radius:50%;background:#ffffff26;border:2px solid #ffffff88;touch-action:none}
 #stick{position:absolute;width:54px;height:54px;left:34px;top:34px;border-radius:50%;background:linear-gradient(145deg,#fff,#bca5ed);border:2px solid #fff;pointer-events:none}
 #buttons{position:fixed;right:20px;bottom:22px;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
@@ -25,7 +26,7 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 #startcard h1{font-size:23px}#startcard p{font-size:13px;line-height:1.6;color:#e4d8ff}
 #play{background:linear-gradient(145deg,#ff83ce,#b83f9a);font-size:17px;padding:14px 25px}
 #loading{font-size:12px;color:#e5d9ff;margin-top:10px}
-#petTag{position:fixed;top:92px;right:10px;background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:7px 10px;font-size:12px;font-weight:900;pointer-events:none}#tip{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
+#tip{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
 @media(orientation:portrait){#joystick{width:112px;height:112px}#stick{left:29px;top:29px}#tip{bottom:145px;white-space:normal;text-align:center;width:90%}}
 </style>
 </head>
@@ -43,12 +44,9 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 <script type="module">
 const loading=document.getElementById('loading');
 let THREE;
-try{
-  THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
-}catch(e1){
-  try{THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js');}
-  catch(e2){loading.textContent='3D 引擎加载失败。请检查网络连接后重新载入。';document.getElementById('play').disabled=true;document.getElementById('play').textContent='引擎加载失败';}
-}
+try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js')}
+catch(e1){try{THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js')}
+catch(e2){loading.textContent='3D 引擎加载失败。请检查网络连接后重新载入。';document.getElementById('play').disabled=true;document.getElementById('play').textContent='引擎加载失败'}}
 if(THREE){
 try{
 const root=document.getElementById('game');
@@ -77,70 +75,34 @@ const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
 box(chest,1.5,.82,1.05,chestMat,0,.48,0);const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);
 box(chest,.18,.85,1.13,gold,0,.55,.02);box(chest,.34,.27,.08,gold,0,.55,.58);
 const chestLight=new THREE.PointLight(0xffd35c,0,5);chestLight.position.set(0,1.2,0);chest.add(chestLight);
-function avatar(top){const g=new THREE.Group(),arms=[],legs=[];box(g,.78,.95,.42,top,0,1.65,0);box(g,.68,.68,.64,skin,0,2.52,0);box(g,.72,.2,.68,hair,0,2.9,-.01);box(g,.18,.48,.67,hair,-.28,2.63,.02);box(g,.18,.48,.67,hair,.28,2.63,.02);box(g,.09,.09,.035,eye,-.15,2.55,.34);box(g,.09,.09,.035,eye,.15,2.55,.34);
+function avatar(top){const g=new THREE.Group(),arms=[],legs=[];
+box(g,.78,.95,.42,top,0,1.65,0);box(g,.68,.68,.64,skin,0,2.52,0);box(g,.72,.2,.68,hair,0,2.9,-.01);box(g,.18,.48,.67,hair,-.28,2.63,.02);box(g,.18,.48,.67,hair,.28,2.63,.02);box(g,.09,.09,.035,eye,-.15,2.55,.34);box(g,.09,.09,.035,eye,.15,2.55,.34);
 for(const x of [-.5,.5]){const a=new THREE.Group();a.position.set(x,2.02,0);g.add(a);box(a,.24,.72,.26,skin,0,-.34,0);arms.push(a)}
 for(const x of [-.22,.22]){const l=new THREE.Group();l.position.set(x,1.17,0);g.add(l);box(l,.28,.8,.32,pants,0,-.4,0);box(l,.34,.18,.46,shoe,0,-.82,.06);legs.push(l)}
 scene.add(g);return {group:g,arms,legs}}
 const sisters=[avatar(shirt1),avatar(shirt2)];sisters[0].group.position.set(0,0,5);sisters[1].group.position.set(1.15,0,6.35);
-
-// 双宠物：紫色兔子跟随姐姐，蓝色小狐狸跟随妹妹
 function makePet(type){
-  const g=new THREE.Group();
-  const fur=mat(type==='bunny'?0xc99af5:0x6bbcf5);
-  const lightFur=mat(type==='bunny'?0xf2e7ff:0xeaf7ff);
-  const dark=mat(type==='bunny'?0x7545a8:0x356baf);
-  const petEye=mat(0x241a32);
-  const nose=mat(type==='bunny'?0xff9fcf:0xffb36b);
-  // Body and head
-  const body=new THREE.Mesh(new THREE.SphereGeometry(.43,8,6),fur);
-  body.scale.set(1.12,.88,1.25);body.position.y=.48;g.add(body);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,8,6),lightFur);
-  head.position.set(0,.91,.22);g.add(head);
-  // Ears
-  if(type==='bunny'){
-    for(const x of [-.17,.17]){
-      const ear=box(g,.15,.55,.13,fur,x,1.35,.18);
-      ear.rotation.z=x<0?-.13:.13;
-      box(g,.075,.38,.035,nose,x,1.36,.255);
-    }
-  }else{
-    for(const x of [-.2,.2]){
-      const ear=new THREE.Mesh(new THREE.ConeGeometry(.16,.42,5),fur);
-      ear.position.set(x,1.22,.2);ear.rotation.z=x<0?.12:-.12;g.add(ear);
-      const inner=new THREE.Mesh(new THREE.ConeGeometry(.075,.25,5),nose);
-      inner.position.set(x,1.23,.31);g.add(inner);
-    }
-    const tail=new THREE.Mesh(new THREE.SphereGeometry(.2,7,5),lightFur);
-    tail.position.set(0,.55,-.53);g.add(tail);
-  }
-  // Face
-  for(const x of [-.12,.12]){
-    const e=box(g,.055,.07,.035,petEye,x,.94,.515);
-    e.rotation.z=0;
-  }
-  const n=new THREE.Mesh(new THREE.SphereGeometry(.065,6,5),nose);
-  n.position.set(0,.82,.54);g.add(n);
-  // Tiny feet
-  for(const x of [-.23,.23]){
-    const foot=new THREE.Mesh(new THREE.SphereGeometry(.13,6,5),dark);
-    foot.scale.set(1,.65,1.2);foot.position.set(x,.16,.13);g.add(foot);
-  }
-  scene.add(g);
-  return {group:g,type};
-}
-const pets=[makePet('bunny'),makePet('fox')];
-pets[0].group.position.set(-1.2,0,6.5);
-pets[1].group.position.set(2.1,0,7.8);
-
+ const g=new THREE.Group(),fur=mat(type==='bunny'?0xc99af5:0x6bbcf5),lightFur=mat(type==='bunny'?0xf2e7ff:0xeaf7ff),dark=mat(type==='bunny'?0x7545a8:0x356baf),petEye=mat(0x241a32),nose=mat(type==='bunny'?0xff9fcf:0xffb36b);
+ const body=new THREE.Mesh(new THREE.SphereGeometry(.43,8,6),fur);body.scale.set(1.12,.88,1.25);body.position.y=.48;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.34,8,6),lightFur);head.position.set(0,.91,.22);g.add(head);
+ if(type==='bunny'){for(const x of [-.17,.17]){const ear=box(g,.15,.55,.13,fur,x,1.35,.18);ear.rotation.z=x<0?-.13:.13;box(g,.075,.38,.035,nose,x,1.36,.255)}}
+ else{for(const x of [-.2,.2]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.16,.42,5),fur);ear.position.set(x,1.22,.2);ear.rotation.z=x<0?.12:-.12;g.add(ear);const inner=new THREE.Mesh(new THREE.ConeGeometry(.075,.25,5),nose);inner.position.set(x,1.23,.31);g.add(inner)}const tail=new THREE.Mesh(new THREE.SphereGeometry(.2,7,5),lightFur);tail.position.set(0,.55,-.53);g.add(tail)}
+ for(const x of [-.12,.12])box(g,.055,.07,.035,petEye,x,.94,.515);
+ const n=new THREE.Mesh(new THREE.SphereGeometry(.065,6,5),nose);n.position.set(0,.82,.54);g.add(n);
+ for(const x of [-.23,.23]){const foot=new THREE.Mesh(new THREE.SphereGeometry(.13,6,5),dark);foot.scale.set(1,.65,1.2);foot.position.set(x,.16,.13);g.add(foot)}
+ scene.add(g);return {group:g,type}}
+const pets=[makePet('bunny'),makePet('fox')];pets[0].group.position.set(-1.2,0,6.5);pets[1].group.position.set(2.1,0,7.8);
 let leader=sisters[0],follower=sisters[1],active='姐姐';
+function hint(t){document.getElementById('hint').textContent=t;document.getElementById('hint').style.display='block'}
+let hintTimer=null;
+function showRewardHint(){const el=document.getElementById('hint');hint('宝箱奖励已领取，继续探索小岛！');if(hintTimer)clearTimeout(hintTimer);hintTimer=setTimeout(()=>{el.style.display='none'},3000)}
 document.getElementById('switch').onclick=()=>{[leader,follower]=[follower,leader];active=active==='姐姐'?'妹妹':'姐姐';document.getElementById('playerName').textContent='当前：'+active;hint(active+'带队，另一位自动跟随！')};
 for(let i=0;i<7;i++){const cloud=new THREE.Group();cloud.position.set(-22+i*7,10+(i%3),-22-(i%2)*8);scene.add(cloud);for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(1.2,7,5),white);c.scale.set(1.5,.65,1);c.position.x=j*1.15;cloud.add(c)}}
 const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,chestClaimed:false};try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
 const xp=document.getElementById('xp'),gems=document.getElementById('gems'),interact=document.getElementById('interact');
 function stats(){xp.textContent=data.xp;gems.textContent=data.gems}stats();
 let opened=!!data.chestClaimed;if(opened){lid.rotation.x=-1.05;chestLight.intensity=2.8}
-function hint(t){document.getElementById('hint').textContent=t}
-function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.chestClaimed=true;opened=true;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block'}
+function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.chestClaimed=true;opened=true;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
 document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=collect;
 let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
@@ -154,36 +116,31 @@ document.getElementById('jump').onpointerdown=e=>{e.preventDefault();if(onGround
 document.getElementById('play').onclick=()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{})};
 loading.textContent='3D 引擎已准备好，请进入小岛';
 const clock=new THREE.Clock();
-function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
-if(moving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
-p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);vy-=18*dt;p.position.y+=vy*dt;if(p.position.y<=0){p.position.y=0;vy=0;onGround=true}
-const desired=p.position.clone().add(new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65));desired.x=THREE.MathUtils.clamp(desired.x,-20,20);desired.z=THREE.MathUtils.clamp(desired.z,-20,19);follower.group.position.lerp(desired,Math.min(1,dt*4.5));const followMoving=follower.group.position.distanceTo(desired)>.12||moving,t=clock.elapsedTime;
-function walk(r,m,phase){const s=m?Math.sin(t*10+phase)*.65:0;r.legs[0].rotation.x=s;r.legs[1].rotation.x=-s;r.arms[0].rotation.x=-s*.7;r.arms[1].rotation.x=s*.7}
-walk(leader,moving,0);walk(follower,followMoving,1.2);
-// Each pet stays with its own sister, including when the controlled sister changes.
-pets.forEach((pet,i)=>{
-  const owner=sisters[i].group;
-  const petGroup=pet.group;
-  const back=new THREE.Vector3(-Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y));
-  const side=new THREE.Vector3(Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y));
-  const petTarget=owner.position.clone().addScaledVector(back,1.25).addScaledVector(side,i===0?-.82:.82);
-  petTarget.x=THREE.MathUtils.clamp(petTarget.x,-20,20);
-  petTarget.z=THREE.MathUtils.clamp(petTarget.z,-20,19);
-  petGroup.position.x+=(petTarget.x-petGroup.position.x)*Math.min(1,dt*5);
-  petGroup.position.z+=(petTarget.z-petGroup.position.z)*Math.min(1,dt*5);
-  const ownerMoving=owner===p?moving:followMoving;
-  petGroup.position.y=.06+(ownerMoving?Math.abs(Math.sin(t*8+i))*0.13:Math.sin(t*2+i)*.035);
-  const dx=owner.position.x-petGroup.position.x,dz=owner.position.z-petGroup.position.z;
-  if(Math.hypot(dx,dz)>.08)petGroup.rotation.y=Math.atan2(dx,dz);
-  petGroup.rotation.z=ownerMoving?Math.sin(t*8+i)*.035:0;
-});
-
-const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
-interact.style.display=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position))<3&&!opened?'block':'none';if(opened)hint('宝箱奖励已领取，继续探索小岛！');else hint('当前'+active+'带队，走近宝箱按「开启宝箱」');
-portal.rotation.y=Math.sin(t*.7)*.08;glow.material.opacity=.48+Math.sin(t*2)*.12;renderer.render(scene,camera)}
+function animate(){
+ requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
+ if(moving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
+ p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);vy-=18*dt;p.position.y+=vy*dt;if(p.position.y<=0){p.position.y=0;vy=0;onGround=true}
+ const desired=p.position.clone().add(new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65));desired.x=THREE.MathUtils.clamp(desired.x,-20,20);desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
+ follower.group.lerp?null:null;
+ follower.group.position.lerp(desired,Math.min(1,dt*4.5));
+ // 跟随者与带队者保持相同朝向，避免妹妹背对前进方向。
+ follower.group.rotation.y=p.rotation.y;
+ const followMoving=follower.group.position.distanceTo(desired)>.12||moving,t=clock.elapsedTime;
+ function walk(r,m,phase){const s=m?Math.sin(t*10+phase)*.65:0;r.legs[0].rotation.x=s;r.legs[1].rotation.x=-s;r.arms[0].rotation.x=-s*.7;r.arms[1].rotation.x=s*.7}
+ walk(leader,moving,0);walk(follower,followMoving,1.2);
+ pets.forEach((pet,i)=>{const owner=sisters[i].group,petGroup=pet.group,back=new THREE.Vector3(-Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y)),side=new THREE.Vector3(Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y)),petTarget=owner.position.clone().addScaledVector(back,1.25).addScaledVector(side,i===0?-.82:.82);
+ petTarget.x=THREE.MathUtils.clamp(petTarget.x,-20,20);petTarget.z=THREE.MathUtils.clamp(petTarget.z,-20,19);
+ petGroup.position.x+=(petTarget.x-petGroup.position.x)*Math.min(1,dt*5);petGroup.position.z+=(petTarget.z-petGroup.position.z)*Math.min(1,dt*5);
+ const ownerMoving=owner===p?moving:followMoving;petGroup.position.y=.06+(ownerMoving?Math.abs(Math.sin(t*8+i))*.13:Math.sin(t*2+i)*.035);
+ const dx=owner.position.x-petGroup.position.x,dz=owner.position.z-petGroup.position.z;if(Math.hypot(dx,dz)>.08)petGroup.rotation.y=Math.atan2(dx,dz);petGroup.rotation.z=ownerMoving?Math.sin(t*8+i)*.035:0});
+ const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
+ interact.style.display=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position))<3&&!opened?'block':'none';
+ if(!opened)hint('当前'+active+'带队，走近宝箱按「开启宝箱」');
+ portal.rotation.y=Math.sin(t*.7)*.08;glow.material.opacity=.48+Math.sin(t*2)*.12;renderer.render(scene,camera)
+}
 animate();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.setSize(innerWidth,innerHeight)});
-}catch(err){loading.textContent='3D 场景启动失败：'+(err?.message||'未知错误');document.getElementById('play').disabled=true;document.getElementById('play').textContent='场景启动失败';}
+}catch(err){loading.textContent='3D 场景启动失败：'+(err?.message||'未知错误');document.getElementById('play').disabled=true;document.getElementById('play').textContent='场景启动失败'}
 }
 </script>
 </body>
