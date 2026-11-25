@@ -29,12 +29,12 @@
 </head>
 <body>
 <div id="game"></div>
-<div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">姐姐</span> <button id="switch">切换角色</button></div></div>
+<div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">当前：姐姐</span> <button id="switch">切换角色</button></div></div>
 <div id="hint">探索小岛：走近宝箱，按「互动」开启</div>
 <div id="joystick"><div id="stick"></div></div>
 <div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
 <div id="tip">左侧摇杆移动 · 拖动屏幕右侧旋转镜头</div>
-<div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 测试场景<br>横屏体验更佳。使用左侧摇杆移动，拖动右侧画面旋转镜头，靠近宝箱后按互动。</p><button id="play">进入 3D 小岛</button><div id="loading">首次载入需要网络连接 Three.js 3D 引擎</div></div></div>
+<div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 测试场景<br>横屏体验更佳。左侧摇杆控制当前角色，另一位会自动跟随；点击右上角切换角色，拖动右侧画面旋转镜头。</p><button id="play">进入 3D 小岛</button><div id="loading">首次载入需要网络连接 Three.js 3D 引擎</div></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
@@ -105,10 +105,19 @@ function makeAvatar(topMaterial){
  rig.arms=[armL,armR];rig.legs=[legL,legR];return rig;
 }
 const sisters=[makeAvatar(shirt1),makeAvatar(shirt2)];
-sisters.forEach((s,i)=>{s.group.position.set(i?1.35:-1.35,0,5);scene.add(s.group)});
-let active=0,player=sisters[active];
+// 姐姐作为领队；妹妹在她身后自动跟随
+sisters.forEach((s,i)=>{s.group.position.set(i?1.15:0,0,i?6.35:5);scene.add(s.group)});
+let leader=sisters[0],follower=sisters[1];
+let activeName='姐姐';
 const nameEl=document.getElementById('playerName');
-document.getElementById('switch').addEventListener('click',()=>{active=1-active;player=sisters[active];nameEl.textContent=active?'妹妹':'姐姐';cameraAngle=0;hint('现在控制'+nameEl.textContent);});
+document.getElementById('switch').addEventListener('click',()=>{
+  const oldLeader=leader;
+  leader=follower;
+  follower=oldLeader;
+  activeName=activeName==='姐姐'?'妹妹':'姐姐';
+  nameEl.textContent='当前：'+activeName;
+  hint(activeName+'现在带队，另一位会自动跟随！');
+});
 function hint(t){document.getElementById('hint').textContent=t}
 
 // Simple cloud decorations
@@ -133,13 +142,13 @@ renderer.domElement.addEventListener('pointerup',lookEnd);renderer.domElement.ad
 document.getElementById('jump').addEventListener('pointerdown',e=>{e.preventDefault();if(onGround){velocityY=7.2;onGround=false}});
 const interact=document.getElementById('interact');
 interact.addEventListener('click',()=>{if(chestOpened)return;chestOpened=true;lid.rotation.x=-1.05;chestGlow.intensity=2.8;hint('🎉 宝箱开启！发现了闪亮宝石！');interact.textContent='已开启';interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);});
-function checkChest(){const d=player.group.position.distanceTo(chest.position);interact.style.display=d<3&&!chestOpened?'block':'none';if(d<3&&!chestOpened)hint('发现宝箱！按右侧「开启宝箱」');else if(!chestOpened)hint('探索小岛：寻找宝箱和传送门');}
+function checkChest(){const d=Math.min(leader.group.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));interact.style.display=d<3&&!chestOpened?'block':'none';if(d<3&&!chestOpened)hint('姐姐和妹妹发现宝箱！按右侧「开启宝箱」');else if(!chestOpened)hint('当前角色带队，另一位会自动跟随：一起探索小岛');}
 
 document.getElementById('play').addEventListener('click',()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{});});
 function animate(){
  requestAnimationFrame(animate);
  const dt=Math.min(clock.getDelta(),.04);
- const p=player.group;
+ const p=leader.group;
  const forward=new THREE.Vector3(-Math.sin(cameraAngle),0,-Math.cos(cameraAngle));
  const right=new THREE.Vector3(Math.cos(cameraAngle),0,-Math.sin(cameraAngle));
  const move=new THREE.Vector3().addScaledVector(right,moveX).addScaledVector(forward,-moveY);
@@ -147,10 +156,23 @@ function animate(){
  if(isMoving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
  p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);
  velocityY-=18*dt;p.position.y+=velocityY*dt;if(p.position.y<=0){p.position.y=0;velocityY=0;onGround=true}
+ // 妹妹平滑跟随姐姐，保持在姐姐身后约 1.6 个单位
+ const followOffset=new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65);
+ const desiredFollower=p.position.clone().add(followOffset);
+ desiredFollower.x=THREE.MathUtils.clamp(desiredFollower.x,-20,20);
+ desiredFollower.z=THREE.MathUtils.clamp(desiredFollower.z,-20,19);
+ const fp=follower.group;
+ fp.position.lerp(desiredFollower,Math.min(1,dt*4.5));
+ const followerMove=desiredFollower.clone().sub(fp.position);
+ if(followerMove.lengthSq()>.002){fp.rotation.y=Math.atan2(followerMove.x,followerMove.z)}
+ const followerMoving=fp.position.distanceTo(desiredFollower)>.12 || isMoving;
  const t=clock.elapsedTime;
- const swing=isMoving?Math.sin(t*10)*.65:Math.sin(t*2)*.04;
- player.legs[0].rotation.x=swing;player.legs[1].rotation.x=-swing;player.arms[0].rotation.x=-swing*.7;player.arms[1].rotation.x=swing*.7;
- p.position.y+=isMoving&&onGround?Math.abs(Math.sin(t*10))*.045:0;
+ function animateRig(rig,moving,phase){
+   const swing=moving?Math.sin(t*10+phase)*.65:Math.sin(t*2+phase)*.04;
+   rig.legs[0].rotation.x=swing;rig.legs[1].rotation.x=-swing;
+   rig.arms[0].rotation.x=-swing*.7;rig.arms[1].rotation.x=swing*.7;
+ }
+ animateRig(leader,isMoving,0);animateRig(follower,followerMoving,1.2);
  const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z);
  const dist=8.2, horiz=Math.cos(cameraPitch)*dist, vert=Math.sin(cameraPitch)*dist+2.2;
  camera.position.set(target.x+Math.sin(cameraAngle)*horiz,target.y+vert,target.z+Math.cos(cameraAngle)*horiz);
