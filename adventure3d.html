@@ -35,7 +35,7 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 <div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">当前：姐姐</span> <button id="switch">切换角色</button></div></div>
 <div id="stats"><div class="stat">⭐ XP：<span id="xp">0</span></div><div class="stat">💎 宝石：<span id="gems">0</span></div></div>
 <div id="hint">探索小岛：走近宝箱，按「开启宝箱」</div>
-<div id="petTag">🐾 双宠物：跟随中</div>
+<div id="petTag">🐾 点击宠物互动</div>
 <div id="joystick"><div id="stick"></div></div>
 <div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
 <div id="tip">左侧摇杆移动 · 拖动右侧画面旋转镜头</div>
@@ -92,6 +92,16 @@ function makePet(type){
  for(const x of [-.23,.23]){const foot=new THREE.Mesh(new THREE.SphereGeometry(.13,6,5),dark);foot.scale.set(1,.65,1.2);foot.position.set(x,.16,.13);g.add(foot)}
  scene.add(g);return {group:g,type}}
 const pets=[makePet('bunny'),makePet('fox')];pets[0].group.position.set(-1.2,0,6.5);pets[1].group.position.set(2.1,0,7.8);
+const petMeshes=[];
+pets.forEach((pet,index)=>pet.group.traverse(o=>{if(o.isMesh){o.userData.petIndex=index;petMeshes.push(o)}}));
+const petActions=pets.map(()=>({type:'',start:0,until:0,baseY:0,baseRotation:0}));
+function playPetAction(index){
+ const pet=pets[index],action=petActions[index],now=clock.elapsedTime;
+ if(now<action.until)return;
+ action.type=index===0?'hop':'spin';action.start=now;action.until=now+(index===0?1.05:1.15);
+ action.baseY=pet.group.position.y;action.baseRotation=pet.group.rotation.y;
+ hint(index===0?'兔兔开心地跳起来了！':'小狐狸开心地转圈了！');
+}
 let leader=sisters[0],follower=sisters[1],active='姐姐';
 function hint(t){document.getElementById('hint').textContent=t;document.getElementById('hint').style.display='block'}
 let hintTimer=null;
@@ -109,9 +119,23 @@ const joy=document.getElementById('joystick'),stick=document.getElementById('sti
 joy.onpointerdown=e=>{e.preventDefault();jp=e.pointerId;const r=joy.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;joy.setPointerCapture(e.pointerId);joyMove(e)};
 function joyMove(e){if(jp!==e.pointerId)return;const dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),k=len>42?42/len:1;mx=dx*k/42;my=dy*k/42;stick.style.transform=`translate(${dx*k}px,${dy*k}px)`}
 joy.onpointermove=joyMove;function joyEnd(e){if(jp!==e.pointerId)return;jp=null;mx=my=0;stick.style.transform='translate(0,0)'}joy.onpointerup=joyEnd;joy.onpointercancel=joyEnd;
-let lp=null,lx=0,ly=0;renderer.domElement.onpointerdown=e=>{if(e.clientX<innerWidth*.38)return;lp=e.pointerId;lx=e.clientX;ly=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
+let lp=null,lx=0,ly=0,downX=0,downY=0;renderer.domElement.onpointerdown=e=>{if(e.clientX<innerWidth*.38)return;lp=e.pointerId;lx=e.clientX;ly=e.clientY;downX=e.clientX;downY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
 renderer.domElement.onpointermove=e=>{if(lp!==e.pointerId)return;angle-=(e.clientX-lx)*.006;pitch=THREE.MathUtils.clamp(pitch+(e.clientY-ly)*.003,-.05,.65);lx=e.clientX;ly=e.clientY};
-renderer.domElement.onpointerup=renderer.domElement.onpointercancel=()=>lp=null;
+renderer.domElement.onpointerup=e=>{
+ if(lp!==e.pointerId)return;
+ const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+ if(moved<12){
+  const rect=renderer.domElement.getBoundingClientRect(),pointer=new THREE.Vector2(
+   ((e.clientX-rect.left)/rect.width)*2-1,
+   -((e.clientY-rect.top)/rect.height)*2+1
+  );
+  const raycaster=new THREE.Raycaster();raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects(petMeshes,false)[0];
+  if(hit&&Number.isInteger(hit.object.userData.petIndex))playPetAction(hit.object.userData.petIndex);
+ }
+ lp=null;
+};
+renderer.domElement.onpointercancel=()=>lp=null;
 document.getElementById('jump').onpointerdown=e=>{e.preventDefault();if(onGround){vy=7.2;onGround=false}};
 document.getElementById('play').onclick=()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{})};
 loading.textContent='3D 引擎已准备好，请进入小岛';
@@ -132,7 +156,22 @@ function animate(){
  petTarget.x=THREE.MathUtils.clamp(petTarget.x,-20,20);petTarget.z=THREE.MathUtils.clamp(petTarget.z,-20,19);
  petGroup.position.x+=(petTarget.x-petGroup.position.x)*Math.min(1,dt*5);petGroup.position.z+=(petTarget.z-petGroup.position.z)*Math.min(1,dt*5);
  const ownerMoving=owner===p?moving:followMoving;petGroup.position.y=.06+(ownerMoving?Math.abs(Math.sin(t*8+i))*.13:Math.sin(t*2+i)*.035);
- const dx=owner.position.x-petGroup.position.x,dz=owner.position.z-petGroup.position.z;if(Math.hypot(dx,dz)>.08)petGroup.rotation.y=Math.atan2(dx,dz);petGroup.rotation.z=ownerMoving?Math.sin(t*8+i)*.035:0});
+ const dx=owner.position.x-petGroup.position.x,dz=owner.position.z-petGroup.position.z;if(Math.hypot(dx,dz)>.08)petGroup.rotation.y=Math.atan2(dx,dz);petGroup.rotation.z=ownerMoving?Math.sin(t*8+i)*.035:0;
+ const action=petActions[i];
+ if(t<action.until){
+  const progress=(t-action.start)/(action.until-action.start);
+  if(action.type==='hop'){
+   petGroup.position.y+=Math.sin(progress*Math.PI)*.95;
+   petGroup.rotation.z=Math.sin(progress*Math.PI*2)*.12;
+  }else if(action.type==='spin'){
+   petGroup.rotation.y=action.baseRotation+progress*Math.PI*4;
+   petGroup.position.y+=Math.sin(progress*Math.PI*2)*.12;
+  }
+ }else if(action.type){
+  action.type='';
+  petGroup.rotation.z=0;
+ }
+ });
  const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
  interact.style.display=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position))<3&&!opened?'block':'none';
  if(!opened)hint('当前'+active+'带队，走近宝箱按「开启宝箱」');
