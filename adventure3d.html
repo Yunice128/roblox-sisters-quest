@@ -50,7 +50,7 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 <div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
 <div id="tip">左侧摇杆移动 · 拖动右侧画面旋转镜头</div>
 <div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><p>🪙 +30 金币</p><button id="rewardOK">收下奖励</button></div>
-<div id="petPanel"><h2 id="petTitle">宠物资料</h2><p id="petLevel">等级：Lv.1</p><p id="petExperience">宠物经验：0 / 100</p><p id="petWallet">🪙 金币：30</p><p>喂食一次：消耗 10 金币，增加 25 宠物经验</p><button id="feedPet">喂食宠物</button><button id="closePet">关闭</button></div>
+<div id="petPanel"><h2 id="petTitle">宠物资料</h2><p id="petLevel">等级：Lv.1</p><p id="petExperience">宠物经验：0 / 100</p><p id="petWallet">🪙 金币：30</p><p>喂食一次：消耗 10 金币，增加 25 宠物经验</p><p id="petSkillInfo">专属技能：Lv.2 解锁</p><button id="feedPet">喂食宠物</button><button id="petSkillBtn">技能尚未解锁</button><button id="closePet">关闭</button></div>
 <div id="collectionPanel"><h2>📖 姐妹宠物图鉴</h2><div id="collectionContent"></div><button id="closeCollection">关闭图鉴</button></div>
 <div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。点击右上角「宠物图鉴」查看成长和收集进度。走近发光物品后按收集按钮。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
 <script type="module">
@@ -144,6 +144,11 @@ function renderPetPanel(){
  document.getElementById('petWallet').textContent='🪙 金币：'+data.coins;
  document.getElementById('feedPet').disabled=data.coins<10;
  document.getElementById('feedPet').textContent=data.coins<10?'金币不足':'喂食宠物（10 金币）';
+ const skillInfo=document.getElementById('petSkillInfo'),skillBtn=document.getElementById('petSkillBtn');
+ const skillName=selectedPet===0?'跳跃寻宝：寻找附近宠物食物':'嗅觉寻宝：寻找附近隐藏宝石';
+ skillInfo.textContent=p.level>=2?'专属技能：'+skillName+'（已解锁）':'专属技能：'+skillName+'（Lv.2 解锁）';
+ skillBtn.disabled=p.level<2;
+ skillBtn.textContent=p.level<2?'Lv.2 解锁技能':(selectedPet===0?'使用跳跃寻宝':'使用嗅觉寻宝');
 }
 const collectibleDefinitions=[
  {id:'food_carrot',kind:'food',name:'胡萝卜',emoji:'🥕',x:-5,z:2,reward:'宠物食物'},
@@ -169,12 +174,40 @@ collectibleDefinitions.forEach((item,index)=>{
  }
  scene.add(group);collectibleObjects.push({definition:item,group});
 });
+const skillMarker=new THREE.Group();skillMarker.visible=false;scene.add(skillMarker);
+const markerRing=new THREE.Mesh(new THREE.TorusGeometry(.9,.12,7,24),gold);markerRing.rotation.x=-Math.PI/2;markerRing.position.y=.12;skillMarker.add(markerRing);
+const markerBeam=new THREE.Mesh(new THREE.CylinderGeometry(.12,.42,3.1,8),new THREE.MeshBasicMaterial({color:0xffe36b,transparent:true,opacity:.42}));markerBeam.position.y=1.65;skillMarker.add(markerBeam);
+const markerStar=new THREE.Mesh(new THREE.OctahedronGeometry(.36),gold);markerStar.position.y=3.35;skillMarker.add(markerStar);
+let skillMarkerExpires=0,petSkillReadyAt=[0,0];
+function usePetSkill(index){
+ const petData=data.petGrowth[index],owner=sisters[index],kind=index===0?'food':'gem';
+ if(petData.level<2){hint('宠物达到 Lv.2 才能解锁专属技能');return}
+ const now=clock.elapsedTime;
+ if(now<petSkillReadyAt[index]){hint('技能冷却中，请稍等 '+Math.ceil(petSkillReadyAt[index]-now)+' 秒');return}
+ const candidates=collectibleObjects.filter(o=>o.group.visible&&o.definition.kind===kind);
+ if(!candidates.length){hint(index===0?'岛上的宠物食物已经收集完了！':'岛上的隐藏宝石已经收集完了！');return}
+ let target=null,best=Infinity;
+ candidates.forEach(o=>{const d=owner.position.distanceTo(o.group.position);if(d<best){best=d;target=o}});
+ const range=index===0?18:22;
+ if(best>range){hint(index===0?'兔兔跳跃探测到食物，但距离太远。继续往岛上探索！':'狐狸闻到宝石气息，但距离太远。继续往岛上探索！');return}
+ skillMarker.position.set(target.group.position.x,0,target.group.position.z);
+ skillMarker.visible=true;skillMarkerExpires=now+8;petSkillReadyAt[index]=now+12;
+ playPetAction(index);
+ const forward=new THREE.Vector3(-Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y));
+ const side=new THREE.Vector3(Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y));
+ const delta=target.group.position.clone().sub(owner.position);
+ const f=delta.dot(forward),s=delta.dot(side);
+ let direction=Math.abs(f)>Math.abs(s)?(f>0?'前方':'后方'):(s>0?'右边':'左边');
+ hint((index===0?'兔兔使用跳跃寻宝！':'狐狸使用嗅觉寻宝！')+' '+target.definition.emoji+' '+target.definition.name+' 在'+direction+'，约 '+Math.round(best)+' 米。金色光柱会标记位置。');
+}
+document.getElementById('petSkillBtn').onclick=()=>usePetSkill(selectedPet);
 function renderCollection(){
  const food=collectibleDefinitions.filter(x=>x.kind==='food'&&data.collectedItems.includes(x.id)).length;
  const gem=collectibleDefinitions.filter(x=>x.kind==='gem'&&data.collectedItems.includes(x.id)).length;
  const lines=[
   '<div class="collectionRow"><b>🐰 姐姐的紫色兔兔</b><br>等级 Lv.'+data.petGrowth[0].level+' · 经验 '+data.petGrowth[0].xp+'/'+(data.petGrowth[0].level*100)+'</div>',
-  '<div class="collectionRow"><b>🦊 妹妹的蓝色狐狸</b><br>等级 Lv.'+data.petGrowth[1].level+' · 经验 '+data.petGrowth[1].xp+'/'+(data.petGrowth[1].level*100)+'</div>',
+  '<div class="collectionRow"><b>🦊 妹妹的蓝色狐狸</b><br>等级 Lv.'+data.petGrowth[1].level+' · 经验 '+data.petGrowth[1].xp+'/'+(data.petGrowth[1].level*100)+'<br>专属技能：'+(data.petGrowth[1].level>=2?'✅ 嗅觉寻宝':'🔒 Lv.2 解锁嗅觉寻宝')+'</div>',
+  '<div class="collectionRow"><b>🐰 兔兔专属技能</b><br>'+(data.petGrowth[0].level>=2?'✅ 跳跃寻宝已解锁':'🔒 Lv.2 解锁跳跃寻宝')+'</div>',
   '<div class="collectionRow"><b>🍎 宠物食物：'+food+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='food').map(x=>(data.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
   '<div class="collectionRow"><b>💎 隐藏宝石：'+gem+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='gem').map(x=>(data.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
   '<div class="collectionRow"><b>收集总进度：'+data.collectedItems.length+'/8</b><br>找到岛上的食物和宝石，完成宠物收藏！</div>'
@@ -265,6 +298,10 @@ function animate(){
   petGroup.rotation.z=0;
  }
  });
+ if(skillMarker.visible){
+  if(t>=skillMarkerExpires)skillMarker.visible=false;
+  else{markerRing.rotation.z=t*1.8;markerStar.rotation.y=t*2.6;markerStar.position.y=3.15+Math.sin(t*4)*.22;markerBeam.material.opacity=.28+Math.sin(t*5)*.12}
+ }
  const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
  let closest=null,closestDistance=Infinity;
  const chestDistance=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));
