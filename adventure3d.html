@@ -6,202 +6,117 @@
 <meta name="theme-color" content="#21133f">
 <title>Roblox Sisters Quest 2.0 · 3D Adventure</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#182d46;color:#fff;font-family:system-ui,sans-serif;touch-action:none}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#8bd4f5;color:#fff;font-family:system-ui,sans-serif;touch-action:none}
 #game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
-#top{position:fixed;top:env(safe-area-inset-top,8px);left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;pointer-events:none}
-.pill{pointer-events:auto;background:#21133fdc;border:1px solid #c4a3ff;border-radius:14px;padding:8px 12px;font-weight:800;font-size:13px;box-shadow:0 3px 12px #0005}
-#switch{pointer-events:auto;border:0;color:white;background:#7548b8;border-radius:10px;padding:8px 10px;font-weight:800}
-#stats{position:fixed;top:54px;left:10px;display:flex;gap:7px;pointer-events:none}
-.stat{background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:7px 10px;font-size:13px;font-weight:900;box-shadow:0 3px 12px #0005}
-#reward{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);width:min(310px,86vw);padding:20px 18px;text-align:center;background:linear-gradient(145deg,#39205f,#21133f);border:2px solid #ffd66b;border-radius:20px;box-shadow:0 12px 40px #0009;display:none;z-index:5}
-#reward h2{margin:0 0 8px;color:#ffdc7a;font-size:22px}#reward p{margin:7px 0;color:#fff;font-weight:800}
-#reward button{margin-top:10px;border:0;border-radius:12px;padding:10px 24px;background:#ffd166;color:#392300;font-weight:900;font-size:15px}
-#hint{position:fixed;left:50%;top:68px;transform:translateX(-50%);background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:8px 12px;font-size:13px;text-align:center;max-width:90%;pointer-events:none}
-#joystick{position:fixed;left:22px;bottom:calc(22px + env(safe-area-inset-bottom,0px));width:126px;height:126px;border-radius:50%;background:#ffffff26;border:2px solid #ffffff88;box-shadow:inset 0 0 20px #0003;touch-action:none}
-#stick{position:absolute;width:54px;height:54px;left:34px;top:34px;border-radius:50%;background:linear-gradient(145deg,#fff,#bca5ed);border:2px solid #fff;box-shadow:0 4px 12px #0006;pointer-events:none}
-#buttons{position:fixed;right:20px;bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:flex-end;gap:12px}
-.gamebtn{width:76px;height:76px;border:2px solid #fff9;border-radius:50%;background:linear-gradient(145deg,#a96bef,#6438a9);color:#fff;font-size:15px;font-weight:900;box-shadow:0 5px 0 #31175a,0 8px 16px #0005;touch-action:none}
-#interact{width:88px;height:58px;border-radius:18px;background:linear-gradient(145deg,#ffcf65,#c27c19);color:#3d2605;display:none}
-#jump{background:linear-gradient(145deg,#61c8ff,#2878bc)}
-#tip{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);font-size:11px;color:#fff;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
-#start{position:fixed;inset:0;background:linear-gradient(#1c1640cc,#142f4dcc);display:flex;align-items:center;justify-content:center;padding:20px}
-#startcard{width:min(420px,94vw);background:#29194c;border:2px solid #c3a0ff;border-radius:22px;padding:22px;text-align:center;box-shadow:0 15px 45px #0008}
-#startcard h1{font-size:23px;margin:0 0 8px}#startcard p{font-size:13px;line-height:1.6;color:#e4d8ff}
-#play{border:0;border-radius:14px;padding:14px 25px;background:linear-gradient(145deg,#ff83ce,#b83f9a);color:white;font-size:17px;font-weight:900}
+#top{position:fixed;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.pill,.stat{background:#21133fe8;border:1px solid #c4a3ff;border-radius:13px;padding:8px 11px;font-size:13px;font-weight:900;pointer-events:auto}
+button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:white;font-weight:900}
+#stats{position:fixed;top:52px;left:10px;display:flex;gap:7px;pointer-events:none}
+#hint{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:8px 12px;font-size:13px;text-align:center;max-width:90%;pointer-events:none}
+#joystick{position:fixed;left:22px;bottom:22px;width:126px;height:126px;border-radius:50%;background:#ffffff26;border:2px solid #ffffff88;touch-action:none}
+#stick{position:absolute;width:54px;height:54px;left:34px;top:34px;border-radius:50%;background:linear-gradient(145deg,#fff,#bca5ed);border:2px solid #fff;pointer-events:none}
+#buttons{position:fixed;right:20px;bottom:22px;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.gamebtn{width:76px;height:76px;border:2px solid #fff9;border-radius:50%;background:linear-gradient(145deg,#a96bef,#6438a9);font-size:14px;box-shadow:0 5px 0 #31175a}
+#interact{display:none;width:92px;height:58px;border-radius:18px;background:linear-gradient(145deg,#ffcf65,#c27c19);color:#3d2605}
+#reward{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(310px,86vw);padding:20px;text-align:center;background:#29194c;border:2px solid #ffd66b;border-radius:20px;display:none;z-index:5}
+#reward h2{color:#ffdc7a;margin:0 0 8px}#reward p{font-weight:900}
+#start{position:fixed;inset:0;background:linear-gradient(#1c1640cc,#142f4dcc);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+#startcard{width:min(420px,94vw);background:#29194c;border:2px solid #c3a0ff;border-radius:22px;padding:22px;text-align:center}
+#startcard h1{font-size:23px}#startcard p{font-size:13px;line-height:1.6;color:#e4d8ff}
+#play{background:linear-gradient(145deg,#ff83ce,#b83f9a);font-size:17px;padding:14px 25px}
 #loading{font-size:12px;color:#e5d9ff;margin-top:10px}
-@media(orientation:portrait){#stats{top:52px}#hint{top:92px}#joystick{width:112px;height:112px}#stick{left:29px;top:29px}#tip{bottom:145px;white-space:normal;text-align:center;width:90%}}
+#tip{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
+@media(orientation:portrait){#joystick{width:112px;height:112px}#stick{left:29px;top:29px}#tip{bottom:145px;white-space:normal;text-align:center;width:90%}}
 </style>
 </head>
 <body>
 <div id="game"></div>
 <div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">当前：姐姐</span> <button id="switch">切换角色</button></div></div>
 <div id="stats"><div class="stat">⭐ XP：<span id="xp">0</span></div><div class="stat">💎 宝石：<span id="gems">0</span></div></div>
-<div id="hint">探索小岛：走近宝箱，按「互动」开启</div>
-<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><button id="rewardOK">收下奖励</button></div>
+<div id="hint">探索小岛：走近宝箱，按「开启宝箱」</div>
 <div id="joystick"><div id="stick"></div></div>
 <div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
-<div id="tip">左侧摇杆移动 · 拖动屏幕右侧旋转镜头</div>
-<div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 测试场景<br>横屏体验更佳。左侧摇杆控制当前角色，另一位会自动跟随；点击右上角切换角色，拖动右侧画面旋转镜头。</p><button id="play">进入 3D 小岛</button><div id="loading">首次载入需要网络连接 Three.js 3D 引擎</div></div></div>
+<div id="tip">左侧摇杆移动 · 拖动右侧画面旋转镜头</div>
+<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><button id="rewardOK">收下奖励</button></div>
+<div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。右上角可切换角色。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-
+const loading=document.getElementById('loading');
+let THREE;
+try{
+  THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+}catch(e1){
+  try{THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js');}
+  catch(e2){loading.textContent='3D 引擎加载失败。请检查网络连接后重新载入。';document.getElementById('play').disabled=true;document.getElementById('play').textContent='引擎加载失败';}
+}
+if(THREE){
+try{
 const root=document.getElementById('game');
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x8bd4f5);
-scene.fog=new THREE.Fog(0x8bd4f5,28,75);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,120);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x8bd4f5);scene.fog=new THREE.Fog(0x8bd4f5,30,80);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,150);
 const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
-renderer.setSize(innerWidth,innerHeight);
-renderer.shadowMap.enabled=false;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-root.appendChild(renderer.domElement);
-
-scene.add(new THREE.HemisphereLight(0xffffff,0x64824b,2.0));
-const sun=new THREE.DirectionalLight(0xfff0d4,2.1);
-sun.position.set(-8,18,10);scene.add(sun);
-
-const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness});
-const grass=mat(0x58b957),darkGrass=mat(0x39964a),wood=mat(0x8a542d),leaf=mat(0x238b59),leaf2=mat(0x45ae65),stone=mat(0x9ba7ad),gold=mat(0xffc94e),chestMat=mat(0x9a572b),metal=mat(0xffd66d),skin=mat(0xf1bd98),hair=mat(0x38223a),shirt1=mat(0xb45be2),shirt2=mat(0x48a7ed),pants=mat(0x394b9b),shoe=mat(0xf6f0ff),white=mat(0xffffff),eye=mat(0x251a25);
-
-function box(parent,w,h,d,material,x=0,y=0,z=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);parent.add(m);return m}
-function cylinder(parent,rt,rb,h,material,x=0,y=0,z=0,segments=7){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,segments),material);m.position.set(x,y,z);parent.add(m);return m}
-
-// Island ground and shore
-const ground=new THREE.Mesh(new THREE.CylinderGeometry(23,24,2.2,48),grass);ground.position.y=-1.1;scene.add(ground);
-const shore=new THREE.Mesh(new THREE.CylinderGeometry(24.2,24.4,1.2,48),mat(0xe8d28b));shore.position.y=-1.85;scene.add(shore);
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x64824b,2));
+const sun=new THREE.DirectionalLight(0xfff0d4,2);sun.position.set(-8,18,10);scene.add(sun);
+const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:1});
+const grass=mat(0x58b957),wood=mat(0x8a542d),leaf=mat(0x238b59),leaf2=mat(0x45ae65),stone=mat(0x9ba7ad),gold=mat(0xffc94e),chestMat=mat(0x9a572b),skin=mat(0xf1bd98),hair=mat(0x38223a),shirt1=mat(0xb45be2),shirt2=mat(0x48a7ed),pants=mat(0x394b9b),shoe=mat(0xf6f0ff),white=mat(0xffffff),eye=mat(0x251a25);
+function box(parent,w,h,d,m,x=0,y=0,z=0){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}
+function cyl(parent,rt,rb,h,m,x=0,y=0,z=0){const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,7),m);o.position.set(x,y,z);parent.add(o);return o}
+const ground=new THREE.Mesh(new THREE.CylinderGeometry(23,24,2.2,40),grass);ground.position.y=-1.1;scene.add(ground);
+const sand=new THREE.Mesh(new THREE.CylinderGeometry(24.2,24.4,1.2,40),mat(0xe8d28b));sand.position.y=-1.85;scene.add(sand);
 const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),mat(0x45b9df));water.rotation.x=-Math.PI/2;water.position.y=-2.5;scene.add(water);
-for(let i=0;i<42;i++){const a=i*2.399,r=7+(i%7)*2.05,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.hypot(x,z)>20)continue;const patch=new THREE.Mesh(new THREE.CylinderGeometry(.7,1.1,.08,7),darkGrass);patch.position.set(x,-.02,z);scene.add(patch)}
-
-// Stone path to the portal
-for(let i=0;i<10;i++){const z=8-i*1.65;const s=box(scene,2.15,.18,1.25,stone,0,.12,z);s.rotation.y=(i%2?-.08:.08)}
-// Portal
+for(let i=0;i<10;i++){const p=box(scene,2.1,.18,1.2,stone,0,.12,8-i*1.65);p.rotation.y=i%2?.08:-.08}
 const portal=new THREE.Group();portal.position.set(0,1.7,-12);scene.add(portal);
 const ring=new THREE.Mesh(new THREE.TorusGeometry(1.65,.22,8,20),gold);portal.add(ring);
-const portalGlow=new THREE.Mesh(new THREE.CircleGeometry(1.43,24),new THREE.MeshBasicMaterial({color:0x9c7aff,transparent:true,opacity:.65,side:THREE.DoubleSide}));portal.add(portalGlow);
+const glow=new THREE.Mesh(new THREE.CircleGeometry(1.43,24),new THREE.MeshBasicMaterial({color:0x9c7aff,transparent:true,opacity:.6,side:THREE.DoubleSide}));portal.add(glow);
 box(portal,.55,3.8,.6,wood,-1.85,0,0);box(portal,.55,3.8,.6,wood,1.85,0,0);box(portal,4.2,.55,.6,wood,0,1.85,0);
-
-// Low-poly trees
-function tree(x,z,scale=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(scale);scene.add(g);cylinder(g,.22,.32,1.7,wood,0,.85,0,6);const c1=new THREE.Mesh(new THREE.ConeGeometry(1.25,2.3,7),leaf);c1.position.y=2.25;g.add(c1);const c2=new THREE.Mesh(new THREE.ConeGeometry(.9,1.8,7),leaf2);c2.position.y=3.15;g.add(c2)}
-for(let i=0;i<25;i++){const a=i*2.4,r=12+(i%4)*2.5,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.hypot(x,z)<7)continue;tree(x,z,.75+(i%3)*.16)}
-
-// Rocks and flowers
-for(let i=0;i<16;i++){const a=i*2.1,r=5+(i%4)*3,x=Math.cos(a)*r,z=Math.sin(a)*r;const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.42+(i%3)*.14,0),stone);rock.position.set(x,.25,z);rock.rotation.set(i*.3,i*.5,0);scene.add(rock)}
-for(let i=0;i<18;i++){const a=i*1.7,r=4+(i%5)*2,x=Math.cos(a)*r,z=Math.sin(a)*r;const f=cylinder(scene,.08,.08,.12,i%2?gold:mat(0xff8fc9),x,.1,z,5)}
-
-// Treasure chest
+function tree(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);cyl(g,.22,.32,1.7,wood,0,.85,0);const a=new THREE.Mesh(new THREE.ConeGeometry(1.25,2.3,7),leaf);a.position.y=2.25;g.add(a);const b=new THREE.Mesh(new THREE.ConeGeometry(.9,1.8,7),leaf2);b.position.y=3.15;g.add(b)}
+for(let i=0;i<25;i++){const a=i*2.4,r=12+(i%4)*2.5,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.hypot(x,z)>20)continue;tree(x,z,.75+(i%3)*.16)}
+for(let i=0;i<14;i++){const a=i*2.1,r=5+(i%4)*3,x=Math.cos(a)*r,z=Math.sin(a)*r;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(.45,0),stone);o.position.set(x,.25,z);scene.add(o)}
 const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
-box(chest,1.5,.82,1.05,chestMat,0,.48,0);
-const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);lid.rotation.x=0;
-box(chest,.18,.85,1.13,metal,0,.55,.02);
-box(chest,.34,.27,.08,gold,0,.55,.58);
-const chestGlow=new THREE.PointLight(0xffd35c,0,5);chestGlow.position.set(0,1.2,0);chest.add(chestGlow);
-
-// Sister block avatars
-function makeAvatar(topMaterial){
- const group=new THREE.Group();const rig={group,arms:[],legs:[],topMaterial};
- const torso=box(group,.78,.95,.42,topMaterial,0,1.65,0);
- const head=box(group,.68,.68,.64,skin,0,2.52,0);
- box(group,.72,.2,.68,hair,0,2.9,-.01);
- box(group,.18,.48,.67,hair,-.28,2.63,.02);box(group,.18,.48,.67,hair,.28,2.63,.02);
- box(group,.09,.09,.035,eye,-.15,2.55,.34);box(group,.09,.09,.035,eye,.15,2.55,.34);
- const armL=new THREE.Group();armL.position.set(-.5,2.02,0);group.add(armL);box(armL,.24,.72,.26,skin,0,-.34,0);
- const armR=new THREE.Group();armR.position.set(.5,2.02,0);group.add(armR);box(armR,.24,.72,.26,skin,0,-.34,0);
- const legL=new THREE.Group();legL.position.set(-.22,1.17,0);group.add(legL);box(legL,.28,.8,.32,pants,0,-.4,0);box(legL,.34,.18,.46,shoe,0,-.82,.06);
- const legR=new THREE.Group();legR.position.set(.22,1.17,0);group.add(legR);box(legR,.28,.8,.32,pants,0,-.4,0);box(legR,.34,.18,.46,shoe,0,-.82,.06);
- rig.arms=[armL,armR];rig.legs=[legL,legR];return rig;
-}
-const sisters=[makeAvatar(shirt1),makeAvatar(shirt2)];
-// 姐姐作为领队；妹妹在她身后自动跟随
-sisters.forEach((s,i)=>{s.group.position.set(i?1.15:0,0,i?6.35:5);scene.add(s.group)});
-let leader=sisters[0],follower=sisters[1];
-let activeName='姐姐';
-const nameEl=document.getElementById('playerName');
-document.getElementById('switch').addEventListener('click',()=>{
-  const oldLeader=leader;
-  leader=follower;
-  follower=oldLeader;
-  activeName=activeName==='姐姐'?'妹妹':'姐姐';
-  nameEl.textContent='当前：'+activeName;
-  hint(activeName+'现在带队，另一位会自动跟随！');
-});
-function hint(t){document.getElementById('hint').textContent=t}
-
-// Simple cloud decorations
+box(chest,1.5,.82,1.05,chestMat,0,.48,0);const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);
+box(chest,.18,.85,1.13,gold,0,.55,.02);box(chest,.34,.27,.08,gold,0,.55,.58);
+const chestLight=new THREE.PointLight(0xffd35c,0,5);chestLight.position.set(0,1.2,0);chest.add(chestLight);
+function avatar(top){const g=new THREE.Group(),arms=[],legs=[];box(g,.78,.95,.42,top,0,1.65,0);box(g,.68,.68,.64,skin,0,2.52,0);box(g,.72,.2,.68,hair,0,2.9,-.01);box(g,.18,.48,.67,hair,-.28,2.63,.02);box(g,.18,.48,.67,hair,.28,2.63,.02);box(g,.09,.09,.035,eye,-.15,2.55,.34);box(g,.09,.09,.035,eye,.15,2.55,.34);
+for(const x of [-.5,.5]){const a=new THREE.Group();a.position.set(x,2.02,0);g.add(a);box(a,.24,.72,.26,skin,0,-.34,0);arms.push(a)}
+for(const x of [-.22,.22]){const l=new THREE.Group();l.position.set(x,1.17,0);g.add(l);box(l,.28,.8,.32,pants,0,-.4,0);box(l,.34,.18,.46,shoe,0,-.82,.06);legs.push(l)}
+scene.add(g);return {group:g,arms,legs}}
+const sisters=[avatar(shirt1),avatar(shirt2)];sisters[0].group.position.set(0,0,5);sisters[1].group.position.set(1.15,0,6.35);
+let leader=sisters[0],follower=sisters[1],active='姐姐';
+document.getElementById('switch').onclick=()=>{[leader,follower]=[follower,leader];active=active==='姐姐'?'妹妹':'姐姐';document.getElementById('playerName').textContent='当前：'+active;hint(active+'带队，另一位自动跟随！')};
 for(let i=0;i<7;i++){const cloud=new THREE.Group();cloud.position.set(-22+i*7,10+(i%3),-22-(i%2)*8);scene.add(cloud);for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(1.2,7,5),white);c.scale.set(1.5,.65,1);c.position.x=j*1.15;cloud.add(c)}}
-
-let moveX=0,moveY=0,cameraAngle=0,cameraPitch=.23,velocityY=0,onGround=true,isMoving=false,chestOpened=false;
-// 3D奖励独立保存，不会影响原本2D游戏的资料
-const rewardKey='sistersQuest3DRewards_v1';
-let rewardData={xp:0,gems:0,chestClaimed:false};
-try{const saved=JSON.parse(localStorage.getItem(rewardKey)||'null');if(saved&&typeof saved==='object')rewardData={...rewardData,...saved}}catch(e){}
-const xpEl=document.getElementById('xp'),gemsEl=document.getElementById('gems');
-function saveRewards(){try{localStorage.setItem(rewardKey,JSON.stringify(rewardData))}catch(e){};updateStats()}
-function updateStats(){xpEl.textContent=rewardData.xp;gemsEl.textContent=rewardData.gems}
-updateStats();
-chestOpened=!!rewardData.chestClaimed;
-if(chestOpened){lid.rotation.x=-1.05;chestGlow.intensity=2.8;interact.textContent='已领取';}
-function collectChestReward(){if(rewardData.chestClaimed)return;rewardData.xp+=50;rewardData.gems+=1;rewardData.chestClaimed=true;chestOpened=true;saveRewards();lid.rotation.x=-1.05;chestGlow.intensity=2.8;hint('奖励已加入你的3D冒险资料！');interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block'}
-document.getElementById('rewardOK').addEventListener('click',()=>{document.getElementById('reward').style.display='none'});
+const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,chestClaimed:false};try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
+const xp=document.getElementById('xp'),gems=document.getElementById('gems'),interact=document.getElementById('interact');
+function stats(){xp.textContent=data.xp;gems.textContent=data.gems}stats();
+let opened=!!data.chestClaimed;if(opened){lid.rotation.x=-1.05;chestLight.intensity=2.8}
+function hint(t){document.getElementById('hint').textContent=t}
+function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.chestClaimed=true;opened=true;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block'}
+document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=collect;
+let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
+const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
+joy.onpointerdown=e=>{e.preventDefault();jp=e.pointerId;const r=joy.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;joy.setPointerCapture(e.pointerId);joyMove(e)};
+function joyMove(e){if(jp!==e.pointerId)return;const dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),k=len>42?42/len:1;mx=dx*k/42;my=dy*k/42;stick.style.transform=`translate(${dx*k}px,${dy*k}px)`}
+joy.onpointermove=joyMove;function joyEnd(e){if(jp!==e.pointerId)return;jp=null;mx=my=0;stick.style.transform='translate(0,0)'}joy.onpointerup=joyEnd;joy.onpointercancel=joyEnd;
+let lp=null,lx=0,ly=0;renderer.domElement.onpointerdown=e=>{if(e.clientX<innerWidth*.38)return;lp=e.pointerId;lx=e.clientX;ly=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
+renderer.domElement.onpointermove=e=>{if(lp!==e.pointerId)return;angle-=(e.clientX-lx)*.006;pitch=THREE.MathUtils.clamp(pitch+(e.clientY-ly)*.003,-.05,.65);lx=e.clientX;ly=e.clientY};
+renderer.domElement.onpointerup=renderer.domElement.onpointercancel=()=>lp=null;
+document.getElementById('jump').onpointerdown=e=>{e.preventDefault();if(onGround){vy=7.2;onGround=false}};
+document.getElementById('play').onclick=()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{})};
+loading.textContent='3D 引擎已准备好，请进入小岛';
 const clock=new THREE.Clock();
-const joystick=document.getElementById('joystick'),stick=document.getElementById('stick');
-let joyPointer=null,joyCenter={x:0,y:0};
-function joyStart(e){e.preventDefault();joyPointer=e.pointerId;const r=joystick.getBoundingClientRect();joyCenter={x:r.left+r.width/2,y:r.top+r.height/2};joystick.setPointerCapture(e.pointerId);joyMove(e)}
-function joyMove(e){if(joyPointer!==e.pointerId)return;const dx=e.clientX-joyCenter.x,dy=e.clientY-joyCenter.y,len=Math.hypot(dx,dy),max=42,k=len>max?max/len:1;moveX=dx*k/max;moveY=dy*k/max;stick.style.transform=`translate(${dx*k}px,${dy*k}px)`}
-function joyEnd(e){if(joyPointer!==e.pointerId)return;joyPointer=null;moveX=moveY=0;stick.style.transform='translate(0,0)'}
-joystick.addEventListener('pointerdown',joyStart);joystick.addEventListener('pointermove',joyMove);joystick.addEventListener('pointerup',joyEnd);joystick.addEventListener('pointercancel',joyEnd);
-
-// Drag on the right half of the screen to orbit camera
-let lookPointer=null,lastX=0,lastY=0;
-renderer.domElement.addEventListener('pointerdown',e=>{if(e.clientX<innerWidth*.38)return;lookPointer=e.pointerId;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
-renderer.domElement.addEventListener('pointermove',e=>{if(lookPointer!==e.pointerId)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;cameraAngle-=dx*.006;cameraPitch=THREE.MathUtils.clamp(cameraPitch+dy*.003,-.05,.65)});
-function lookEnd(e){if(lookPointer===e.pointerId)lookPointer=null}
-renderer.domElement.addEventListener('pointerup',lookEnd);renderer.domElement.addEventListener('pointercancel',lookEnd);
-
-document.getElementById('jump').addEventListener('pointerdown',e=>{e.preventDefault();if(onGround){velocityY=7.2;onGround=false}});
-const interact=document.getElementById('interact');
-interact.addEventListener('click',collectChestReward);
-function checkChest(){const d=Math.min(leader.group.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));interact.style.display=d<3&&!chestOpened?'block':'none';if(d<3&&!chestOpened)hint('姐姐和妹妹发现宝箱！按右侧「开启宝箱」领取奖励');else if(chestOpened)hint('这个宝箱的奖励已经领取，继续探索吧！');else hint('当前角色带队，另一位会自动跟随：一起探索小岛');}
-
-document.getElementById('play').addEventListener('click',()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{});});
-function animate(){
- requestAnimationFrame(animate);
- const dt=Math.min(clock.getDelta(),.04);
- const p=leader.group;
- const forward=new THREE.Vector3(-Math.sin(cameraAngle),0,-Math.cos(cameraAngle));
- const right=new THREE.Vector3(Math.cos(cameraAngle),0,-Math.sin(cameraAngle));
- const move=new THREE.Vector3().addScaledVector(right,moveX).addScaledVector(forward,-moveY);
- isMoving=move.lengthSq()>.015;
- if(isMoving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
- p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);
- velocityY-=18*dt;p.position.y+=velocityY*dt;if(p.position.y<=0){p.position.y=0;velocityY=0;onGround=true}
- // 妹妹平滑跟随姐姐，保持在姐姐身后约 1.6 个单位
- const followOffset=new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65);
- const desiredFollower=p.position.clone().add(followOffset);
- desiredFollower.x=THREE.MathUtils.clamp(desiredFollower.x,-20,20);
- desiredFollower.z=THREE.MathUtils.clamp(desiredFollower.z,-20,19);
- const fp=follower.group;
- fp.position.lerp(desiredFollower,Math.min(1,dt*4.5));
- const followerMove=desiredFollower.clone().sub(fp.position);
- if(followerMove.lengthSq()>.002){fp.rotation.y=Math.atan2(followerMove.x,followerMove.z)}
- const followerMoving=fp.position.distanceTo(desiredFollower)>.12 || isMoving;
- const t=clock.elapsedTime;
- function animateRig(rig,moving,phase){
-   const swing=moving?Math.sin(t*10+phase)*.65:Math.sin(t*2+phase)*.04;
-   rig.legs[0].rotation.x=swing;rig.legs[1].rotation.x=-swing;
-   rig.arms[0].rotation.x=-swing*.7;rig.arms[1].rotation.x=swing*.7;
- }
- animateRig(leader,isMoving,0);animateRig(follower,followerMoving,1.2);
- const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z);
- const dist=8.2, horiz=Math.cos(cameraPitch)*dist, vert=Math.sin(cameraPitch)*dist+2.2;
- camera.position.set(target.x+Math.sin(cameraAngle)*horiz,target.y+vert,target.z+Math.cos(cameraAngle)*horiz);
- camera.lookAt(target);
- portal.rotation.y=Math.sin(t*.7)*.08;portalGlow.material.opacity=.48+Math.sin(t*2)*.12;
- checkChest();
- renderer.render(scene,camera);
-}
+function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
+if(moving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
+p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);vy-=18*dt;p.position.y+=vy*dt;if(p.position.y<=0){p.position.y=0;vy=0;onGround=true}
+const desired=p.position.clone().add(new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65));desired.x=THREE.MathUtils.clamp(desired.x,-20,20);desired.z=THREE.MathUtils.clamp(desired.z,-20,19);follower.group.position.lerp(desired,Math.min(1,dt*4.5));const followMoving=follower.group.position.distanceTo(desired)>.12||moving,t=clock.elapsedTime;
+function walk(r,m,phase){const s=m?Math.sin(t*10+phase)*.65:0;r.legs[0].rotation.x=s;r.legs[1].rotation.x=-s;r.arms[0].rotation.x=-s*.7;r.arms[1].rotation.x=s*.7}
+walk(leader,moving,0);walk(follower,followMoving,1.2);
+const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
+interact.style.display=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position))<3&&!opened?'block':'none';if(opened)hint('宝箱奖励已领取，继续探索小岛！');else hint('当前'+active+'带队，走近宝箱按「开启宝箱」');
+portal.rotation.y=Math.sin(t*.7)*.08;glow.material.opacity=.48+Math.sin(t*2)*.12;renderer.render(scene,camera)}
 animate();
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));renderer.setSize(innerWidth,innerHeight)});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.setSize(innerWidth,innerHeight)});
+}catch(err){loading.textContent='3D 场景启动失败：'+(err?.message||'未知错误');document.getElementById('play').disabled=true;document.getElementById('play').textContent='场景启动失败';}
+}
 </script>
+<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><button id="rewardOK">收下奖励</button></div>
 </body>
 </html>
