@@ -135,6 +135,25 @@ data.petGrowth=data.petGrowth.map(p=>({level:Math.max(1,Number(p?.level)||1),xp:
 if(!Array.isArray(data.collectedItems))data.collectedItems=[];
 const xp=document.getElementById('xp'),gems=document.getElementById('gems'),coins=document.getElementById('coins'),interact=document.getElementById('interact');
 function saveData(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){hint('无法保存：请检查浏览器储存空间')}}
+function kualaLumpurDate(){
+ const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+ const part={};parts.forEach(x=>part[x.type]=x.value);
+ return part.year+'-'+part.month+'-'+part.day;
+}
+// 保留历史收藏记录；每日收集清单只负责当天物品是否显示及当天奖励。
+const todayKey=kualaLumpurDate();
+if(!data.dailyCollection||data.dailyCollection.date!==todayKey)data.dailyCollection={date:todayKey,collectedItems:[]};
+if(!Array.isArray(data.dailyCollection.collectedItems))data.dailyCollection.collectedItems=[];
+let dailyDateCheck=Date.now();
+function refreshDailyCollection(){
+ const today=kualaLumpurDate();
+ if(data.dailyCollection.date!==today){
+  data.dailyCollection={date:today,collectedItems:[]};
+  collectibleObjects.forEach(o=>o.group.visible=true);
+  saveData();renderCollection();
+  hint('新的一天开始了！岛上的食物和宝石已经重新出现。');
+ }
+}
 function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
 function renderPetPanel(){
  const p=data.petGrowth[selectedPet],name=selectedPet===0?'紫色兔兔（姐姐）':'蓝色狐狸（妹妹）',need=p.level*100;
@@ -185,7 +204,7 @@ function usePetSkill(index){
  const now=clock.elapsedTime;
  if(now<petSkillReadyAt[index]){hint('技能冷却中，请稍等 '+Math.ceil(petSkillReadyAt[index]-now)+' 秒');return}
  const candidates=collectibleObjects.filter(o=>o.group.visible&&o.definition.kind===kind);
- if(!candidates.length){hint(index===0?'岛上的宠物食物已经收集完了！':'岛上的隐藏宝石已经收集完了！');return}
+ if(!candidates.length){hint(index===0?'今天的宠物食物已经收集完了！':'今天的隐藏宝石已经收集完了！');return}
  let target=null,best=Infinity;
  candidates.forEach(o=>{const d=owner.position.distanceTo(o.group.position);if(d<best){best=d;target=o}});
  const range=index===0?18:22;
@@ -202,15 +221,15 @@ function usePetSkill(index){
 }
 document.getElementById('petSkillBtn').onclick=()=>usePetSkill(selectedPet);
 function renderCollection(){
- const food=collectibleDefinitions.filter(x=>x.kind==='food'&&data.collectedItems.includes(x.id)).length;
- const gem=collectibleDefinitions.filter(x=>x.kind==='gem'&&data.collectedItems.includes(x.id)).length;
+ const food=collectibleDefinitions.filter(x=>x.kind==='food'&&data.dailyCollection.collectedItems.includes(x.id)).length;
+ const gem=collectibleDefinitions.filter(x=>x.kind==='gem'&&data.dailyCollection.collectedItems.includes(x.id)).length;
  const lines=[
   '<div class="collectionRow"><b>🐰 姐姐的紫色兔兔</b><br>等级 Lv.'+data.petGrowth[0].level+' · 经验 '+data.petGrowth[0].xp+'/'+(data.petGrowth[0].level*100)+'</div>',
   '<div class="collectionRow"><b>🦊 妹妹的蓝色狐狸</b><br>等级 Lv.'+data.petGrowth[1].level+' · 经验 '+data.petGrowth[1].xp+'/'+(data.petGrowth[1].level*100)+'<br>专属技能：'+(data.petGrowth[1].level>=2?'✅ 嗅觉寻宝':'🔒 Lv.2 解锁嗅觉寻宝')+'</div>',
   '<div class="collectionRow"><b>🐰 兔兔专属技能</b><br>'+(data.petGrowth[0].level>=2?'✅ 跳跃寻宝已解锁':'🔒 Lv.2 解锁跳跃寻宝')+'</div>',
-  '<div class="collectionRow"><b>🍎 宠物食物：'+food+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='food').map(x=>(data.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
-  '<div class="collectionRow"><b>💎 隐藏宝石：'+gem+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='gem').map(x=>(data.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
-  '<div class="collectionRow"><b>收集总进度：'+data.collectedItems.length+'/8</b><br>找到岛上的食物和宝石，完成宠物收藏！</div>'
+  '<div class="collectionRow"><b>🍎 今日宠物食物：'+food+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='food').map(x=>(data.dailyCollection.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
+  '<div class="collectionRow"><b>💎 今日隐藏宝石：'+gem+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='gem').map(x=>(data.dailyCollection.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
+  '<div class="collectionRow"><b>今日收集进度：'+data.dailyCollection.collectedItems.length+'/8</b><br>历史收集种类：'+data.collectedItems.length+'/8<br>每天重新探索，可再次获得金币和宝石奖励。</div>'
  ];
  document.getElementById('collectionContent').innerHTML=lines.join('');
 }
@@ -227,11 +246,13 @@ document.getElementById('feedPet').onclick=()=>{
  hint(p.level>oldLevel?'宠物升级了！现在是 Lv.'+p.level:'喂食成功！宠物获得 25 经验值');
 };
 let opened=!!data.chestClaimed;if(opened){lid.rotation.x=-1.05;chestLight.intensity=2.8}
-collectibleObjects.forEach(o=>{if(data.collectedItems.includes(o.definition.id))o.group.visible=false});
+collectibleObjects.forEach(o=>{if(data.dailyCollection.collectedItems.includes(o.definition.id))o.group.visible=false});
 let nearbyTarget=null;
 function collectPickup(target){
- const item=target.definition;if(data.collectedItems.includes(item.id))return;
- data.collectedItems.push(item.id);
+ const item=target.definition;
+ if(data.dailyCollection.collectedItems.includes(item.id))return;
+ data.dailyCollection.collectedItems.push(item.id);
+ if(!data.collectedItems.includes(item.id))data.collectedItems.push(item.id);
  if(item.kind==='gem')data.gems+=1;
  else data.coins+=5;
  target.group.visible=false;saveData();stats();renderCollection();
@@ -267,7 +288,9 @@ document.getElementById('play').onclick=()=>{document.getElementById('start').st
 loading.textContent='3D 引擎已准备好，请进入小岛';
 const clock=new THREE.Clock();
 function animate(){
- requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
+ requestAnimationFrame(animate);
+ if(Date.now()-dailyDateCheck>1000){dailyDateCheck=Date.now();refreshDailyCollection()}
+ const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
  if(moving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
  p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);vy-=18*dt;p.position.y+=vy*dt;if(p.position.y<=0){p.position.y=0;vy=0;onGround=true}
  const desired=p.position.clone().add(new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65));desired.x=THREE.MathUtils.clamp(desired.x,-20,20);desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
