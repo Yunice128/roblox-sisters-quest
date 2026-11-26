@@ -375,16 +375,29 @@ function renderFamilyTasks(){
 
  ['姐姐','妹妹'].forEach(name=>{
   const section=document.createElement('div');
-  section.style.marginTop='16px';
+  section.style.cssText=
+ 'margin-top:18px;padding:12px;border-radius:16px;'+
+ (name==='姐姐'
+ ?'background:linear-gradient(135deg,#542b50,#382044);border:2px solid #ff9bcf;'
+ :'background:linear-gradient(135deg,#30366c,#25234f);border:2px solid #9c9cff;');
 
   const title=document.createElement('h3');
   title.textContent=(name==='姐姐'?'👧 ':'👧 ')+name+
    ' · 任务 XP：'+data.taskXP[name];
-  title.style.color='#ffdf8b';
+  title.style.color=name==='姐姐'?'#ff9bcf':'#a9adff';
   section.appendChild(title);
 
   const done=data.familyTaskProgress[name];
+const progressBar=document.createElement('div');
+progressBar.style.cssText='height:9px;background:#ffffff25;border-radius:20px;overflow:hidden;margin:8px 0 12px';
 
+const progressFill=document.createElement('div');
+progressFill.style.cssText=
+ 'height:100%;width:'+(done.length/17*100)+'%;border-radius:20px;'+
+ (name==='姐姐'?'background:#ff9bcf':'background:#9c9cff');
+
+progressBar.appendChild(progressFill);
+section.appendChild(progressBar);
   familyTasks.forEach((task,index)=>{
    const row=document.createElement('div');
    row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
