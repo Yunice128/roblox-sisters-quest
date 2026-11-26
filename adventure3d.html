@@ -582,6 +582,19 @@ if(!data.familyTaskProgress || data.familyTaskProgress.date!==todayTaskDate){
 if(!data.taskXP){
  data.taskXP={姐姐:0,妹妹:0};
 }
+ // 姐妹独立衣柜存档
+if(!data.wardrobes){
+ data.wardrobes={
+  姐姐:{owned:[],equipped:{}},
+  妹妹:{owned:[],equipped:{}}
+ };
+}
+if(!data.wardrobes.姐姐){
+ data.wardrobes.姐姐={owned:[],equipped:{}};
+}
+if(!data.wardrobes.妹妹){
+ data.wardrobes.妹妹={owned:[],equipped:{}};
+}
  function getPetStage(level){
  if(level>=5)return 4;
  if(level>=3)return 3;
