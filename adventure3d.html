@@ -164,7 +164,62 @@ if(!Number.isFinite(data.coins)){data.coins=30;data.starterCoinsGranted=true}
 if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2)data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
 data.petGrowth=data.petGrowth.map(p=>({level:Math.max(1,Number(p?.level)||1),xp:Math.max(0,Number(p?.xp)||0)}));
 if(!Array.isArray(data.collectedItems))data.collectedItems=[];
-const xp=document.getElementById('xp'),gems=document.getElementById('gems'),coins=document.getElementById('coins'),interact=document.getElementById('interact');
+function getPetStage(level){
+ if(level>=5)return 4;
+ if(level>=3)return 3;
+ if(level>=2)return 2;
+ return 1;
+}
+ const petGrowthDecor=pets.map(()=>{
+ const decor=new THREE.Group();
+ return decor;
+});
+pets.forEach((pet,index)=>{
+ pet.group.add(petGrowthDecor[index]);
+});
+ function applyPetGrowthAppearance(){
+ pets.forEach((pet,index)=>{
+  const level=data.petGrowth[index].level;
+  const stage=getPetStage(level);
+  const decor=petGrowthDecor[index];
+
+  while(decor.children.length){
+   const child=decor.children[0];
+   decor.remove(child);
+   child.traverse(o=>{
+    if(o.geometry)o.geometry.dispose();
+    if(o.material)o.material.dispose();
+   });
+  }
+
+  pet.group.scale.setScalar(stage===4?1.2:1);
+
+  if(stage>=2){
+   const color=index===0?0xff83c9:0x79d9ff;
+   const ring=new THREE.Mesh(
+    new THREE.TorusGeometry(.65,.045,8,32),
+    new THREE.MeshBasicMaterial({color,transparent:true,opacity:.85})
+   );
+   ring.rotation.x=Math.PI/2;
+   ring.position.y=.12;
+   decor.add(ring);
+  }
+
+  if(stage>=3){
+   const gem=new THREE.Mesh(
+    new THREE.OctahedronGeometry(.22),
+    new THREE.MeshStandardMaterial({
+     color:index===0?0xffb4df:0x55cfff,
+     emissive:index===0?0x7a2454:0x124c78,
+     emissiveIntensity:.5
+    })
+   );
+   gem.position.set(0,1.65,0);
+   decor.add(gem);
+  }
+ });
+}
+ const xp=document.getElementById('xp'),gems=document.getElementById('gems'),coins=document.getElementById('coins'),interact=document.getElementById('interact');
 function saveData(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){hint('无法保存：请检查浏览器储存空间')}}
 function kualaLumpurDate(){
  const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -186,7 +241,9 @@ function refreshDailyCollection(){
  }
 }
 function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
-function renderPetPanel(){
+applyPetGrowthAppearance();
+ function renderPetPanel(){
+  applyPetGrowthAppearance();
  const p=data.petGrowth[selectedPet],name=selectedPet===0?'紫色兔兔（姐姐）':'蓝色狐狸（妹妹）',need=p.level*100;
  document.getElementById('petTitle').textContent=(selectedPet===0?'🐰 ':'🦊 ')+name;
  document.getElementById('petLevel').textContent='等级：Lv.'+p.level;
