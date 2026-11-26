@@ -399,7 +399,11 @@ function collectPickup(target){
  nearbyTarget=null;interact.style.display='none';
 }
 function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.coins+=30;data.chestClaimed=true;opened=true;saveData();stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
-document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=()=>{if(nearbyTarget?.type==='chest')collect();else if(nearbyTarget?.type==='pickup')collectPickup(nearbyTarget.object)};
+document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=()=>{
+ if(nearbyTarget?.type==='chest')collect();
+ else if(nearbyTarget?.type==='pickup')collectPickup(nearbyTarget.object);
+ else if(nearbyTarget?.type==='task')hint('家庭任务面板即将开放！');
+};
 let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
 joy.onpointerdown=e=>{e.preventDefault();jp=e.pointerId;const r=joy.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;joy.setPointerCapture(e.pointerId);joyMove(e)};
@@ -483,6 +487,14 @@ function animate(){
  }
  const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
  let closest=null,closestDistance=Infinity;
+ const taskDistance=Math.min(
+ p.position.distanceTo(taskNPC.position),
+ follower.group.position.distanceTo(taskNPC.position)
+);
+if(taskDistance<3.2){
+ closest={type:'task'};
+ closestDistance=taskDistance;
+}
  const chestDistance=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));
  if(!opened&&chestDistance<3){closest={type:'chest'};closestDistance=chestDistance}
  collectibleObjects.forEach(object=>{
@@ -491,7 +503,12 @@ function animate(){
   if(d<2.35&&d<closestDistance){closest={type:'pickup',object};closestDistance=d}
  });
  nearbyTarget=closest;
- if(closest){interact.style.display='block';interact.textContent=closest.type==='chest'?'开启宝箱':'收集 '+closest.object.definition.emoji}
+ if(closest){
+ interact.style.display='block';
+ interact.textContent=closest.type==='chest'?'开启宝箱':
+ closest.type==='task'?'查看家庭任务':
+ '收集 '+closest.object.definition.emoji;
+}
  else{interact.style.display='none';interact.textContent='收集'}
  collectibleObjects.forEach((object,i)=>{if(object.group.visible){object.group.position.y=.08+Math.sin(t*2.2+i)*.12;object.group.rotation.y=t*.65+i}});
  if(!opened&&!closest)hint('当前'+active+'带队，探索小岛寻找食物和宝石');
