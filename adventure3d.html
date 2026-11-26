@@ -989,6 +989,7 @@ if(taskDistance<3.2){
  interact.style.display='block';
  interact.textContent=closest.type==='chest'?'开启宝箱':
  closest.type==='task'?'查看家庭任务':
+  closest.type==='shop'?'进入魔法商店': 
  '收集 '+closest.object.definition.emoji;
 }
  else{interact.style.display='none';interact.textContent='收集'}
