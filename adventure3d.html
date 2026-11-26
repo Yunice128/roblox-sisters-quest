@@ -140,7 +140,7 @@ for(let i=0;i<25;i++){const a=i*2.4,r=12+(i%4)*2.5,x=Math.cos(a)*r,z=Math.sin(a)
 for(let i=0;i<14;i++){const a=i*2.1,r=5+(i%4)*3,x=Math.cos(a)*r,z=Math.sin(a)*r;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(.45,0),stone);o.position.set(x,.25,z);scene.add(o)}
 // 3D Family Task NPC
 const taskNPC=new THREE.Group();
-taskNPC.position.set(-4,0,-1);
+taskNPC.position.set(-8,0,14.5);
 scene.add(taskNPC);
 
 // NPC body
@@ -161,7 +161,7 @@ taskNPC.add(npcHead);
 
 // Task board
 const taskBoard=new THREE.Group();
-taskBoard.position.set(-4,0,-2.5);
+taskBoard.position.set(-8,0,15.8);
 scene.add(taskBoard);
 
 const board=new THREE.Mesh(
