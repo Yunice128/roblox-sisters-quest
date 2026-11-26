@@ -398,6 +398,10 @@ progressFill.style.cssText=
 
 progressBar.appendChild(progressFill);
 section.appendChild(progressBar);
+const percent=document.createElement('div');
+percent.textContent=(done.length/17*100).toFixed(1)+'%';
+percent.style.cssText='text-align:right;font-size:12px;font-weight:bold;color:#fff;margin-top:-6px;margin-bottom:8px';
+section.appendChild(percent); 
   familyTasks.forEach((task,index)=>{
    const row=document.createElement('div');
    row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
