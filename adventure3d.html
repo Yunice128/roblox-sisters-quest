@@ -383,6 +383,36 @@ if(b.color===0xffb86b){
  );
  signMesh.position.set(b.x,2.45,b.z+1.38);
  habitCity.add(signMesh);
+}// MAGIC SHOP SIGN
+if(b.color===0x79b9e8){
+ const shopCanvas=document.createElement('canvas');
+ shopCanvas.width=768;
+ shopCanvas.height=192;
+
+ const shopCtx=shopCanvas.getContext('2d');
+ shopCtx.fillStyle='#253b78';
+ shopCtx.fillRect(0,0,768,192);
+
+ shopCtx.strokeStyle='#7eeaff';
+ shopCtx.lineWidth=10;
+ shopCtx.strokeRect(6,6,756,180);
+
+ shopCtx.fillStyle='#b8f4ff';
+ shopCtx.font='bold 62px Arial';
+ shopCtx.textAlign='center';
+ shopCtx.textBaseline='middle';
+ shopCtx.fillText('MAGIC SHOP',384,96);
+
+ const shopTexture=new THREE.CanvasTexture(shopCanvas);
+ const shopSign=new THREE.Mesh(
+  new THREE.PlaneGeometry(2.2,.55),
+  new THREE.MeshBasicMaterial({
+   map:shopTexture,
+   side:THREE.DoubleSide
+  })
+ );
+ shopSign.position.set(b.x,2.45,b.z+1.38);
+ habitCity.add(shopSign);
 }
 });
  // HABIT CITY MAGIC LIGHTS
