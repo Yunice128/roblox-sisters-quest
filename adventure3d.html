@@ -478,7 +478,9 @@ scene.add(g);
 return {group:g,arms,legs,wearables};
 }
 const sisters=[avatar(shirt1),avatar(shirt2)];sisters[0].group.position.set(0,0,5);sisters[1].group.position.set(1.15,0,6.35);
-function makePet(type){
+// 魔法商店位置
+const magicShopPosition=new THREE.Vector3(0,0,11);
+ function makePet(type){
  const g=new THREE.Group(),fur=mat(type==='bunny'?0xc99af5:0x6bbcf5),lightFur=mat(type==='bunny'?0xf2e7ff:0xeaf7ff),dark=mat(type==='bunny'?0x7545a8:0x356baf),petEye=mat(0x241a32),nose=mat(type==='bunny'?0xff9fcf:0xffb36b);
  const body=new THREE.Mesh(new THREE.SphereGeometry(.43,8,6),fur);body.scale.set(1.12,.88,1.25);body.position.y=.48;g.add(body);
  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,8,6),lightFur);head.position.set(0,.91,.22);g.add(head);
@@ -967,6 +969,14 @@ if(taskDistance<3.2){
  closest={type:'task'};
  closestDistance=taskDistance;
 }
+ const shopDistance=Math.min(
+  p.position.distanceTo(magicShopPosition),
+  follower.group.position.distanceTo(magicShopPosition)
+ );
+ if(shopDistance<3.5&&shopDistance<closestDistance){
+  closest={type:'shop'};
+  closestDistance=shopDistance;
+ } 
  const chestDistance=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));
  if(!opened&&chestDistance<3){closest={type:'chest'};closestDistance=chestDistance}
  collectibleObjects.forEach(object=>{
