@@ -352,6 +352,38 @@ buildings.forEach(b=>{
  );
  door.position.set(b.x, .85,b.z+1.31);
  habitCity.add(door);
+ // FAMILY TASK CENTER SIGN
+if(b.color===0xffb86b){
+ const signCanvas=document.createElement('canvas');
+ signCanvas.width=768;
+ signCanvas.height=192;
+
+ const signCtx=signCanvas.getContext('2d');
+ signCtx.fillStyle='#48266f';
+ signCtx.fillRect(0,0,768,192);
+
+ signCtx.strokeStyle='#ffd45c';
+ signCtx.lineWidth=10;
+ signCtx.strokeRect(6,6,756,180);
+
+ signCtx.fillStyle='#ffe28a';
+ signCtx.font='bold 58px Arial';
+ signCtx.textAlign='center';
+ signCtx.textBaseline='middle';
+ signCtx.fillText('FAMILY TASK',384,72);
+ signCtx.fillText('CENTER',384,137);
+
+ const signTexture=new THREE.CanvasTexture(signCanvas);
+ const signMesh=new THREE.Mesh(
+  new THREE.PlaneGeometry(2.2,.55),
+  new THREE.MeshBasicMaterial({
+   map:signTexture,
+   side:THREE.DoubleSide
+  })
+ );
+ signMesh.position.set(b.x,2.45,b.z+1.38);
+ habitCity.add(signMesh);
+}
 });
  // HABIT CITY MAGIC LIGHTS
 [-3.2,3.2].forEach(x=>{
