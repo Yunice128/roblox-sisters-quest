@@ -277,7 +277,21 @@ if(!Number.isFinite(data.coins)){data.coins=30;data.starterCoinsGranted=true}
 if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2)data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
 data.petGrowth=data.petGrowth.map(p=>({level:Math.max(1,Number(p?.level)||1),xp:Math.max(0,Number(p?.xp)||0)}));
 if(!Array.isArray(data.collectedItems))data.collectedItems=[];
-function getPetStage(level){
+// 姐妹独立家庭任务存档
+const todayTaskDate=kualaLumpurDate();
+
+if(!data.familyTaskProgress || data.familyTaskProgress.date!==todayTaskDate){
+ data.familyTaskProgress={
+  date:todayTaskDate,
+  姐姐:[],
+  妹妹:[]
+ };
+}
+
+if(!data.taskXP){
+ data.taskXP={姐姐:0,妹妹:0};
+}
+ function getPetStage(level){
  if(level>=5)return 4;
  if(level>=3)return 3;
  if(level>=2)return 2;
@@ -354,23 +368,62 @@ function refreshDailyCollection(){
  }
 }
 function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
+
 function renderFamilyTasks(){
  const list=document.getElementById('taskList');
  list.innerHTML='';
- familyTasks.forEach((task,index)=>{
-  const row=document.createElement('div');
-  row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
-  const info=document.createElement('div');
-  info.style.cssText='flex:1;font-size:13px;line-height:1.5';
-  info.innerHTML='<b>'+(index+1)+'. '+task[0]+'</b><br><span style="color:#d9c9ff">'+task[1]+'</span>';
-  const reward=document.createElement('b');
-  reward.textContent='+'+task[2]+' XP';
-  reward.style.color='#ffdf8b';
-  row.append(info,reward);
-  list.appendChild(row);
+
+ ['姐姐','妹妹'].forEach(name=>{
+  const section=document.createElement('div');
+  section.style.marginTop='16px';
+
+  const title=document.createElement('h3');
+  title.textContent=(name==='姐姐'?'👧 ':'👧 ')+name+
+   ' · 任务 XP：'+data.taskXP[name];
+  title.style.color='#ffdf8b';
+  section.appendChild(title);
+
+  const done=data.familyTaskProgress[name];
+
+  familyTasks.forEach((task,index)=>{
+   const row=document.createElement('div');
+   row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
+
+   const info=document.createElement('div');
+   info.style.cssText='flex:1;font-size:13px;line-height:1.5';
+   info.innerHTML='<b>'+(index+1)+'. '+task[0]+'</b><br><span style="color:#d9c9ff">'+task[1]+'</span>';
+
+   const btn=document.createElement('button');
+   btn.textContent=done.includes(index)?'已完成 ✓':'完成 +'+task[2]+' XP';
+   btn.disabled=done.includes(index);
+   btn.style.background=done.includes(index)?'#477b59':'#7548b8';
+
+   btn.onclick=()=>{
+    if(done.includes(index))return;
+
+    done.push(index);
+    data.taskXP[name]+=task[2];
+
+    saveData();
+    renderFamilyTasks();
+   };
+
+   row.append(info,btn);
+   section.appendChild(row);
+  });
+
+  const progress=document.createElement('p');
+  progress.textContent='完成 '+done.length+' / 17 项';
+  section.appendChild(progress);
+
+  list.appendChild(section);
  });
- document.getElementById('taskProgress').textContent='每日任务：0 / 17';
+
+ document.getElementById('taskProgress').textContent=
+  '姐姐：'+data.familyTaskProgress['姐姐'].length+'/17 · 妹妹：'+
+  data.familyTaskProgress['妹妹'].length+'/17';
 }
+
 function openFamilyTasks(){
  renderFamilyTasks();
  document.getElementById('taskPanel').style.display='flex';
