@@ -413,6 +413,37 @@ if(b.color===0x79b9e8){
  );
  shopSign.position.set(b.x,2.45,b.z+1.38);
  habitCity.add(shopSign);
+}// PET GROWTH CENTER SIGN
+if(b.color===0xc49be8){
+ const petCanvas=document.createElement('canvas');
+ petCanvas.width=768;
+ petCanvas.height=192;
+
+ const petCtx=petCanvas.getContext('2d');
+ petCtx.fillStyle='#48266f';
+ petCtx.fillRect(0,0,768,192);
+
+ petCtx.strokeStyle='#ffd45c';
+ petCtx.lineWidth=10;
+ petCtx.strokeRect(6,6,756,180);
+
+ petCtx.fillStyle='#ffe6ff';
+ petCtx.font='bold 54px Arial';
+ petCtx.textAlign='center';
+ petCtx.textBaseline='middle';
+ petCtx.fillText('PET GROWTH',384,68);
+ petCtx.fillText('CENTER',384,137);
+
+ const petTexture=new THREE.CanvasTexture(petCanvas);
+ const petSign=new THREE.Mesh(
+  new THREE.PlaneGeometry(2.2,.55),
+  new THREE.MeshBasicMaterial({
+   map:petTexture,
+   side:THREE.DoubleSide
+  })
+ );
+ petSign.position.set(b.x,2.45,b.z+1.38);
+ habitCity.add(petSign);
 }
 });
  // HABIT CITY MAGIC LIGHTS
