@@ -471,7 +471,12 @@ function avatar(top){const g=new THREE.Group(),arms=[],legs=[];
 box(g,.78,.95,.42,top,0,1.65,0);box(g,.68,.68,.64,skin,0,2.52,0);box(g,.72,.2,.68,hair,0,2.9,-.01);box(g,.18,.48,.67,hair,-.28,2.63,.02);box(g,.18,.48,.67,hair,.28,2.63,.02);box(g,.09,.09,.035,eye,-.15,2.55,.34);box(g,.09,.09,.035,eye,.15,2.55,.34);
 for(const x of [-.5,.5]){const a=new THREE.Group();a.position.set(x,2.02,0);g.add(a);box(a,.24,.72,.26,skin,0,-.34,0);arms.push(a)}
 for(const x of [-.22,.22]){const l=new THREE.Group();l.position.set(x,1.17,0);g.add(l);box(l,.28,.8,.32,pants,0,-.4,0);box(l,.34,.18,.46,shoe,0,-.82,.06);legs.push(l)}
-scene.add(g);return {group:g,arms,legs}}
+const wearables=new THREE.Group();
+g.add(wearables);
+
+scene.add(g);
+return {group:g,arms,legs,wearables};
+}
 const sisters=[avatar(shirt1),avatar(shirt2)];sisters[0].group.position.set(0,0,5);sisters[1].group.position.set(1.15,0,6.35);
 function makePet(type){
  const g=new THREE.Group(),fur=mat(type==='bunny'?0xc99af5:0x6bbcf5),lightFur=mat(type==='bunny'?0xf2e7ff:0xeaf7ff),dark=mat(type==='bunny'?0x7545a8:0x356baf),petEye=mat(0x241a32),nose=mat(type==='bunny'?0xff9fcf:0xffb36b);
