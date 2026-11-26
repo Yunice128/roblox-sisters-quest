@@ -38,6 +38,50 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 #loading{font-size:12px;color:#e5d9ff;margin-top:10px}
 #tip{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
 @media(orientation:portrait){#joystick{width:112px;height:112px}#stick{left:29px;top:29px}#tip{bottom:145px;white-space:normal;text-align:center;width:90%}}
+/* Family Task Panel */
+#taskPanel{
+ position:fixed;
+ inset:0;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ padding:16px;
+ background:#100b25bb;
+ z-index:9;
+}
+.task-card{
+ width:min(460px,94vw);
+ max-height:82vh;
+ overflow-y:auto;
+ padding:20px;
+ background:linear-gradient(145deg,#34205e,#21133f);
+ border:2px solid #c4a3ff;
+ border-radius:22px;
+ box-shadow:0 12px 35px #0009;
+}
+.task-card h2{
+ margin:0 0 8px;
+ color:#ffdf8b;
+ text-align:center;
+}
+.task-card>p{
+ text-align:center;
+ color:#e8dcff;
+}
+.task-footer{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-top:15px;
+}
+#taskProgress{
+ font-size:13px;
+ font-weight:900;
+}
+#closeTasks{
+ background:#65458d;
+}
 </style>
 </head>
 <body>
@@ -52,7 +96,18 @@ button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:whi
 <div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><p>🪙 +30 金币</p><button id="rewardOK">收下奖励</button></div>
 <div id="petPanel"><h2 id="petTitle">宠物资料</h2><p id="petLevel">等级：Lv.1</p><p id="petExperience">宠物经验：0 / 100</p><p id="petWallet">🪙 金币：30</p><p>喂食一次：消耗 10 金币，增加 25 宠物经验</p><p id="petSkillInfo">专属技能：Lv.2 解锁</p><button id="feedPet">喂食宠物</button><button id="petSkillBtn">技能尚未解锁</button><button id="closePet">关闭</button></div>
 <div id="collectionPanel"><h2>📖 姐妹宠物图鉴</h2><div id="collectionContent"></div><button id="closeCollection">关闭图鉴</button></div>
-<div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。点击右上角「宠物图鉴」查看成长和收集进度。走近发光物品后按收集按钮。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
+<div id="taskPanel">
+ <div class="task-card">
+  <h2>🏡 姐妹家庭任务</h2>
+  <p>完成每日任务，赚取 XP！</p>
+  <div id="taskList"></div>
+  <div class="task-footer">
+   <span id="taskProgress">今日进度：0 / 17</span>
+   <button id="closeTasks">关闭</button>
+  </div>
+ </div>
+</div>
+ <div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。点击右上角「宠物图鉴」查看成长和收集进度。走近发光物品后按收集按钮。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
 <script type="module">
 const loading=document.getElementById('loading');
 let THREE;
@@ -197,7 +252,26 @@ let hintTimer=null;
 function showRewardHint(){const el=document.getElementById('hint');hint('宝箱奖励已领取，继续探索小岛！');if(hintTimer)clearTimeout(hintTimer);hintTimer=setTimeout(()=>{el.style.display='none'},3000)}
 document.getElementById('switch').onclick=()=>{[leader,follower]=[follower,leader];active=active==='姐姐'?'妹妹':'姐姐';document.getElementById('playerName').textContent='当前：'+active;hint(active+'带队，另一位自动跟随！')};
 for(let i=0;i<7;i++){const cloud=new THREE.Group();cloud.position.set(-22+i*7,10+(i%3),-22-(i%2)*8);scene.add(cloud);for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(1.2,7,5),white);c.scale.set(1.5,.65,1);c.position.x=j*1.15;cloud.add(c)}}
-const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,coins:30,chestClaimed:false,petGrowth:[{level:1,xp:0},{level:1,xp:0}],collectedItems:[]};
+const familyTasks=[
+["不乱发脾气","Control my temper",25],
+["10点前睡觉","Sleep before 10pm",30],
+["主动温习功课","Revise proactively",35],
+["30分钟内吃完饭","Finish meal within 30 min",25],
+["东西放回原位","Put things back",20],
+["不乱丢垃圾","Use the bin",20],
+["吃完自己洗碗","Wash own dishes",25],
+["整理书包和书本","Pack bag & books",25],
+["水壶餐具拿去厨房","Take bottle & utensils to kitchen",20],
+["主动帮忙做家务","Help with chores",30],
+["没有看短视频","No short videos",40],
+["8:15pm前吃完晚餐","Finish dinner by 8:15pm",30],
+["两姐妹没有吵架","Peaceful sister teamwork",40],
+["念国语/英语故事书","Read BM/English storybook",25],
+["讲英语","Speak English",20],
+["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],
+["听写80分或以上","Dictation score 80%+",50]
+];
+ const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,coins:30,chestClaimed:false,petGrowth:[{level:1,xp:0},{level:1,xp:0}],collectedItems:[]};
 try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
 if(!Number.isFinite(data.coins)){data.coins=30;data.starterCoinsGranted=true}
 if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2)data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
@@ -280,7 +354,31 @@ function refreshDailyCollection(){
  }
 }
 function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
-applyPetGrowthAppearance();
+function renderFamilyTasks(){
+ const list=document.getElementById('taskList');
+ list.innerHTML='';
+ familyTasks.forEach((task,index)=>{
+  const row=document.createElement('div');
+  row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
+  const info=document.createElement('div');
+  info.style.cssText='flex:1;font-size:13px;line-height:1.5';
+  info.innerHTML='<b>'+(index+1)+'. '+task[0]+'</b><br><span style="color:#d9c9ff">'+task[1]+'</span>';
+  const reward=document.createElement('b');
+  reward.textContent='+'+task[2]+' XP';
+  reward.style.color='#ffdf8b';
+  row.append(info,reward);
+  list.appendChild(row);
+ });
+ document.getElementById('taskProgress').textContent='每日任务：0 / 17';
+}
+function openFamilyTasks(){
+ renderFamilyTasks();
+ document.getElementById('taskPanel').style.display='flex';
+}
+document.getElementById('closeTasks').onclick=()=>{
+ document.getElementById('taskPanel').style.display='none';
+};
+ applyPetGrowthAppearance();
  function renderPetPanel(){
   applyPetGrowthAppearance();
  const p=data.petGrowth[selectedPet],name=selectedPet===0?'紫色兔兔（姐姐）':'蓝色狐狸（妹妹）',need=p.level*100;
@@ -402,7 +500,7 @@ function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.coi
 document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=()=>{
  if(nearbyTarget?.type==='chest')collect();
  else if(nearbyTarget?.type==='pickup')collectPickup(nearbyTarget.object);
- else if(nearbyTarget?.type==='task')hint('家庭任务面板即将开放！');
+ else if(nearbyTarget?.type==='task')openFamilyTasks();
 };
 let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
