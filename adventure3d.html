@@ -877,6 +877,7 @@ document.getElementById('rewardOK').onclick=()=>document.getElementById('reward'
  if(nearbyTarget?.type==='chest')collect();
  else if(nearbyTarget?.type==='pickup')collectPickup(nearbyTarget.object);
  else if(nearbyTarget?.type==='task')openFamilyTasks();
+ else if(nearbyTarget?.type==='shop')openMagicShop();
 };
 let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
 const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
