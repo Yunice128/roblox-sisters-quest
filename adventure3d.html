@@ -222,6 +222,83 @@ habitPlaza.add(plazaRing);
  cap.position.set(x,2.55,0);
  habitPlaza.add(cap);
 });
+// HABIT CITY GOLDEN GATE
+const habitGate=new THREE.Group();
+habitGate.position.set(-4,0,3.2);
+scene.add(habitGate);
+
+// Left gate pillar
+const gateLeft=new THREE.Mesh(
+ new THREE.BoxGeometry(.65,3.5,.7),
+ new THREE.MeshStandardMaterial({
+  color:0x8055a8,
+  metalness:.25,
+  roughness:.5
+ })
+);
+gateLeft.position.set(-2.1,1.75,0);
+habitGate.add(gateLeft);
+
+// Right gate pillar
+const gateRight=gateLeft.clone();
+gateRight.position.x=2.1;
+habitGate.add(gateRight);
+
+// Golden top beam
+const gateTop=new THREE.Mesh(
+ new THREE.BoxGeometry(5.1,.65,.85),
+ new THREE.MeshStandardMaterial({
+  color:0xffd45c,
+  metalness:.6,
+  roughness:.3
+ })
+);
+gateTop.position.y=3.65;
+habitGate.add(gateTop);
+
+// Purple sign
+const gateSign=new THREE.Mesh(
+ new THREE.BoxGeometry(3.7,.8,.18),
+ new THREE.MeshStandardMaterial({
+  color:0x48266f,
+  emissive:0x24103d
+ })
+);
+gateSign.position.set(0,3.65,.48);
+const gateCanvas=document.createElement('canvas');
+gateCanvas.width=1024;
+gateCanvas.height=256;
+
+const gateCtx=gateCanvas.getContext('2d');
+gateCtx.fillStyle='#ffe28a';
+gateCtx.font='bold 100px Arial';
+gateCtx.textAlign='center';
+gateCtx.textBaseline='middle';
+gateCtx.fillText('HABIT CITY',512,128);
+
+const gateTexture=new THREE.CanvasTexture(gateCanvas);
+const gateText=new THREE.Mesh(
+ new THREE.PlaneGeometry(3.5,.75),
+ new THREE.MeshBasicMaterial({
+  map:gateTexture,
+  transparent:true
+ })
+);
+gateText.position.set(0,3.65,.59);
+habitGate.add(gateText);
+ habitGate.add(gateSign);
+
+// Golden arch decoration
+const gateArch=new THREE.Mesh(
+ new THREE.TorusGeometry(1.75,.12,12,48,Math.PI),
+ new THREE.MeshStandardMaterial({
+  color:0xffdf79,
+  metalness:.65,
+  roughness:.25
+ })
+);
+gateArch.position.set(0,2.6,.2);
+habitGate.add(gateArch); 
  // HABIT CITY MAGIC LIGHTS
 [-3.2,3.2].forEach(x=>{
  const lamp=new THREE.Mesh(
