@@ -299,6 +299,60 @@ const gateArch=new THREE.Mesh(
 );
 gateArch.position.set(0,2.6,.2);
 habitGate.add(gateArch); 
+// HABIT CITY - FIRST DISTRICT
+const habitCity=new THREE.Group();
+habitCity.position.set(-4,0,13);
+scene.add(habitCity);
+
+// City ground
+const cityGround=new THREE.Mesh(
+ new THREE.CylinderGeometry(6.5,6.5,.2,48),
+ new THREE.MeshStandardMaterial({
+  color:0x82b879,
+  roughness:.9
+ })
+);
+cityGround.position.y=.02;
+habitCity.add(cityGround);
+
+// Main stone road
+const cityRoad=new THREE.Mesh(
+ new THREE.BoxGeometry(2.5,.12,12),
+ new THREE.MeshStandardMaterial({color:0xc5b9a8})
+);
+cityRoad.position.set(0,.16,0);
+habitCity.add(cityRoad);
+
+// Three colorful buildings
+const buildings=[
+ {x:-4,z:-2,color:0xffb86b},
+ {x:4,z:-2,color:0x79b9e8},
+ {x:-4,z:3,color:0xc49be8}
+];
+
+buildings.forEach(b=>{
+ const body=new THREE.Mesh(
+  new THREE.BoxGeometry(2.5,3,2.5),
+  new THREE.MeshStandardMaterial({color:b.color})
+ );
+ body.position.set(b.x,1.6,b.z);
+ habitCity.add(body);
+
+ const roof=new THREE.Mesh(
+  new THREE.ConeGeometry(1.9,1.5,4),
+  new THREE.MeshStandardMaterial({color:0x7546a8})
+ );
+ roof.position.set(b.x,3.85,b.z);
+ roof.rotation.y=Math.PI/4;
+ habitCity.add(roof);
+
+ const door=new THREE.Mesh(
+  new THREE.BoxGeometry(.65,1.35,.12),
+  new THREE.MeshStandardMaterial({color:0x70452e})
+ );
+ door.position.set(b.x, .85,b.z+1.31);
+ habitCity.add(door);
+});
  // HABIT CITY MAGIC LIGHTS
 [-3.2,3.2].forEach(x=>{
  const lamp=new THREE.Mesh(
