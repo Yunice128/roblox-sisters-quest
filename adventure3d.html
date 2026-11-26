@@ -83,7 +83,46 @@ box(portal,.55,3.8,.6,wood,-1.85,0,0);box(portal,.55,3.8,.6,wood,1.85,0,0);box(p
 function tree(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);cyl(g,.22,.32,1.7,wood,0,.85,0);const a=new THREE.Mesh(new THREE.ConeGeometry(1.25,2.3,7),leaf);a.position.y=2.25;g.add(a);const b=new THREE.Mesh(new THREE.ConeGeometry(.9,1.8,7),leaf2);b.position.y=3.15;g.add(b)}
 for(let i=0;i<25;i++){const a=i*2.4,r=12+(i%4)*2.5,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.hypot(x,z)>20)continue;tree(x,z,.75+(i%3)*.16)}
 for(let i=0;i<14;i++){const a=i*2.1,r=5+(i%4)*3,x=Math.cos(a)*r,z=Math.sin(a)*r;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(.45,0),stone);o.position.set(x,.25,z);scene.add(o)}
-const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
+// 3D Family Task NPC
+const taskNPC=new THREE.Group();
+taskNPC.position.set(-4,0,-1);
+scene.add(taskNPC);
+
+// NPC body
+const npcBody=new THREE.Mesh(
+ new THREE.BoxGeometry(.8,1.1,.55),
+ new THREE.MeshStandardMaterial({color:0xffc66d})
+);
+npcBody.position.y=.9;
+taskNPC.add(npcBody);
+
+// NPC head
+const npcHead=new THREE.Mesh(
+ new THREE.BoxGeometry(.65,.65,.65),
+ new THREE.MeshStandardMaterial({color:0xffd9b0})
+);
+npcHead.position.y=1.75;
+taskNPC.add(npcHead);
+
+// Task board
+const taskBoard=new THREE.Group();
+taskBoard.position.set(-4,0,-2.5);
+scene.add(taskBoard);
+
+const board=new THREE.Mesh(
+ new THREE.BoxGeometry(2.2,1.6,.18),
+ new THREE.MeshStandardMaterial({color:0x7546a8})
+);
+board.position.y=1.5;
+taskBoard.add(board);
+
+const boardTop=new THREE.Mesh(
+ new THREE.BoxGeometry(2.35,.18,.25),
+ new THREE.MeshStandardMaterial({color:0xffd45c})
+);
+boardTop.position.y=2.35;
+taskBoard.add(boardTop);
+ const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
 box(chest,1.5,.82,1.05,chestMat,0,.48,0);const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);
 box(chest,.18,.85,1.13,gold,0,.55,.02);box(chest,.34,.27,.08,gold,0,.55,.58);
 const chestLight=new THREE.PointLight(0xffd35c,0,5);chestLight.position.set(0,1.2,0);chest.add(chestLight);
