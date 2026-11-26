@@ -177,6 +177,68 @@ const boardTop=new THREE.Mesh(
 );
 boardTop.position.y=2.35;
 taskBoard.add(boardTop);
+ // HABIT CITY TASK PLAZA
+const habitPlaza=new THREE.Group();
+habitPlaza.position.set(-4,0,-2);
+scene.add(habitPlaza);
+
+// Stone plaza floor
+const plazaFloor=new THREE.Mesh(
+ new THREE.CylinderGeometry(5.2,5.2,.18,48),
+ new THREE.MeshStandardMaterial({
+  color:0x9b91b8,
+  roughness:.9
+ })
+);
+plazaFloor.position.y=.02;
+habitPlaza.add(plazaFloor);
+
+// Golden plaza ring
+const plazaRing=new THREE.Mesh(
+ new THREE.TorusGeometry(4.9,.07,8,64),
+ new THREE.MeshStandardMaterial({
+  color:0xffd45c,
+  metalness:.45,
+  roughness:.4
+ })
+);
+plazaRing.rotation.x=Math.PI/2;
+plazaRing.position.y=.13;
+habitPlaza.add(plazaRing);
+
+// Decorative pillars
+[-3.2,3.2].forEach(x=>{
+ const pillar=new THREE.Mesh(
+  new THREE.BoxGeometry(.55,2.5,.55),
+  new THREE.MeshStandardMaterial({color:0x8065a8})
+ );
+ pillar.position.set(x,1.25,0);
+ habitPlaza.add(pillar);
+
+ const cap=new THREE.Mesh(
+  new THREE.BoxGeometry(.85,.22,.85),
+  new THREE.MeshStandardMaterial({color:0xffd45c})
+ );
+ cap.position.set(x,2.55,0);
+ habitPlaza.add(cap);
+});
+ // HABIT CITY MAGIC LIGHTS
+[-3.2,3.2].forEach(x=>{
+ const lamp=new THREE.Mesh(
+  new THREE.SphereGeometry(.28,16,16),
+  new THREE.MeshStandardMaterial({
+   color:0xffdf8b,
+   emissive:0xffc94d,
+   emissiveIntensity:1.5
+  })
+ );
+ lamp.position.set(-4+x,2.1,-2);
+ scene.add(lamp);
+
+ const light=new THREE.PointLight(0xffd477,1.5,7);
+ light.position.set(-4+x,2.1,-2);
+ scene.add(light);
+});
  const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
 box(chest,1.5,.82,1.05,chestMat,0,.48,0);const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);
 box(chest,.18,.85,1.13,gold,0,.55,.02);box(chest,.34,.27,.08,gold,0,.55,.58);
