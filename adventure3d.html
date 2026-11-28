@@ -1437,7 +1437,32 @@ function animate(){
  const dt=Math.min(clock.getDelta(),.04);
  const t=clock.elapsedTime;
  const p=leader.group;
+// ===== AUTOMATIC BUILDING DOORS =====
+buildingDoors.forEach(door=>{
+ const doorPosition=new THREE.Vector3();
+ door.group.getWorldPosition(doorPosition);
 
+ const distance=Math.min(
+  p.position.distanceTo(doorPosition),
+  follower.group.position.distanceTo(doorPosition)
+ );
+
+ const shouldOpen=distance<3.8;
+ const targetAngle=shouldOpen?1.15:0;
+ const speed=Math.min(1,dt*5);
+
+ door.left.rotation.y=THREE.MathUtils.lerp(
+  door.left.rotation.y,
+  -targetAngle,
+  speed
+ );
+
+ door.right.rotation.y=THREE.MathUtils.lerp(
+  door.right.rotation.y,
+  targetAngle,
+  speed
+ );
+});
  const forward=new THREE.Vector3(
   -Math.sin(angle),0,-Math.cos(angle)
  );
