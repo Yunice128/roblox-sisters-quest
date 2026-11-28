@@ -1,750 +1,579 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#21133f">
-<title>Roblox Sisters Quest 2.0 · 3D Adventure</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Roblox Sisters Adventure</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#8bd4f5;color:#fff;font-family:system-ui,sans-serif;touch-action:none}
-#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
-#top{position:fixed;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
-.pill,.stat{background:#21133fe8;border:1px solid #c4a3ff;border-radius:13px;padding:8px 11px;font-size:13px;font-weight:900;pointer-events:auto}
-button{border:0;border-radius:12px;padding:9px 12px;background:#7548b8;color:white;font-weight:900}
-#stats{position:fixed;top:52px;left:10px;display:flex;gap:7px;pointer-events:none}
-#hint{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:8px 12px;font-size:13px;text-align:center;max-width:90%;pointer-events:none}
-#petTag{position:fixed;top:92px;right:10px;background:#21133fe8;border:1px solid #c4a3ff;border-radius:12px;padding:7px 10px;font-size:12px;font-weight:900;pointer-events:none}
-#joystick{position:fixed;left:22px;bottom:22px;width:126px;height:126px;border-radius:50%;background:#ffffff26;border:2px solid #ffffff88;touch-action:none}
-#stick{position:absolute;width:54px;height:54px;left:34px;top:34px;border-radius:50%;background:linear-gradient(145deg,#fff,#bca5ed);border:2px solid #fff;pointer-events:none}
-#buttons{position:fixed;right:20px;bottom:22px;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
-.gamebtn{width:76px;height:76px;border:2px solid #fff9;border-radius:50%;background:linear-gradient(145deg,#a96bef,#6438a9);font-size:14px;box-shadow:0 5px 0 #31175a}
-#interact{display:none;width:92px;height:58px;border-radius:18px;background:linear-gradient(145deg,#ffcf65,#c27c19);color:#3d2605}
-#reward{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(310px,86vw);padding:20px;text-align:center;background:#29194c;border:2px solid #ffd66b;border-radius:20px;display:none;z-index:5}
-#reward h2{color:#ffdc7a;margin:0 0 8px}#reward p{font-weight:900}
-#petPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,90vw);padding:18px;background:#29194c;border:2px solid #c4a3ff;border-radius:20px;display:none;z-index:7;text-align:center;box-shadow:0 12px 35px #0008}
-#petPanel h2{margin:0 0 8px;color:#f2d7ff}#petPanel p{margin:8px 0;font-weight:800}
-#petPanel button{margin:5px;min-width:110px;padding:11px 14px}
-#feedPet{background:linear-gradient(145deg,#ffd66b,#c78322);color:#402900}
-#closePet{background:#65458d}
-#collectionPanel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(390px,92vw);max-height:82vh;overflow:auto;padding:18px;background:#241744;border:2px solid #ffd66b;border-radius:20px;display:none;z-index:8;box-shadow:0 12px 35px #0009}
-#collectionPanel h2{margin:0 0 12px;color:#ffdf8b;text-align:center}
-.collectionRow{background:#ffffff12;border:1px solid #ffffff26;border-radius:12px;padding:10px;margin:7px 0;font-size:13px;line-height:1.55}
-#collectionPanel button{display:block;margin:12px auto 0;min-width:110px}
-#collectionBtn{pointer-events:auto;background:#60418e;padding:7px 10px}
-#start{position:fixed;inset:0;background:linear-gradient(#1c1640cc,#142f4dcc);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
-#startcard{width:min(420px,94vw);background:#29194c;border:2px solid #c3a0ff;border-radius:22px;padding:22px;text-align:center}
-#startcard h1{font-size:23px}#startcard p{font-size:13px;line-height:1.6;color:#e4d8ff}
-#play{background:linear-gradient(145deg,#ff83ce,#b83f9a);font-size:17px;padding:14px 25px}
-#loading{font-size:12px;color:#e5d9ff;margin-top:10px}
-#tip{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;text-shadow:0 1px 3px #000;white-space:nowrap;pointer-events:none}
-@media(orientation:portrait){#joystick{width:112px;height:112px}#stick{left:29px;top:29px}#tip{bottom:145px;white-space:normal;text-align:center;width:90%}}
-/* Family Task Panel */
-#taskPanel{
- position:fixed;
- inset:0;
- display:none;
- align-items:center;
- justify-content:center;
- padding:16px;
- background:#100b25bb;
- z-index:9;
-}
-.task-card{
- width:min(460px,94vw);
- max-height:82vh;
- overflow-y:auto;
- padding:20px;
- background:linear-gradient(145deg,#34205e,#21133f);
- border:2px solid #c4a3ff;
- border-radius:22px;
- box-shadow:0 12px 35px #0009;
-}
-.task-card h2{
- margin:0 0 8px;
- color:#ffdf8b;
- text-align:center;
-}
-.task-card>p{
- text-align:center;
- color:#e8dcff;
-}
-.task-footer{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
- margin-top:15px;
-}
-#taskProgress{
- font-size:13px;
- font-weight:900;
-}
-#closeTasks{
- background:#65458d;
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#91c9e8;font-family:Arial,"Microsoft YaHei",sans-serif;color:white}
+canvas{display:block;touch-action:none}
+button{border:0;border-radius:12px;padding:11px 15px;font-weight:bold;font-size:14px;cursor:pointer}
+button:disabled{opacity:.45}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#282044;z-index:100;font-size:18px}
+#topbar{position:fixed;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;z-index:5;pointer-events:none}
+.stat{background:#211a3dcc;border:1px solid #ffffff55;border-radius:12px;padding:8px 10px;font-size:12px;pointer-events:auto}
+#playerName{font-weight:bold;color:#ffe28a}
+#switch{background:#7546a8;color:white}
+#hint{position:fixed;top:65px;left:50%;transform:translateX(-50%);background:#241c42eF;padding:10px 16px;border-radius:14px;z-index:8;display:none;text-align:center;max-width:90%;font-size:13px}
+#interact{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:8;background:#ffdf79;color:#42285e;min-width:150px;display:none}
+#joystick{position:fixed;bottom:25px;left:20px;width:116px;height:116px;border-radius:50%;background:#ffffff35;border:2px solid #ffffff80;z-index:6;touch-action:none}
+#stick{position:absolute;width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid #9b77ce;left:32px;top:32px;pointer-events:none}
+#jump{position:fixed;bottom:42px;right:25px;width:76px;height:76px;border-radius:50%;background:#ffcf6e;color:#573a7b;z-index:6}
+#play{background:#ffdc78;color:#40285d;font-size:17px;padding:14px 28px}
+#start{position:fixed;inset:0;z-index:20;background:linear-gradient(#251a4dcc,#302052ee);display:flex;align-items:center;justify-content:center;padding:20px}
+#startcard{width:min(420px,95vw);padding:25px;border-radius:24px;background:#49336d;border:2px solid #d6b6ff;text-align:center}
+#startcard h1{color:#ffe28a;font-size:25px}
+#startcard p{line-height:1.7;font-size:14px}
+.panel{position:fixed;inset:0;z-index:30;background:#090615c9;display:none;align-items:center;justify-content:center;padding:12px}
+.panel-card{width:min(540px,96vw);max-height:88vh;overflow:auto;background:#392858;border:2px solid #c7a4f3;border-radius:20px;padding:18px;box-shadow:0 12px 40px #0008}
+.panel-card h2{margin:0 0 12px;color:#ffe28a}
+.panel-card p{font-size:13px;line-height:1.6}
+.panel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.panel-actions button{flex:1;background:#ffdf8b;color:#382252}
+.close-btn{background:#76618f!important;color:white!important}
+.task-section{margin-top:14px;padding:12px;border-radius:15px}
+.task-row{display:flex;align-items:center;gap:8px;background:#ffffff12;border:1px solid #ffffff30;border-radius:10px;padding:9px;margin:7px 0}
+.task-info{flex:1;font-size:12px;line-height:1.5}
+.task-row button{font-size:11px;padding:8px;background:#7548b8;color:white}
+.progress-bg{height:9px;background:#ffffff30;border-radius:20px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:#ff9bcf;border-radius:20px}
+.shop-item,.collection-row{padding:12px;margin:9px 0;border:1px solid #c4a3ff;border-radius:13px;background:#ffffff12}
+.shop-item button{margin-top:8px;background:#ffdf8b;color:#34205e}
+#reward{position:fixed;inset:0;z-index:40;background:#000b;display:none;align-items:center;justify-content:center}
+#reward .panel-card{text-align:center}
+#petPanel,#collectionPanel{z-index:35}
+@media(max-width:600px){
+ .stat{font-size:10px;padding:7px}
+ #topbar{gap:4px}
+ #joystick{width:108px;height:108px}
+ #stick{left:29px;top:29px}
 }
 </style>
 </head>
 <body>
-<div id="game"></div>
-<div id="top"><div class="pill">🌴 SISTERS ADVENTURE ISLAND</div><div class="pill"><span id="playerName">当前：姐姐</span> <button id="switch">切换角色</button> <button id="collectionBtn">宠物图鉴</button></div></div>
-<div id="stats"><div class="stat">⭐ XP：<span id="xp">0</span></div><div class="stat">💎 宝石：<span id="gems">0</span></div><div class="stat">🪙 金币：<span id="coins">30</span></div></div>
-<div id="hint">探索小岛：走近宝箱，按「开启宝箱」</div>
-<div id="petTag">🐾 点击宠物互动</div>
+<div id="loading">正在准备 3D 冒险世界……</div>
+
+<div id="topbar">
+ <div class="stat">
+  <div id="playerName">当前：姐姐</div>
+  <div>⭐ XP：<span id="xp">0</span></div>
+ </div>
+ <div class="stat">
+  💎 <span id="gems">0</span>
+  <br>🪙 <span id="coins">0</span>
+ </div>
+ <button id="switch">切换带队</button>
+</div>
+
+<div id="hint"></div>
+<button id="interact">互动</button>
 <div id="joystick"><div id="stick"></div></div>
-<div id="buttons"><button id="interact" class="gamebtn">开启宝箱</button><button id="jump" class="gamebtn">跳跃</button></div>
-<div id="tip">左侧摇杆移动 · 拖动右侧画面旋转镜头</div>
-<div id="reward"><h2>宝箱奖励！</h2><p>⭐ +50 XP</p><p>💎 +1 宝石</p><p>🪙 +30 金币</p><button id="rewardOK">收下奖励</button></div>
-<div id="petPanel"><h2 id="petTitle">宠物资料</h2><p id="petLevel">等级：Lv.1</p><p id="petExperience">宠物经验：0 / 100</p><p id="petWallet">🪙 金币：30</p><p>喂食一次：消耗 10 金币，增加 25 宠物经验</p><p id="petSkillInfo">专属技能：Lv.2 解锁</p><button id="feedPet">喂食宠物</button><button id="petSkillBtn">技能尚未解锁</button><button id="closePet">关闭</button></div>
-<div id="collectionPanel"><h2>📖 姐妹宠物图鉴</h2><div id="collectionContent"></div><button id="closeCollection">关闭图鉴</button></div>
-<div id="taskPanel">
- <div class="task-card">
-  <h2>🏡 姐妹家庭任务</h2>
-  <p>完成每日任务，赚取 XP！</p>
+<button id="jump">跳跃</button>
+
+<div id="start">
+ <div id="startcard">
+  <h1>✨ Sisters Adventure ✨</h1>
+  <p>姐妹一起探索 Habit City！<br>
+  完成家庭任务、收集宝石、照顾宠物，<br>
+  赚取金币并购买漂亮的皇冠。</p>
+  <p>左边摇杆移动，滑动画面转动视角，右边按钮跳跃。</p>
+  <button id="play">进入 3D 世界</button>
+ </div>
+</div>
+
+<div class="panel" id="taskPanel">
+ <div class="panel-card">
+  <h2>🏡 家庭任务中心</h2>
+  <p id="taskProgress"></p>
   <div id="taskList"></div>
-  <div class="task-footer">
-   <span id="taskProgress">今日进度：0 / 17</span>
-   <button id="closeTasks">关闭</button>
+  <div class="panel-actions">
+   <button class="close-btn" id="closeTasks">关闭</button>
   </div>
  </div>
 </div>
- <div id="start"><div id="startcard"><h1>Roblox Sisters Quest 2.0</h1><p>Tab M11 3D 冒险岛<br>横屏体验更佳。摇杆控制当前角色，另一位自动跟随。点击右上角「宠物图鉴」查看成长和收集进度。走近发光物品后按收集按钮。</p><button id="play">进入 3D 小岛</button><div id="loading">正在准备 3D 引擎……</div></div></div>
+
+<div class="panel" id="shopPanel">
+ <div class="panel-card">
+  <h2>✨ 魔法商店</h2>
+  <p id="shopWallet"></p>
+  <div id="shopItems"></div>
+  <div class="panel-actions">
+   <button class="close-btn" id="closeShop">关闭商店</button>
+  </div>
+ </div>
+</div>
+
+<div class="panel" id="petPanel">
+ <div class="panel-card">
+  <h2 id="petTitle">宠物成长中心</h2>
+  <p id="petLevel"></p>
+  <p id="petExperience"></p>
+  <p id="petWallet"></p>
+  <p id="petSkillInfo"></p>
+  <div class="panel-actions">
+   <button id="feedPet">喂食宠物</button>
+   <button id="petSkillBtn">宠物技能</button>
+   <button class="close-btn" id="closePet">关闭</button>
+  </div>
+ </div>
+</div>
+
+<div class="panel" id="collectionPanel">
+ <div class="panel-card">
+  <h2>🎒 收藏与成长记录</h2>
+  <div id="collectionContent"></div>
+  <div class="panel-actions">
+   <button class="close-btn" id="closeCollection">关闭</button>
+  </div>
+ </div>
+</div>
+
+<div id="reward">
+ <div class="panel-card">
+  <h2>🎉 宝箱奖励</h2>
+  <p>获得 50 XP、1 颗宝石，姐姐和妹妹各获得 30 金币！</p>
+  <button id="rewardOK">太好了！</button>
+ </div>
+</div>
+
 <script type="module">
-const loading=document.getElementById('loading');
-let THREE;
-try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js')}
-catch(e1){try{THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js')}
-catch(e2){loading.textContent='3D 引擎加载失败。请检查网络连接后重新载入。';document.getElementById('play').disabled=true;document.getElementById('play').textContent='引擎加载失败'}}
-if(THREE){
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
 try{
-const root=document.getElementById('game');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x8bd4f5);scene.fog=new THREE.Fog(0x8bd4f5,30,80);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,150);
-const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;root.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff,0x64824b,2));
-const sun=new THREE.DirectionalLight(0xfff0d4,2);sun.position.set(-8,18,10);scene.add(sun);
-const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:1});
-const grass=mat(0x58b957),wood=mat(0x8a542d),leaf=mat(0x238b59),leaf2=mat(0x45ae65),stone=mat(0x9ba7ad),gold=mat(0xffc94e),chestMat=mat(0x9a572b),skin=mat(0xf1bd98),hair=mat(0x38223a),shirt1=mat(0xb45be2),shirt2=mat(0x48a7ed),pants=mat(0x394b9b),shoe=mat(0xf6f0ff),white=mat(0xffffff),eye=mat(0x251a25);
-function box(parent,w,h,d,m,x=0,y=0,z=0){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);parent.add(o);return o}
-function cyl(parent,rt,rb,h,m,x=0,y=0,z=0){const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,7),m);o.position.set(x,y,z);parent.add(o);return o}
-const ground=new THREE.Mesh(new THREE.CylinderGeometry(23,24,2.2,40),grass);ground.position.y=-1.1;scene.add(ground);
-const sand=new THREE.Mesh(new THREE.CylinderGeometry(24.2,24.4,1.2,40),mat(0xe8d28b));sand.position.y=-1.85;scene.add(sand);
-const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),mat(0x45b9df));water.rotation.x=-Math.PI/2;water.position.y=-2.5;scene.add(water);
-for(let i=0;i<10;i++){const p=box(scene,2.1,.18,1.2,stone,0,.12,8-i*1.65);p.rotation.y=i%2?.08:-.08}
-const portal=new THREE.Group();portal.position.set(0,1.7,-12);scene.add(portal);
-const ring=new THREE.Mesh(new THREE.TorusGeometry(1.65,.22,8,20),gold);portal.add(ring);
-const glow=new THREE.Mesh(new THREE.CircleGeometry(1.43,24),new THREE.MeshBasicMaterial({color:0x9c7aff,transparent:true,opacity:.6,side:THREE.DoubleSide}));portal.add(glow);
-box(portal,.55,3.8,.6,wood,-1.85,0,0);box(portal,.55,3.8,.6,wood,1.85,0,0);box(portal,4.2,.55,.6,wood,0,1.85,0);
-function tree(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);cyl(g,.22,.32,1.7,wood,0,.85,0);const a=new THREE.Mesh(new THREE.ConeGeometry(1.25,2.3,7),leaf);a.position.y=2.25;g.add(a);const b=new THREE.Mesh(new THREE.ConeGeometry(.9,1.8,7),leaf2);b.position.y=3.15;g.add(b)}
-for(let i=0;i<25;i++){const a=i*2.4,r=12+(i%4)*2.5,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.hypot(x,z)>20)continue;tree(x,z,.75+(i%3)*.16)}
-for(let i=0;i<14;i++){const a=i*2.1,r=5+(i%4)*3,x=Math.cos(a)*r,z=Math.sin(a)*r;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(.45,0),stone);o.position.set(x,.25,z);scene.add(o)}
-// 3D Family Task NPC
-const taskNPC=new THREE.Group();
-taskNPC.position.set(-8,0,14.5);
-scene.add(taskNPC);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x91c9e8);
+scene.fog=new THREE.Fog(0x91c9e8,35,75);
 
-// NPC body
-const npcBody=new THREE.Mesh(
- new THREE.BoxGeometry(.8,1.1,.55),
- new THREE.MeshStandardMaterial({color:0xffc66d})
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,120);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const hemi=new THREE.HemisphereLight(0xffffff,0x64805a,2);
+scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffffff,2.2);
+sun.position.set(-12,22,10);
+sun.castShadow=true;
+scene.add(sun);
+
+const mat=color=>new THREE.MeshStandardMaterial({color,roughness:.8});
+const grass=mat(0x72b96b);
+const stone=mat(0x9c9caa);
+const gold=mat(0xffd45c);
+const wood=mat(0x80502f);
+const skin=mat(0xffd0ae);
+const hair=mat(0x563a32);
+const eye=mat(0x241a32);
+const pants=mat(0x5269a5);
+const shoe=mat(0xeeeeee);
+const shirt1=mat(0xff83c9);
+const shirt2=mat(0x8c8cff);
+const white=mat(0xffffff);
+const leaf=mat(0x48a85b);
+
+function box(parent,w,h,d,material,x,y,z){
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
+ mesh.position.set(x,y,z);
+ mesh.castShadow=true;
+ mesh.receiveShadow=true;
+ parent.add(mesh);
+ return mesh;
+}
+
+const island=new THREE.Mesh(
+ new THREE.CylinderGeometry(25,27,1.4,64),
+ grass
 );
-npcBody.position.y=.9;
-taskNPC.add(npcBody);
+island.position.y=-.8;
+island.receiveShadow=true;
+scene.add(island);
 
-// NPC head
-const npcHead=new THREE.Mesh(
- new THREE.BoxGeometry(.65,.65,.65),
- new THREE.MeshStandardMaterial({color:0xffd9b0})
+const water=new THREE.Mesh(
+ new THREE.CylinderGeometry(34,34,.3,64),
+ new THREE.MeshStandardMaterial({color:0x389fc7,roughness:.3})
 );
-npcHead.position.y=1.75;
-taskNPC.add(npcHead);
+water.position.y=-1.65;
+scene.add(water);
 
-// Task board
-const taskBoard=new THREE.Group();
-taskBoard.position.set(-8,0,15.8);
-scene.add(taskBoard);
-
-const board=new THREE.Mesh(
- new THREE.BoxGeometry(2.2,1.6,.18),
- new THREE.MeshStandardMaterial({color:0x7546a8})
+const ground=new THREE.Mesh(
+ new THREE.CircleGeometry(24,64),
+ grass
 );
-board.position.y=1.5;
-taskBoard.add(board);
+ground.rotation.x=-Math.PI/2;
+ground.position.y=-.08;
+ground.receiveShadow=true;
+scene.add(ground);
 
-const boardTop=new THREE.Mesh(
- new THREE.BoxGeometry(2.35,.18,.25),
- new THREE.MeshStandardMaterial({color:0xffd45c})
+for(let i=0;i<14;i++){
+ const a=i*2.1,r=5+(i%4)*3;
+ const x=Math.cos(a)*r,z=Math.sin(a)*r;
+ const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.45,0),stone);
+ rock.position.set(x,.25,z);
+ rock.castShadow=true;
+ scene.add(rock);
+}
+// ===== HABIT CITY =====
+const habitCity=new THREE.Group();
+habitCity.position.set(-4,0,13);
+scene.add(habitCity);
+
+const cityGround=new THREE.Mesh(
+ new THREE.CylinderGeometry(6.5,6.5,.2,48),
+ mat(0x82b879)
 );
-boardTop.position.y=2.35;
-taskBoard.add(boardTop);
- // HABIT CITY TASK PLAZA
-const habitPlaza=new THREE.Group();
-habitPlaza.position.set(-4,0,-2);
-scene.add(habitPlaza);
+cityGround.position.y=.02;
+habitCity.add(cityGround);
 
-// Stone plaza floor
-const plazaFloor=new THREE.Mesh(
- new THREE.CylinderGeometry(5.2,5.2,.18,48),
- new THREE.MeshStandardMaterial({
-  color:0x9b91b8,
-  roughness:.9
- })
+const cityRoad=new THREE.Mesh(
+ new THREE.BoxGeometry(2.5,.12,16),
+ mat(0xc5b9a8)
 );
-plazaFloor.position.y=.02;
-habitPlaza.add(plazaFloor);
+cityRoad.position.set(0,.16,-2);
+habitCity.add(cityRoad);
 
-// Golden plaza ring
-const plazaRing=new THREE.Mesh(
- new THREE.TorusGeometry(4.9,.07,8,64),
- new THREE.MeshStandardMaterial({
-  color:0xffd45c,
-  metalness:.45,
-  roughness:.4
- })
-);
-plazaRing.rotation.x=Math.PI/2;
-plazaRing.position.y=.13;
-habitPlaza.add(plazaRing);
+const buildings=[
+ {x:-4,z:-2,color:0xffb86b,label:'FAMILY TASK'},
+ {x:4,z:-2,color:0x79b9e8,label:'MAGIC SHOP'},
+ {x:-4,z:3,color:0xc49be8,label:'PET CENTER'}
+];
 
-// Decorative pillars
-[-3.2,3.2].forEach(x=>{
- const pillar=new THREE.Mesh(
-  new THREE.BoxGeometry(.55,2.5,.55),
-  new THREE.MeshStandardMaterial({color:0x8065a8})
+buildings.forEach(b=>{
+ const body=box(habitCity,2.5,3,2.5,mat(b.color),b.x,1.6,b.z);
+ const roof=new THREE.Mesh(
+  new THREE.ConeGeometry(1.9,1.5,4),
+  mat(0x7546a8)
  );
- pillar.position.set(x,1.25,0);
- habitPlaza.add(pillar);
+ roof.position.set(b.x,3.85,b.z);
+ roof.rotation.y=Math.PI/4;
+ habitCity.add(roof);
+ box(habitCity,.65,1.35,.12,mat(0x70452e),b.x,.85,b.z+1.31);
 
- const cap=new THREE.Mesh(
-  new THREE.BoxGeometry(.85,.22,.85),
-  new THREE.MeshStandardMaterial({color:0xffd45c})
+ const canvas=document.createElement('canvas');
+ canvas.width=768;canvas.height=192;
+ const ctx=canvas.getContext('2d');
+ ctx.fillStyle='#48266f';ctx.fillRect(0,0,768,192);
+ ctx.strokeStyle='#ffd45c';ctx.lineWidth=10;
+ ctx.strokeRect(6,6,756,180);
+ ctx.fillStyle='#ffe28a';ctx.font='bold 52px Arial';
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillText(b.label,384,96);
+ const texture=new THREE.CanvasTexture(canvas);
+ const sign=new THREE.Mesh(
+  new THREE.PlaneGeometry(2.2,.55),
+  new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide})
  );
- cap.position.set(x,2.55,0);
- habitPlaza.add(cap);
+ sign.position.set(b.x,2.45,b.z+1.38);
+ habitCity.add(sign);
 });
-// HABIT CITY GOLDEN GATE
+
 const habitGate=new THREE.Group();
 habitGate.position.set(-4,0,3.2);
 scene.add(habitGate);
+box(habitGate,.65,3.5,.7,mat(0x8055a8),-2.1,1.75,0);
+box(habitGate,.65,3.5,.7,mat(0x8055a8),2.1,1.75,0);
+box(habitGate,5.1,.65,.85,gold,0,3.65,0);
+box(habitGate,3.7,.8,.18,mat(0x48266f),0,3.65,.48);
 
-// Left gate pillar
-const gateLeft=new THREE.Mesh(
- new THREE.BoxGeometry(.65,3.5,.7),
- new THREE.MeshStandardMaterial({
-  color:0x8055a8,
-  metalness:.25,
-  roughness:.5
- })
-);
-gateLeft.position.set(-2.1,1.75,0);
-habitGate.add(gateLeft);
-
-// Right gate pillar
-const gateRight=gateLeft.clone();
-gateRight.position.x=2.1;
-habitGate.add(gateRight);
-
-// Golden top beam
-const gateTop=new THREE.Mesh(
- new THREE.BoxGeometry(5.1,.65,.85),
- new THREE.MeshStandardMaterial({
-  color:0xffd45c,
-  metalness:.6,
-  roughness:.3
- })
-);
-gateTop.position.y=3.65;
-habitGate.add(gateTop);
-
-// Purple sign
-const gateSign=new THREE.Mesh(
- new THREE.BoxGeometry(3.7,.8,.18),
- new THREE.MeshStandardMaterial({
-  color:0x48266f,
-  emissive:0x24103d
- })
-);
-gateSign.position.set(0,3.65,.48);
 const gateCanvas=document.createElement('canvas');
-gateCanvas.width=1024;
-gateCanvas.height=256;
-
+gateCanvas.width=1024;gateCanvas.height=256;
 const gateCtx=gateCanvas.getContext('2d');
 gateCtx.fillStyle='#ffe28a';
 gateCtx.font='bold 100px Arial';
 gateCtx.textAlign='center';
 gateCtx.textBaseline='middle';
 gateCtx.fillText('HABIT CITY',512,128);
-
-const gateTexture=new THREE.CanvasTexture(gateCanvas);
 const gateText=new THREE.Mesh(
  new THREE.PlaneGeometry(3.5,.75),
- new THREE.MeshBasicMaterial({
-  map:gateTexture,
-  transparent:true
- })
+ new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(gateCanvas),transparent:true})
 );
 gateText.position.set(0,3.65,.59);
 habitGate.add(gateText);
- habitGate.add(gateSign);
 
-// Golden arch decoration
-const gateArch=new THREE.Mesh(
+const arch=new THREE.Mesh(
  new THREE.TorusGeometry(1.75,.12,12,48,Math.PI),
- new THREE.MeshStandardMaterial({
-  color:0xffdf79,
-  metalness:.65,
-  roughness:.25
- })
+ gold
 );
-gateArch.position.set(0,2.6,.2);
-habitGate.add(gateArch); 
-// HABIT CITY - FIRST DISTRICT
-const habitCity=new THREE.Group();
-habitCity.position.set(-4,0,13);
-scene.add(habitCity);
+arch.position.set(0,2.6,.2);
+habitGate.add(arch);
 
-// City ground
-const cityGround=new THREE.Mesh(
- new THREE.CylinderGeometry(6.5,6.5,.2,48),
- new THREE.MeshStandardMaterial({
-  color:0x82b879,
-  roughness:.9
- })
-);
-cityGround.position.y=.02;
-habitCity.add(cityGround);
+// Task NPC
+const taskNPC=new THREE.Group();
+taskNPC.position.set(-8,0,14.5);
+scene.add(taskNPC);
+box(taskNPC,.8,1.1,.55,mat(0xffc66d),0,.9,0);
+box(taskNPC,.65,.65,.65,skin,0,1.75,0);
 
-// Main stone road
-const cityRoad=new THREE.Mesh(
- new THREE.BoxGeometry(2.5,.12,16),
- new THREE.MeshStandardMaterial({color:0xc5b9a8})
-);
-cityRoad.position.set(0,.16,-2);
-habitCity.add(cityRoad);
+// Task board
+const taskBoard=new THREE.Group();
+taskBoard.position.set(-8,0,15.8);
+scene.add(taskBoard);
+box(taskBoard,2.2,1.6,.18,mat(0x7546a8),0,1.5,0);
+box(taskBoard,2.35,.18,.25,gold,0,2.35,0);
 
-// Three colorful buildings
-const buildings=[
- {x:-4,z:-2,color:0xffb86b},
- {x:4,z:-2,color:0x79b9e8},
- {x:-4,z:3,color:0xc49be8}
-];
-
-buildings.forEach(b=>{
- const body=new THREE.Mesh(
-  new THREE.BoxGeometry(2.5,3,2.5),
-  new THREE.MeshStandardMaterial({color:b.color})
- );
- body.position.set(b.x,1.6,b.z);
- habitCity.add(body);
-
- const roof=new THREE.Mesh(
-  new THREE.ConeGeometry(1.9,1.5,4),
-  new THREE.MeshStandardMaterial({color:0x7546a8})
- );
- roof.position.set(b.x,3.85,b.z);
- roof.rotation.y=Math.PI/4;
- habitCity.add(roof);
-
- const door=new THREE.Mesh(
-  new THREE.BoxGeometry(.65,1.35,.12),
-  new THREE.MeshStandardMaterial({color:0x70452e})
- );
- door.position.set(b.x, .85,b.z+1.31);
- habitCity.add(door);
- // FAMILY TASK CENTER SIGN
-if(b.color===0xffb86b){
- const signCanvas=document.createElement('canvas');
- signCanvas.width=768;
- signCanvas.height=192;
-
- const signCtx=signCanvas.getContext('2d');
- signCtx.fillStyle='#48266f';
- signCtx.fillRect(0,0,768,192);
-
- signCtx.strokeStyle='#ffd45c';
- signCtx.lineWidth=10;
- signCtx.strokeRect(6,6,756,180);
-
- signCtx.fillStyle='#ffe28a';
- signCtx.font='bold 58px Arial';
- signCtx.textAlign='center';
- signCtx.textBaseline='middle';
- signCtx.fillText('FAMILY TASK',384,72);
- signCtx.fillText('CENTER',384,137);
-
- const signTexture=new THREE.CanvasTexture(signCanvas);
- const signMesh=new THREE.Mesh(
-  new THREE.PlaneGeometry(2.2,.55),
-  new THREE.MeshBasicMaterial({
-   map:signTexture,
-   side:THREE.DoubleSide
-  })
- );
- signMesh.position.set(b.x,2.45,b.z+1.38);
- habitCity.add(signMesh);
-}// MAGIC SHOP SIGN
-if(b.color===0x79b9e8){
- const shopCanvas=document.createElement('canvas');
- shopCanvas.width=768;
- shopCanvas.height=192;
-
- const shopCtx=shopCanvas.getContext('2d');
- shopCtx.fillStyle='#253b78';
- shopCtx.fillRect(0,0,768,192);
-
- shopCtx.strokeStyle='#7eeaff';
- shopCtx.lineWidth=10;
- shopCtx.strokeRect(6,6,756,180);
-
- shopCtx.fillStyle='#b8f4ff';
- shopCtx.font='bold 62px Arial';
- shopCtx.textAlign='center';
- shopCtx.textBaseline='middle';
- shopCtx.fillText('MAGIC SHOP',384,96);
-
- const shopTexture=new THREE.CanvasTexture(shopCanvas);
- const shopSign=new THREE.Mesh(
-  new THREE.PlaneGeometry(2.2,.55),
-  new THREE.MeshBasicMaterial({
-   map:shopTexture,
-   side:THREE.DoubleSide
-  })
- );
- shopSign.position.set(b.x,2.45,b.z+1.38);
- habitCity.add(shopSign);
-}// PET GROWTH CENTER SIGN
-if(b.color===0xc49be8){
- const petCanvas=document.createElement('canvas');
- petCanvas.width=768;
- petCanvas.height=192;
-
- const petCtx=petCanvas.getContext('2d');
- petCtx.fillStyle='#48266f';
- petCtx.fillRect(0,0,768,192);
-
- petCtx.strokeStyle='#ffd45c';
- petCtx.lineWidth=10;
- petCtx.strokeRect(6,6,756,180);
-
- petCtx.fillStyle='#ffe6ff';
- petCtx.font='bold 54px Arial';
- petCtx.textAlign='center';
- petCtx.textBaseline='middle';
- petCtx.fillText('PET GROWTH',384,68);
- petCtx.fillText('CENTER',384,137);
-
- const petTexture=new THREE.CanvasTexture(petCanvas);
- const petSign=new THREE.Mesh(
-  new THREE.PlaneGeometry(2.2,.55),
-  new THREE.MeshBasicMaterial({
-   map:petTexture,
-   side:THREE.DoubleSide
-  })
- );
- petSign.position.set(b.x,2.45,b.z+1.38);
- habitCity.add(petSign);
-}
-});
- // HABIT CITY MAGIC LIGHTS
-[-3.2,3.2].forEach(x=>{
- const lamp=new THREE.Mesh(
-  new THREE.SphereGeometry(.42,16,16),
-  new THREE.MeshStandardMaterial({
-   color:0xffdf8b,
-   emissive:0xffc94d,
-   emissiveIntensity:1.5
-  })
- );
- lamp.position.set(-4+x,3.0,-2);
- scene.add(lamp);
-
- const light=new THREE.PointLight(0xffd477,1.5,7);
- light.position.set(-4+x,3.0,-2);
- scene.add(light);
-});
- const chest=new THREE.Group();chest.position.set(4,0,-1);scene.add(chest);
-box(chest,1.5,.82,1.05,chestMat,0,.48,0);const lid=box(chest,1.58,.3,1.12,wood,0,.99,0);
-box(chest,.18,.85,1.13,gold,0,.55,.02);box(chest,.34,.27,.08,gold,0,.55,.58);
-const chestLight=new THREE.PointLight(0xffd35c,0,5);chestLight.position.set(0,1.2,0);chest.add(chestLight);
-function avatar(top){const g=new THREE.Group(),arms=[],legs=[];
-box(g,.78,.95,.42,top,0,1.65,0);box(g,.68,.68,.64,skin,0,2.52,0);box(g,.72,.2,.68,hair,0,2.9,-.01);box(g,.18,.48,.67,hair,-.28,2.63,.02);box(g,.18,.48,.67,hair,.28,2.63,.02);box(g,.09,.09,.035,eye,-.15,2.55,.34);box(g,.09,.09,.035,eye,.15,2.55,.34);
-for(const x of [-.5,.5]){const a=new THREE.Group();a.position.set(x,2.02,0);g.add(a);box(a,.24,.72,.26,skin,0,-.34,0);arms.push(a)}
-for(const x of [-.22,.22]){const l=new THREE.Group();l.position.set(x,1.17,0);g.add(l);box(l,.28,.8,.32,pants,0,-.4,0);box(l,.34,.18,.46,shoe,0,-.82,.06);legs.push(l)}
-const wearables=new THREE.Group();
-g.add(wearables);
-
-scene.add(g);
-return {group:g,arms,legs,wearables};
-}
-const sisters=[avatar(shirt1),avatar(shirt2)];sisters[0].group.position.set(0,0,5);sisters[1].group.position.set(1.15,0,6.35);
-// 魔法商店位置
+// Magic shop interaction location
 const magicShopPosition=new THREE.Vector3(0,0,11);
- function makePet(type){
- const g=new THREE.Group(),fur=mat(type==='bunny'?0xc99af5:0x6bbcf5),lightFur=mat(type==='bunny'?0xf2e7ff:0xeaf7ff),dark=mat(type==='bunny'?0x7545a8:0x356baf),petEye=mat(0x241a32),nose=mat(type==='bunny'?0xff9fcf:0xffb36b);
- const body=new THREE.Mesh(new THREE.SphereGeometry(.43,8,6),fur);body.scale.set(1.12,.88,1.25);body.position.y=.48;g.add(body);
- const head=new THREE.Mesh(new THREE.SphereGeometry(.34,8,6),lightFur);head.position.set(0,.91,.22);g.add(head);
- if(type==='bunny'){for(const x of [-.17,.17]){const ear=box(g,.15,.55,.13,fur,x,1.35,.18);ear.rotation.z=x<0?-.13:.13;box(g,.075,.38,.035,nose,x,1.36,.255)}}
- else{for(const x of [-.2,.2]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.16,.42,5),fur);ear.position.set(x,1.22,.2);ear.rotation.z=x<0?.12:-.12;g.add(ear);const inner=new THREE.Mesh(new THREE.ConeGeometry(.075,.25,5),nose);inner.position.set(x,1.23,.31);g.add(inner)}const tail=new THREE.Mesh(new THREE.SphereGeometry(.2,7,5),lightFur);tail.position.set(0,.55,-.53);g.add(tail)}
- for(const x of [-.12,.12])box(g,.055,.07,.035,petEye,x,.94,.515);
- const n=new THREE.Mesh(new THREE.SphereGeometry(.065,6,5),nose);n.position.set(0,.82,.54);g.add(n);
- for(const x of [-.23,.23]){const foot=new THREE.Mesh(new THREE.SphereGeometry(.13,6,5),dark);foot.scale.set(1,.65,1.2);foot.position.set(x,.16,.13);g.add(foot)}
- scene.add(g);return {group:g,type}}
-const pets=[makePet('bunny'),makePet('fox')];pets[0].group.position.set(-1.2,0,6.5);pets[1].group.position.set(2.1,0,7.8);
-const petMeshes=[];
-pets.forEach((pet,index)=>pet.group.traverse(o=>{if(o.isMesh){o.userData.petIndex=index;petMeshes.push(o)}}));
-const petActions=pets.map(()=>({type:'',start:0,until:0,baseY:0,baseRotation:0}));
-const heartParticles=[];
-function spawnPetHearts(index){
- const pet=pets[index];
- for(let i=0;i<5;i++){
-  const shape=new THREE.Shape();
-  shape.moveTo(0,.12);
-  shape.bezierCurveTo(-.35,.42,-.72,.12,-.45,-.18);
-  shape.bezierCurveTo(-.25,-.42,0,-.22,0,-.12);
-  shape.bezierCurveTo(0,-.22,.25,-.42,.45,-.18);
-  shape.bezierCurveTo(.72,.12,.35,.42,0,.12);
-  const material=new THREE.MeshBasicMaterial({
-   color:index===0?0xff83c9:0x79d9ff,
-   transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false
-  });
-  const heart=new THREE.Mesh(new THREE.ShapeGeometry(shape),material);
-  heart.scale.setScalar(.32);
-  heart.position.copy(pet.group.position);
-  heart.position.y+=1.2;
-  heart.position.x+=(Math.random()-.5)*.6;
-  scene.add(heart);
-  heartParticles.push({mesh:heart,life:1});
+
+// Plaza decoration
+const plaza=new THREE.Mesh(
+ new THREE.CylinderGeometry(5.2,5.2,.18,48),
+ mat(0x9b91b8)
+);
+plaza.position.set(-8,.02,-2);
+scene.add(plaza);
+
+for(const x of [-7.2,-.8]){
+ const pillar=box(scene,.55,2.5,.55,mat(0x8065a8),x,1.25,-2);
+ box(scene,.85,.22,.85,gold,x,2.55,-2);
+}
+
+// Chest
+const chest=new THREE.Group();
+chest.position.set(4,0,-1);
+scene.add(chest);
+box(chest,1.5,.82,1.05,mat(0x9b572d),0,.48,0);
+const lid=box(chest,1.58,.3,1.12,mat(0x75452b),0,.99,0);
+box(chest,.18,.85,1.13,gold,0,.55,.02);
+box(chest,.34,.27,.08,gold,0,.55,.58);
+const chestLight=new THREE.PointLight(0xffd35c,0,5);
+chestLight.position.set(0,1.2,0);
+chest.add(chestLight);
+
+// Portal
+const portal=new THREE.Group();
+portal.position.set(0,0,-17);
+scene.add(portal);
+const portalRing=new THREE.Mesh(
+ new THREE.TorusGeometry(1.8,.18,12,48),
+ new THREE.MeshStandardMaterial({color:0xb987ff,emissive:0x6333a8,emissiveIntensity:1})
+);
+portalRing.position.y=2;
+portal.add(portalRing);
+const portalCore=new THREE.Mesh(
+ new THREE.CircleGeometry(1.55,32),
+ new THREE.MeshBasicMaterial({color:0x9c65e8,transparent:true,opacity:.35,side:THREE.DoubleSide})
+);
+portalCore.position.y=2;
+portal.add(portalCore);
+
+// ===== CHARACTERS =====
+function avatar(top){
+ const g=new THREE.Group(),arms=[],legs=[];
+ box(g,.78,.95,.42,top,0,1.65,0);
+ box(g,.68,.68,.64,skin,0,2.52,0);
+ box(g,.72,.2,.68,mat(0x563a32),0,2.9,-.01);
+ box(g,.18,.48,.67,mat(0x563a32),-.28,2.63,.02);
+ box(g,.18,.48,.67,mat(0x563a32),.28,2.63,.02);
+ box(g,.09,.09,.035,mat(0x241a32),-.15,2.55,.34);
+ box(g,.09,.09,.035,mat(0x241a32),.15,2.55,.34);
+
+ for(const x of [-.5,.5]){
+  const a=new THREE.Group();
+  a.position.set(x,2.02,0);
+  g.add(a);
+  box(a,.24,.72,.26,skin,0,-.34,0);
+  arms.push(a);
  }
+ for(const x of [-.22,.22]){
+  const l=new THREE.Group();
+  l.position.set(x,1.17,0);
+  g.add(l);
+  box(l,.28,.8,.32,mat(0x5269a5),0,-.4,0);
+  box(l,.34,.18,.46,mat(0xeeeeee),0,-.82,.06);
+  legs.push(l);
+ }
+ const wearables=new THREE.Group();
+ g.add(wearables);
+ scene.add(g);
+ return {group:g,arms,legs,wearables};
 }
-function playPetEat(index){
- const action=petActions[index],pet=pets[index],now=clock.elapsedTime;
- action.type='eat';
- action.start=now;
- action.until=now+.9;
- action.baseY=pet.group.position.y;
- action.baseRotation=pet.group.rotation.y;
- spawnPetHearts(index);
-}function playPetAction(index){
- const pet=pets[index],action=petActions[index],now=clock.elapsedTime;
- if(now<action.until)return;
- action.type=index===0?'hop':'spin';action.start=now;action.until=now+(index===0?1.05:1.15);
- action.baseY=pet.group.position.y;action.baseRotation=pet.group.rotation.y;
- hint(index===0?'兔兔开心地跳起来了！':'小狐狸开心地转圈了！');
-}
-let selectedPet=0;
-function openPetPanel(index){
- selectedPet=index;
- renderPetPanel();
- document.getElementById('petPanel').style.display='block';
- playPetAction(index);
-}
+
+const sisters=[avatar(shirt1),avatar(shirt2)];
+sisters[0].group.position.set(0,0,5);
+sisters[1].group.position.set(1.15,0,6.35);
+
 let leader=sisters[0],follower=sisters[1],active='姐姐';
-function hint(t){document.getElementById('hint').textContent=t;document.getElementById('hint').style.display='block'}
+let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
+let nearbyTarget=null,opened=false;
 let hintTimer=null;
-function showRewardHint(){const el=document.getElementById('hint');hint('宝箱奖励已领取，继续探索小岛！');if(hintTimer)clearTimeout(hintTimer);hintTimer=setTimeout(()=>{el.style.display='none'},3000)}
-document.getElementById('switch').onclick=()=>{[leader,follower]=[follower,leader];active=active==='姐姐'?'妹妹':'姐姐';document.getElementById('playerName').textContent='当前：'+active;hint(active+'带队，另一位自动跟随！')};
-for(let i=0;i<7;i++){const cloud=new THREE.Group();cloud.position.set(-22+i*7,10+(i%3),-22-(i%2)*8);scene.add(cloud);for(let j=0;j<3;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(1.2,7,5),white);c.scale.set(1.5,.65,1);c.position.x=j*1.15;cloud.add(c)}}
-const familyTasks=[
-["不乱发脾气","Control my temper",25],
-["10点前睡觉","Sleep before 10pm",30],
-["主动温习功课","Revise proactively",35],
-["30分钟内吃完饭","Finish meal within 30 min",25],
-["东西放回原位","Put things back",20],
-["不乱丢垃圾","Use the bin",20],
-["吃完自己洗碗","Wash own dishes",25],
-["整理书包和书本","Pack bag & books",25],
-["水壶餐具拿去厨房","Take bottle & utensils to kitchen",20],
-["主动帮忙做家务","Help with chores",30],
-["没有看短视频","No short videos",40],
-["8:15pm前吃完晚餐","Finish dinner by 8:15pm",30],
-["两姐妹没有吵架","Peaceful sister teamwork",40],
-["念国语/英语故事书","Read BM/English storybook",25],
-["讲英语","Speak English",20],
-["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],
-["听写80分或以上","Dictation score 80%+",50]
-];
- const key='sistersQuest3DRewards_v1';let data={xp:0,gems:0,coins:30,chestClaimed:false,petGrowth:[{level:1,xp:0},{level:1,xp:0}],collectedItems:[]};
-try{data={...data,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}
-if(!Number.isFinite(data.coins)){data.coins=30;data.starterCoinsGranted=true}
-if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2)data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
-data.petGrowth=data.petGrowth.map(p=>({level:Math.max(1,Number(p?.level)||1),xp:Math.max(0,Number(p?.xp)||0)}));
-if(!Array.isArray(data.collectedItems))data.collectedItems=[];
-// 姐妹独立家庭任务存档
-const todayTaskDate=kualaLumpurDate();
 
-if(!data.familyTaskProgress || data.familyTaskProgress.date!==todayTaskDate){
- data.familyTaskProgress={
-  date:todayTaskDate,
-  姐姐:[],
-  妹妹:[]
- };
+function hint(message){
+ const el=document.getElementById('hint');
+ el.textContent=message;
+ el.style.display='block';
+ if(hintTimer)clearTimeout(hintTimer);
+ hintTimer=setTimeout(()=>el.style.display='none',3000);
 }
 
-if(!data.taskXP){
- data.taskXP={姐姐:0,妹妹:0};
-}
- // 姐妹独立衣柜存档
-if(!data.wardrobes){
- data.wardrobes={
-  姐姐:{owned:[],equipped:{}},
-  妹妹:{owned:[],equipped:{}}
- };
-}
-if(!data.wardrobes.姐姐){
- data.wardrobes.姐姐={owned:[],equipped:{}};
-}
-if(!data.wardrobes.妹妹){
- data.wardrobes.妹妹={owned:[],equipped:{}};
-}
- function getPetStage(level){
- if(level>=5)return 4;
- if(level>=3)return 3;
- if(level>=2)return 2;
- return 1;
-}
- const petGrowthDecor=pets.map(()=>{
- const decor=new THREE.Group();
- return decor;
-});
-pets.forEach((pet,index)=>{
- pet.group.add(petGrowthDecor[index]);
-});
- function applyPetGrowthAppearance(){
- pets.forEach((pet,index)=>{
-  const level=data.petGrowth[index].level;
-  const stage=getPetStage(level);
-  const decor=petGrowthDecor[index];
-
-  while(decor.children.length){
-   const child=decor.children[0];
-   decor.remove(child);
-   child.traverse(o=>{
-    if(o.geometry)o.geometry.dispose();
-    if(o.material)o.material.dispose();
-   });
-  }
-
-  pet.group.scale.setScalar(stage===4?1.2:1);
-
-  if(stage>=2){
-   const color=index===0?0xff83c9:0x79d9ff;
-   const ring=new THREE.Mesh(
-    new THREE.TorusGeometry(.65,.045,8,32),
-    new THREE.MeshBasicMaterial({color,transparent:true,opacity:.85})
-   );
-   ring.rotation.x=Math.PI/2;
-   ring.position.y=.12;
-   decor.add(ring);
-  }
-
-  if(stage>=3){
-   const gem=new THREE.Mesh(
-    new THREE.OctahedronGeometry(.22),
-    new THREE.MeshStandardMaterial({
-     color:index===0?0xffb4df:0x55cfff,
-     emissive:index===0?0x7a2454:0x124c78,
-     emissiveIntensity:.5
-    })
-   );
-   gem.position.set(0,1.65,0);
-   decor.add(gem);
-  }
- });
-}
- const xp=document.getElementById('xp'),gems=document.getElementById('gems'),coins=document.getElementById('coins'),interact=document.getElementById('interact');
-function saveData(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){hint('无法保存：请检查浏览器储存空间')}}
+// ===== SAVE DATA =====
 function kualaLumpurDate(){
- const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
- const part={};parts.forEach(x=>part[x.type]=x.value);
- return part.year+'-'+part.month+'-'+part.day;
+ const parts=new Intl.DateTimeFormat('en-GB',{
+  timeZone:'Asia/Kuala_Lumpur',
+  year:'numeric',month:'2-digit',day:'2-digit'
+ }).formatToParts(new Date());
+ const p={};
+ parts.forEach(x=>p[x.type]=x.value);
+ return p.year+'-'+p.month+'-'+p.day;
 }
-// 保留历史收藏记录；每日收集清单只负责当天物品是否显示及当天奖励。
+
+const key='sistersQuest3DRewards_v1';
+let data={
+ xp:0,gems:0,coins:30,chestClaimed:false,
+ petGrowth:[{level:1,xp:0},{level:1,xp:0}],
+ collectedItems:[]
+};
+
+try{
+ data={...data,...JSON.parse(localStorage.getItem(key)||'{}')};
+}catch(e){}
+
+if(!Number.isFinite(data.coins))data.coins=30;
+if(!Number.isFinite(data.xp))data.xp=0;
+if(!Number.isFinite(data.gems))data.gems=0;
+if(!Array.isArray(data.petGrowth)||data.petGrowth.length!==2){
+ data.petGrowth=[{level:1,xp:0},{level:1,xp:0}];
+}
+data.petGrowth=data.petGrowth.map(p=>({
+ level:Math.max(1,Number(p?.level)||1),
+ xp:Math.max(0,Number(p?.xp)||0)
+}));
+if(!Array.isArray(data.collectedItems))data.collectedItems=[];
+
+// One-time migration: split old shared coins between sisters
+if(!data.characterCoins){
+ const oldCoins=Math.max(0,Number(data.coins)||0);
+ const share=Math.floor(oldCoins/2);
+ data.characterCoins={
+  姐姐:share,
+  妹妹:share+(oldCoins%2)
+ };
+}
+if(!Number.isFinite(data.characterCoins.姐姐))data.characterCoins.姐姐=0;
+if(!Number.isFinite(data.characterCoins.妹妹))data.characterCoins.妹妹=0;
+
+// Independent wardrobes
+if(!data.wardrobes)data.wardrobes={};
+if(!data.wardrobes.姐姐)data.wardrobes.姐姐={owned:[],equipped:{}};
+if(!data.wardrobes.妹妹)data.wardrobes.妹妹={owned:[],equipped:{}};
+
+// Daily family task progress
+const todayTaskDate=kualaLumpurDate();
+if(!data.familyTaskProgress||data.familyTaskProgress.date!==todayTaskDate){
+ data.familyTaskProgress={date:todayTaskDate,姐姐:[],妹妹:[]};
+}
+if(!Array.isArray(data.familyTaskProgress.姐姐))data.familyTaskProgress.姐姐=[];
+if(!Array.isArray(data.familyTaskProgress.妹妹))data.familyTaskProgress.妹妹=[];
+if(!data.taskXP)data.taskXP={姐姐:0,妹妹:0};
+if(!Number.isFinite(data.taskXP.姐姐))data.taskXP.姐姐=0;
+if(!Number.isFinite(data.taskXP.妹妹))data.taskXP.妹妹=0;
+
+// Daily collection progress
 const todayKey=kualaLumpurDate();
-if(!data.dailyCollection||data.dailyCollection.date!==todayKey)data.dailyCollection={date:todayKey,collectedItems:[]};
-if(!Array.isArray(data.dailyCollection.collectedItems))data.dailyCollection.collectedItems=[];
-let dailyDateCheck=Date.now();
-function refreshDailyCollection(){
- const today=kualaLumpurDate();
- if(data.dailyCollection.date!==today){
-  data.dailyCollection={date:today,collectedItems:[]};
-  collectibleObjects.forEach(o=>o.group.visible=true);
-  saveData();renderCollection();
-  hint('新的一天开始了！岛上的食物和宝石已经重新出现。');
+if(!data.dailyCollection||data.dailyCollection.date!==todayKey){
+ data.dailyCollection={date:todayKey,collectedItems:[]};
+}
+if(!Array.isArray(data.dailyCollection.collectedItems)){
+ data.dailyCollection.collectedItems=[];
+}
+
+function saveData(){
+ try{
+  localStorage.setItem(key,JSON.stringify(data));
+ }catch(e){
+  hint('无法保存：请检查浏览器储存空间');
  }
 }
-function stats(){xp.textContent=data.xp;gems.textContent=data.gems;coins.textContent=data.coins}
+// ===== FAMILY TASKS =====
+const familyTasks=[
+ ["不乱发脾气","Control my temper",25],
+ ["10点前睡觉","Sleep before 10pm",30],
+ ["主动温习功课","Revise proactively",35],
+ ["30分钟内吃完饭","Finish meal within 30 min",25],
+ ["东西放回原位","Put things back",20],
+ ["不乱丢垃圾","Use the bin",20],
+ ["吃完自己洗碗","Wash own dishes",25],
+ ["整理书包和书本","Pack bag & books",25],
+ ["水壶餐具拿去厨房","Take bottle & utensils to kitchen",20],
+ ["主动帮忙做家务","Help with chores",30],
+ ["没有看短视频","No short videos",40],
+ ["8:15pm前吃完晚餐","Finish dinner by 8:15pm",30],
+ ["两姐妹没有吵架","Peaceful sister teamwork",40],
+ ["念国语/英语故事书","Read BM/English storybook",25],
+ ["讲英语","Speak English",20],
+ ["抄华语/国语/英语作文","Copy a Chinese/BM/English essay",35],
+ ["听写80分或以上","Dictation score 80%+",50]
+];
+
+function stats(){
+ document.getElementById('xp').textContent=data.xp;
+ document.getElementById('gems').textContent=data.gems;
+ document.getElementById('coins').textContent=data.characterCoins[active];
+ document.getElementById('playerName').textContent='当前：'+active;
+}
 
 function renderFamilyTasks(){
  const list=document.getElementById('taskList');
  list.innerHTML='';
-
  ['姐姐','妹妹'].forEach(name=>{
+  const done=data.familyTaskProgress[name];
   const section=document.createElement('div');
-  section.style.cssText=
- 'margin-top:18px;padding:12px;border-radius:16px;'+
- (name==='姐姐'
- ?'background:linear-gradient(135deg,#542b50,#382044);border:2px solid #ff9bcf;'
- :'background:linear-gradient(135deg,#30366c,#25234f);border:2px solid #9c9cff;');
+  section.className='task-section';
+  section.style.background=name==='姐姐'?'#542b50':'#30366c';
+  section.style.border='2px solid '+(name==='姐姐'?'#ff9bcf':'#9c9cff');
 
   const title=document.createElement('h3');
-  title.textContent=(name==='姐姐'?'👧 ':'👧 ')+name+
-   ' · 任务 XP：'+data.taskXP[name];
+  title.textContent=name+' · 任务 XP：'+data.taskXP[name];
   title.style.color=name==='姐姐'?'#ff9bcf':'#a9adff';
   section.appendChild(title);
 
-  const done=data.familyTaskProgress[name];
-const progressBar=document.createElement('div');
-progressBar.style.cssText='height:9px;background:#ffffff25;border-radius:20px;overflow:hidden;margin:8px 0 12px';
+  const bar=document.createElement('div');
+  bar.className='progress-bg';
+  const fill=document.createElement('div');
+  fill.className='progress-fill';
+  fill.style.width=(done.length/17*100)+'%';
+  if(name==='妹妹')fill.style.background='#9c9cff';
+  bar.appendChild(fill);
+  section.appendChild(bar);
 
-const progressFill=document.createElement('div');
-progressFill.style.cssText=
- 'height:100%;width:'+(done.length/17*100)+'%;border-radius:20px;'+
- (name==='姐姐'?'background:#ff9bcf':'background:#9c9cff');
+  const percent=document.createElement('p');
+  percent.textContent=(done.length/17*100).toFixed(1)+'% 完成';
+  section.appendChild(percent);
 
-progressBar.appendChild(progressFill);
-section.appendChild(progressBar);
-const percent=document.createElement('div');
-percent.textContent=(done.length/17*100).toFixed(1)+'%';
-percent.style.cssText='text-align:right;font-size:12px;font-weight:bold;color:#fff;margin-top:-6px;margin-bottom:8px';
-section.appendChild(percent); 
   familyTasks.forEach((task,index)=>{
    const row=document.createElement('div');
-   row.style.cssText='background:#ffffff12;border:1px solid #ffffff30;border-radius:12px;padding:10px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px';
-
+   row.className='task-row';
    const info=document.createElement('div');
-   info.style.cssText='flex:1;font-size:13px;line-height:1.5';
-   info.innerHTML='<b>'+(index+1)+'. '+task[0]+'</b><br><span style="color:#d9c9ff">'+task[1]+'</span>';
+   info.className='task-info';
+   info.innerHTML='<b>'+(index+1)+'. '+task[0]+'</b><br>'+task[1];
 
    const btn=document.createElement('button');
    btn.textContent=done.includes(index)?'已完成 ✓':'完成 +'+task[2]+' XP';
    btn.disabled=done.includes(index);
-   btn.style.background=done.includes(index)?'#477b59':'#7548b8';
+   if(done.includes(index))btn.style.background='#477b59';
 
    btn.onclick=()=>{
     if(done.includes(index))return;
-
     done.push(index);
     data.taskXP[name]+=task[2];
-
     saveData();
     renderFamilyTasks();
    };
-
    row.append(info,btn);
    section.appendChild(row);
   });
 
-  const progress=document.createElement('p');
-  progress.textContent='完成 '+done.length+' / 17 项';
-  section.appendChild(progress);
-
+  const count=document.createElement('p');
+  count.textContent='完成 '+done.length+' / 17 项';
+  section.appendChild(count);
   list.appendChild(section);
  });
 
  document.getElementById('taskProgress').textContent=
-  '姐姐：'+data.familyTaskProgress['姐姐'].length+'/17 · 妹妹：'+
-  data.familyTaskProgress['妹妹'].length+'/17';
+  '姐姐：'+data.familyTaskProgress.姐姐.length+'/17 · 妹妹：'+
+  data.familyTaskProgress.妹妹.length+'/17';
 }
 
 function openFamilyTasks(){
@@ -754,253 +583,1041 @@ function openFamilyTasks(){
 document.getElementById('closeTasks').onclick=()=>{
  document.getElementById('taskPanel').style.display='none';
 };
- applyPetGrowthAppearance();
- function renderPetPanel(){
-  applyPetGrowthAppearance();
- const p=data.petGrowth[selectedPet],name=selectedPet===0?'紫色兔兔（姐姐）':'蓝色狐狸（妹妹）',need=p.level*100;
- document.getElementById('petTitle').textContent=(selectedPet===0?'🐰 ':'🦊 ')+name;
- document.getElementById('petLevel').textContent='等级：Lv.'+p.level;
- document.getElementById('petExperience').textContent='宠物经验：'+p.xp+' / '+need;
- document.getElementById('petWallet').textContent='🪙 金币：'+data.coins;
- document.getElementById('feedPet').disabled=data.coins<10;
- document.getElementById('feedPet').textContent=data.coins<10?'金币不足':'喂食宠物（10 金币）';
- const skillInfo=document.getElementById('petSkillInfo'),skillBtn=document.getElementById('petSkillBtn');
- const skillName=selectedPet===0?'跳跃寻宝：寻找附近宠物食物':'嗅觉寻宝：寻找附近隐藏宝石';
- skillInfo.textContent=p.level>=2?'专属技能：'+skillName+'（已解锁）':'专属技能：'+skillName+'（Lv.2 解锁）';
- skillBtn.disabled=p.level<2;
- skillBtn.textContent=p.level<2?'Lv.2 解锁技能':(selectedPet===0?'使用跳跃寻宝':'使用嗅觉寻宝');
-}
-const collectibleDefinitions=[
- {id:'food_carrot',kind:'food',name:'胡萝卜',emoji:'🥕',x:-5,z:2,reward:'宠物食物'},
- {id:'food_berry',kind:'food',name:'魔法莓果',emoji:'🫐',x:7,z:5,reward:'宠物食物'},
- {id:'food_apple',kind:'food',name:'金苹果',emoji:'🍎',x:-9,z:-5,reward:'宠物食物'},
- {id:'food_fish',kind:'food',name:'星星小鱼',emoji:'🐟',x:10,z:-7,reward:'宠物食物'},
- {id:'gem_blue',kind:'gem',name:'蓝色宝石',emoji:'💎',x:-3,z:-9,reward:'+1 宝石'},
- {id:'gem_pink',kind:'gem',name:'粉色宝石',emoji:'💠',x:8,z:-12,reward:'+1 宝石'},
- {id:'gem_green',kind:'gem',name:'绿色宝石',emoji:'💚',x:-12,z:5,reward:'+1 宝石'},
- {id:'gem_gold',kind:'gem',name:'金色宝石',emoji:'🌟',x:13,z:1,reward:'+1 宝石'}
-];
-const collectibleObjects=[];
-collectibleDefinitions.forEach((item,index)=>{
- const group=new THREE.Group();group.position.set(item.x,0,item.z);
- if(item.kind==='food'){
-  const foodMat=mat(item.id==='food_carrot'?0xff8b32:item.id==='food_berry'?0x6d4bb8:item.id==='food_apple'?0xe84c55:0x63c8ee);
-  const shape=new THREE.Mesh(new THREE.SphereGeometry(.38,8,6),foodMat);shape.scale.set(1,.72,1);shape.position.y=.55;group.add(shape);
-  if(item.id==='food_carrot'){const tip=new THREE.Mesh(new THREE.ConeGeometry(.23,.62,7),foodMat);tip.rotation.x=Math.PI;tip.position.y=.22;group.add(tip)}
-  const leafBit=new THREE.Mesh(new THREE.ConeGeometry(.13,.36,5),leaf);leafBit.position.set(0,.96,0);group.add(leafBit);
- }else{
-  const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.48),mat(item.id==='gem_blue'?0x4bd9ff:item.id==='gem_pink'?0xff83d5:item.id==='gem_green'?0x58ed9a:0xffd45c));
-  crystal.position.y=.72;group.add(crystal);
+
+// ===== CROWNS AND WARDROBES =====
+function createCrown(index){
+ const group=new THREE.Group();
+ const color=index===0?0xff69c8:0x55baff;
+ const crownMat=mat(color);
+ const base=new THREE.Mesh(
+  new THREE.CylinderGeometry(.34,.38,.12,8),
+  crownMat
+ );
+ base.position.y=3.05;
+ group.add(base);
+
+ for(let i=0;i<5;i++){
+  const spike=new THREE.Mesh(
+   new THREE.ConeGeometry(.09,.3,5),
+   crownMat
+  );
+  spike.position.set(-.28+i*.14,3.25,0);
+  group.add(spike);
  }
- scene.add(group);collectibleObjects.push({definition:item,group});
+ return group;
+}
+
+function applyWardrobeAppearance(index){
+ const owner=index===0?'姐姐':'妹妹';
+ const wearables=sisters[index].wearables;
+ while(wearables.children.length){
+  wearables.remove(wearables.children[0]);
+ }
+ const crownId=data.wardrobes[owner].equipped.head;
+ if(crownId)wearables.add(createCrown(index));
+}
+applyWardrobeAppearance(0);
+applyWardrobeAppearance(1);
+
+// ===== MAGIC SHOP =====
+function renderMagicShop(){
+ const owner=active;
+ const wallet=data.characterCoins[owner];
+ document.getElementById('shopWallet').textContent=
+  '🪙 '+owner+'的金币：'+wallet;
+
+ const items=owner==='姐姐'
+ ?[{id:'pink_crown',name:'粉红公主皇冠',price:20}]
+ :[{id:'blue_crown',name:'蓝色魔法皇冠',price:20}];
+
+ const box=document.getElementById('shopItems');
+ box.innerHTML='';
+
+ items.forEach(item=>{
+  const owned=data.wardrobes[owner].owned.includes(item.id);
+  const div=document.createElement('div');
+  div.className='shop-item';
+  div.innerHTML='<b>'+item.name+'</b><br>价格：'+item.price+' 金币';
+
+  const btn=document.createElement('button');
+  btn.textContent=owned?'已拥有':wallet<item.price?'金币不足':'购买（20 金币）';
+  btn.disabled=owned||wallet<item.price;
+
+  btn.onclick=()=>{
+   if(data.characterCoins[owner]<item.price){
+    hint('金币不足！');
+    return;
+   }
+   data.characterCoins[owner]-=item.price;
+   data.wardrobes[owner].owned.push(item.id);
+   data.wardrobes[owner].equipped.head=item.id;
+   applyWardrobeAppearance(owner==='姐姐'?0:1);
+   saveData();
+   stats();
+   renderMagicShop();
+   hint('购买成功！皇冠已装备给'+owner);
+  };
+  div.appendChild(btn);
+  box.appendChild(div);
+ });
+}
+
+function openMagicShop(){
+ renderMagicShop();
+ document.getElementById('shopPanel').style.display='flex';
+}
+document.getElementById('closeShop').onclick=()=>{
+ document.getElementById('shopPanel').style.display='none';
+};
+
+// ===== PETS =====
+function makePet(type){
+ const bunny=type==='bunny';
+ const fur=mat(bunny?0xc99af5:0x6bbcf5);
+ const lightFur=mat(bunny?0xf2e7ff:0xeaf7ff);
+ const dark=mat(bunny?0x7545a8:0x356baf);
+ const petEye=mat(0x241a32);
+ const nose=mat(bunny?0xff9fcf:0xffb36b);
+ const g=new THREE.Group();
+
+ const body=new THREE.Mesh(new THREE.SphereGeometry(.43,8,6),fur);
+ body.scale.set(1.12,.88,1.25);
+ body.position.y=.48;
+ g.add(body);
+
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.34,8,6),lightFur);
+ head.position.set(0,.91,.22);
+ g.add(head);
+
+ if(bunny){
+  for(const x of [-.17,.17]){
+   const ear=box(g,.15,.55,.13,fur,x,1.35,.18);
+   ear.rotation.z=x<0?-.13:.13;
+   box(g,.075,.38,.035,nose,x,1.36,.255);
+  }
+ }else{
+  for(const x of [-.2,.2]){
+   const ear=new THREE.Mesh(new THREE.ConeGeometry(.16,.42,5),fur);
+   ear.position.set(x,1.22,.2);
+   g.add(ear);
+   const inner=new THREE.Mesh(new THREE.ConeGeometry(.075,.25,5),nose);
+   inner.position.set(x,1.23,.31);
+   g.add(inner);
+  }
+  const tail=new THREE.Mesh(new THREE.SphereGeometry(.2,7,5),lightFur);
+  tail.position.set(0,.55,-.53);
+  g.add(tail);
+ }
+
+ for(const x of [-.12,.12])box(g,.055,.07,.035,petEye,x,.94,.515);
+ const n=new THREE.Mesh(new THREE.SphereGeometry(.065,6,5),nose);
+ n.position.set(0,.82,.54);
+ g.add(n);
+
+ for(const x of [-.23,.23]){
+  const foot=new THREE.Mesh(new THREE.SphereGeometry(.13,6,5),dark);
+  foot.scale.set(1,.65,1.2);
+  foot.position.set(x,.16,.13);
+  g.add(foot);
+ }
+ scene.add(g);
+ return {group:g,type};
+}
+
+const pets=[makePet('bunny'),makePet('fox')];
+pets[0].group.position.set(-1.2,0,6.5);
+pets[1].group.position.set(2.1,0,7.8);
+const petMeshes=[];
+pets.forEach((pet,index)=>{
+ pet.group.traverse(o=>{
+  if(o.isMesh){
+   o.userData.petIndex=index;
+   petMeshes.push(o);
+  }
+ });
 });
-const skillMarker=new THREE.Group();skillMarker.visible=false;scene.add(skillMarker);
-const markerRing=new THREE.Mesh(new THREE.TorusGeometry(.9,.12,7,24),gold);markerRing.rotation.x=-Math.PI/2;markerRing.position.y=.12;skillMarker.add(markerRing);
-const markerBeam=new THREE.Mesh(new THREE.CylinderGeometry(.12,.42,3.1,8),new THREE.MeshBasicMaterial({color:0xffe36b,transparent:true,opacity:.42}));markerBeam.position.y=1.65;skillMarker.add(markerBeam);
-const markerStar=new THREE.Mesh(new THREE.OctahedronGeometry(.36),gold);markerStar.position.y=3.35;skillMarker.add(markerStar);
-let skillMarkerExpires=0,petSkillReadyAt=[0,0];
-function usePetSkill(index){
- const petData=data.petGrowth[index],owner=sisters[index],kind=index===0?'food':'gem';
- if(petData.level<2){hint('宠物达到 Lv.2 才能解锁专属技能');return}
+
+const petActions=pets.map(()=>({type:'',start:0,until:0,baseY:0,baseRotation:0}));
+const heartParticles=[];
+let selectedPet=0;
+let skillMarkerExpires=0;
+let petSkillReadyAt=[0,0];
+
+function getPetStage(level){
+ if(level>=5)return 4;
+ if(level>=3)return 3;
+ if(level>=2)return 2;
+ return 1;
+}
+
+const petGrowthDecor=pets.map(()=>{
+ const decor=new THREE.Group();
+ return decor;
+});
+pets.forEach((pet,index)=>pet.group.add(petGrowthDecor[index]));
+
+function applyPetGrowthAppearance(){
+ pets.forEach((pet,index)=>{
+  const stage=getPetStage(data.petGrowth[index].level);
+  const decor=petGrowthDecor[index];
+  while(decor.children.length)decor.remove(decor.children[0]);
+  pet.group.scale.setScalar(stage===4?1.2:1);
+
+  if(stage>=2){
+   const ring=new THREE.Mesh(
+    new THREE.TorusGeometry(.65,.045,8,32),
+    new THREE.MeshBasicMaterial({
+     color:index===0?0xff83c9:0x79d9ff,
+     transparent:true,opacity:.85
+    })
+   );
+   ring.rotation.x=Math.PI/2;
+   ring.position.y=.12;
+   decor.add(ring);
+  }
+  if(stage>=3){
+   const gem=new THREE.Mesh(
+    new THREE.OctahedronGeometry(.22),
+    mat(index===0?0xffb4df:0x55cfff)
+   );
+   gem.position.set(0,1.65,0);
+   decor.add(gem);
+  }
+ });
+}
+applyPetGrowthAppearance();
+
+function spawnPetHearts(index){
+ const pet=pets[index];
+ for(let i=0;i<5;i++){
+  const heart=new THREE.Mesh(
+   new THREE.SphereGeometry(.12,8,6),
+   new THREE.MeshBasicMaterial({
+    color:index===0?0xff83c9:0x79d9ff,
+    transparent:true
+   })
+  );
+  heart.position.copy(pet.group.position);
+  heart.position.y+=1.2;
+  heartParticles.push({mesh:heart,life:1});
+  scene.add(heart);
+ }
+}
+
+function playPetEat(index){
+ const action=petActions[index],pet=pets[index];
+ action.type='eat';
+ action.start=clock.elapsedTime;
+ action.until=clock.elapsedTime+.9;
+ spawnPetHearts(index);
+}
+
+function playPetAction(index){
+ const action=petActions[index];
  const now=clock.elapsedTime;
- if(now<petSkillReadyAt[index]){hint('技能冷却中，请稍等 '+Math.ceil(petSkillReadyAt[index]-now)+' 秒');return}
- const candidates=collectibleObjects.filter(o=>o.group.visible&&o.definition.kind===kind);
- if(!candidates.length){hint(index===0?'今天的宠物食物已经收集完了！':'今天的隐藏宝石已经收集完了！');return}
- let target=null,best=Infinity;
- candidates.forEach(o=>{const d=owner.position.distanceTo(o.group.position);if(d<best){best=d;target=o}});
- const range=index===0?18:22;
- if(best>range){hint(index===0?'兔兔跳跃探测到食物，但距离太远。继续往岛上探索！':'狐狸闻到宝石气息，但距离太远。继续往岛上探索！');return}
- skillMarker.position.set(target.group.position.x,0,target.group.position.z);
- skillMarker.visible=true;skillMarkerExpires=now+8;petSkillReadyAt[index]=now+12;
+ if(now<action.until)return;
+ action.type=index===0?'hop':'spin';
+ action.start=now;
+ action.until=now+(index===0?1.05:1.15);
+ action.baseRotation=pets[index].group.rotation.y;
+}
+
+function openPetPanel(index){
+ selectedPet=index;
+ renderPetPanel();
+ document.getElementById('petPanel').style.display='flex';
  playPetAction(index);
- const forward=new THREE.Vector3(-Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y));
- const side=new THREE.Vector3(Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y));
- const delta=target.group.position.clone().sub(owner.position);
- const f=delta.dot(forward),s=delta.dot(side);
- let direction=Math.abs(f)>Math.abs(s)?(f>0?'前方':'后方'):(s>0?'右边':'左边');
- hint((index===0?'兔兔使用跳跃寻宝！':'狐狸使用嗅觉寻宝！')+' '+target.definition.emoji+' '+target.definition.name+' 在'+direction+'，约 '+Math.round(best)+' 米。金色光柱会标记位置。');
 }
-document.getElementById('petSkillBtn').onclick=()=>usePetSkill(selectedPet);
-function renderCollection(){
- const food=collectibleDefinitions.filter(x=>x.kind==='food'&&data.dailyCollection.collectedItems.includes(x.id)).length;
- const gem=collectibleDefinitions.filter(x=>x.kind==='gem'&&data.dailyCollection.collectedItems.includes(x.id)).length;
- const lines=[
-  '<div class="collectionRow"><b>🐰 姐姐的紫色兔兔</b><br>等级 Lv.'+data.petGrowth[0].level+' · 经验 '+data.petGrowth[0].xp+'/'+(data.petGrowth[0].level*100)+'</div>',
-  '<div class="collectionRow"><b>🦊 妹妹的蓝色狐狸</b><br>等级 Lv.'+data.petGrowth[1].level+' · 经验 '+data.petGrowth[1].xp+'/'+(data.petGrowth[1].level*100)+'<br>专属技能：'+(data.petGrowth[1].level>=2?'✅ 嗅觉寻宝':'🔒 Lv.2 解锁嗅觉寻宝')+'</div>',
-  '<div class="collectionRow"><b>🐰 兔兔专属技能</b><br>'+(data.petGrowth[0].level>=2?'✅ 跳跃寻宝已解锁':'🔒 Lv.2 解锁跳跃寻宝')+'</div>',
-  '<div class="collectionRow"><b>🍎 今日宠物食物：'+food+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='food').map(x=>(data.dailyCollection.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
-  '<div class="collectionRow"><b>💎 今日隐藏宝石：'+gem+'/4</b><br>'+collectibleDefinitions.filter(x=>x.kind==='gem').map(x=>(data.dailyCollection.collectedItems.includes(x.id)?'✅ ':'⬜ ')+x.emoji+' '+x.name).join('<br>')+'</div>',
-  '<div class="collectionRow"><b>今日收集进度：'+data.dailyCollection.collectedItems.length+'/8</b><br>历史收集种类：'+data.collectedItems.length+'/8<br>每天重新探索，可再次获得金币和宝石奖励。</div>'
- ];
- document.getElementById('collectionContent').innerHTML=lines.join('');
+
+function renderPetPanel(){
+ applyPetGrowthAppearance();
+ const p=data.petGrowth[selectedPet];
+ const owner=selectedPet===0?'姐姐':'妹妹';
+ const need=p.level*100;
+
+ document.getElementById('petTitle').textContent=
+  (selectedPet===0?'🐰 紫色兔兔（姐姐）':'🦊 蓝色狐狸（妹妹）');
+ document.getElementById('petLevel').textContent='等级：Lv.'+p.level;
+ document.getElementById('petExperience').textContent=
+  '宠物经验：'+p.xp+' / '+need;
+ document.getElementById('petWallet').textContent=
+  '🪙 '+owner+'的金币：'+data.characterCoins[owner];
+
+ const skillName=selectedPet===0?'跳跃寻宝：寻找宠物食物':'嗅觉寻宝：寻找隐藏宝石';
+ document.getElementById('petSkillInfo').textContent=
+  '专属技能：'+skillName+(p.level>=2?'（已解锁）':'（Lv.2 解锁）');
+ document.getElementById('petSkillBtn').disabled=p.level<2;
+ document.getElementById('petSkillBtn').textContent=
+  p.level<2?'Lv.2 解锁技能':(selectedPet===0?'使用跳跃寻宝':'使用嗅觉寻宝');
+
+ const feed=document.getElementById('feedPet');
+ feed.disabled=data.characterCoins[owner]<10;
+ feed.textContent=data.characterCoins[owner]<10?'金币不足':'喂食宠物（10 金币）';
 }
-document.getElementById('collectionBtn').onclick=()=>{renderCollection();document.getElementById('collectionPanel').style.display='block'};
-document.getElementById('closeCollection').onclick=()=>document.getElementById('collectionPanel').style.display='none';
-stats();
-document.getElementById('closePet').onclick=()=>document.getElementById('petPanel').style.display='none';
+
+document.getElementById('closePet').onclick=()=>{
+ document.getElementById('petPanel').style.display='none';
+};
+
 document.getElementById('feedPet').onclick=()=>{
- if(data.coins<10){hint('金币不足，先去探索和领取宝箱奖励！');return}
+ const owner=selectedPet===0?'姐姐':'妹妹';
+ if(data.characterCoins[owner]<10){
+  hint('金币不足，先去探索和领取奖励！');
+  return;
+ }
  const p=data.petGrowth[selectedPet],oldLevel=p.level;
- data.coins-=10;p.xp+=25;
- while(p.xp>=p.level*100){p.xp-=p.level*100;p.level++}
- saveData();stats();renderPetPanel();playPetAction(selectedPet);
+ data.characterCoins[owner]-=10;
+ p.xp+=25;
+ while(p.xp>=p.level*100){
+  p.xp-=p.level*100;
+  p.level++;
+ }
+ saveData();stats();renderPetPanel();
+ playPetAction(selectedPet);
  hint(p.level>oldLevel?'宠物升级了！现在是 Lv.'+p.level:'喂食成功！宠物获得 25 经验值');
 };
-let opened=!!data.chestClaimed;if(opened){lid.rotation.x=-1.05;chestLight.intensity=2.8}
-collectibleObjects.forEach(o=>{if(data.dailyCollection.collectedItems.includes(o.definition.id))o.group.visible=false});
-let nearbyTarget=null;
+
+// ===== COLLECTIBLES =====
+const collectibleDefinitions=[
+ {id:'food_carrot',kind:'food',name:'胡萝卜',emoji:'🥕',x:-5,z:2},
+ {id:'food_berry',kind:'food',name:'魔法莓果',emoji:'🫐',x:7,z:5},
+ {id:'food_apple',kind:'food',name:'金苹果',emoji:'🍎',x:-9,z:-5},
+ {id:'food_fish',kind:'food',name:'星星小鱼',emoji:'🐟',x:10,z:-7},
+ {id:'gem_blue',kind:'gem',name:'蓝色宝石',emoji:'💎',x:-3,z:-9},
+ {id:'gem_pink',kind:'gem',name:'粉色宝石',emoji:'💠',x:8,z:-12},
+ {id:'gem_green',kind:'gem',name:'绿色宝石',emoji:'💚',x:-12,z:5},
+ {id:'gem_gold',kind:'gem',name:'金色宝石',emoji:'🌟',x:13,z:1}
+];
+
+const collectibleObjects=[];
+collectibleDefinitions.forEach(item=>{
+ const group=new THREE.Group();
+ group.position.set(item.x,0,item.z);
+ if(item.kind==='food'){
+  const color=item.id==='food_carrot'?0xff8b32:
+   item.id==='food_berry'?0x6d4bb8:
+   item.id==='food_apple'?0xe84c55:0x63c8ee;
+  const food=new THREE.Mesh(new THREE.SphereGeometry(.38,8,6),mat(color));
+  food.position.y=.55;
+  group.add(food);
+  if(item.id==='food_carrot'){
+   const tip=new THREE.Mesh(new THREE.ConeGeometry(.23,.62,7),mat(color));
+   tip.rotation.x=Math.PI;
+   tip.position.y=.22;
+   group.add(tip);
+  }
+  const leafBit=new THREE.Mesh(new THREE.ConeGeometry(.13,.36,5),leaf);
+  leafBit.position.y=.96;
+  group.add(leafBit);
+ }else{
+  const colors={
+   gem_blue:0x4bd9ff,gem_pink:0xff83d5,
+   gem_green:0x58ed9a,gem_gold:0xffd45c
+  };
+  const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.48),mat(colors[item.id]));
+  crystal.position.y=.72;
+  group.add(crystal);
+ }
+ scene.add(group);
+ collectibleObjects.push({definition:item,group});
+});
+
+collectibleObjects.forEach(o=>{
+ if(data.dailyCollection.collectedItems.includes(o.definition.id)){
+  o.group.visible=false;
+ }
+});
+
+// Collection display
+function renderCollection(){
+ const food=collectibleDefinitions.filter(x=>x.kind==='food'&&data.dailyCollection.collectedItems.includes(x.id)).length;
+ const gemsCollected=collectibleDefinitions.filter(x=>x.kind==='gem'&&data.dailyCollection.collectedItems.includes(x.id)).length;
+
+ document.getElementById('collectionContent').innerHTML=
+  '<div class="collection-row"><b>🐰 姐姐的紫色兔兔</b><br>Lv.'+
+  data.petGrowth[0].level+' · 经验 '+data.petGrowth[0].xp+'</div>'+
+  '<div class="collection-row"><b>🦊 妹妹的蓝色狐狸</b><br>Lv.'+
+  data.petGrowth[1].level+' · 经验 '+data.petGrowth[1].xp+'</div>'+
+  '<div class="collection-row"><b>🍎 今日宠物食物：'+food+'/4</b></div>'+
+  '<div class="collection-row"><b>💎 今日隐藏宝石：'+gemsCollected+'/4</b></div>'+
+  '<div class="collection-row"><b>今日收集进度：'+
+  data.dailyCollection.collectedItems.length+'/8</b><br>每天重新探索，可再次获得奖励。</div>';
+}
+
+document.getElementById('collectionBtn')?.addEventListener('click',()=>{
+ renderCollection();
+ document.getElementById('collectionPanel').style.display='flex';
+});
+document.getElementById('closeCollection').onclick=()=>{
+ document.getElementById('collectionPanel').style.display='none';
+};
+// ===== PET SKILL MARKER =====
+const skillMarker=new THREE.Group();
+skillMarker.visible=false;
+scene.add(skillMarker);
+
+const markerRing=new THREE.Mesh(
+ new THREE.TorusGeometry(.9,.12,7,24),
+ gold
+);
+markerRing.rotation.x=-Math.PI/2;
+markerRing.position.y=.12;
+skillMarker.add(markerRing);
+
+const markerBeam=new THREE.Mesh(
+ new THREE.CylinderGeometry(.12,.42,3.1,8),
+ new THREE.MeshBasicMaterial({
+  color:0xffe36b,transparent:true,opacity:.42
+ })
+);
+markerBeam.position.y=1.65;
+skillMarker.add(markerBeam);
+
+const markerStar=new THREE.Mesh(
+ new THREE.OctahedronGeometry(.36),
+ gold
+);
+markerStar.position.y=3.35;
+skillMarker.add(markerStar);
+
+function usePetSkill(index){
+ const petData=data.petGrowth[index];
+ const owner=sisters[index];
+ const kind=index===0?'food':'gem';
+
+ if(petData.level<2){
+  hint('宠物达到 Lv.2 才能解锁专属技能');
+  return;
+ }
+
+ const now=clock.elapsedTime;
+ if(now<petSkillReadyAt[index]){
+  hint('技能冷却中，请稍等 '+Math.ceil(petSkillReadyAt[index]-now)+' 秒');
+  return;
+ }
+
+ const candidates=collectibleObjects.filter(o=>
+  o.group.visible&&o.definition.kind===kind
+ );
+
+ if(!candidates.length){
+  hint('今天的目标已经全部收集完了！');
+  return;
+ }
+
+ let target=null,best=Infinity;
+ candidates.forEach(o=>{
+  const d=owner.group.position.distanceTo(o.group.position);
+  if(d<best){best=d;target=o;}
+ });
+
+ const range=index===0?18:22;
+ if(best>range){
+  hint('发现目标，但距离太远，请继续探索！');
+  return;
+ }
+
+ skillMarker.position.set(
+  target.group.position.x,0,target.group.position.z
+ );
+ skillMarker.visible=true;
+ skillMarkerExpires=now+8;
+ petSkillReadyAt[index]=now+12;
+ playPetAction(index);
+
+ hint(
+  (index===0?'兔兔跳跃寻宝！':'狐狸嗅觉寻宝！')+
+  ' '+target.definition.emoji+' '+target.definition.name+
+  ' 距离约 '+Math.round(best)+' 米，金色光柱已标记位置。'
+ );
+}
+
+document.getElementById('petSkillBtn').onclick=()=>{
+ usePetSkill(selectedPet);
+};
+
+// ===== COLLECT FOOD AND GEMS =====
 function collectPickup(target){
  const item=target.definition;
  if(data.dailyCollection.collectedItems.includes(item.id))return;
+
  data.dailyCollection.collectedItems.push(item.id);
- if(!data.collectedItems.includes(item.id))data.collectedItems.push(item.id);
+ if(!data.collectedItems.includes(item.id)){
+  data.collectedItems.push(item.id);
+ }
+
  if(item.kind==='gem'){
   data.gems+=1;
+  hint(item.name+' +1 宝石！');
  }else{
-  data.coins+=5;
+  data.characterCoins[active]+=5;
+
   const petIndex=item.id==='food_fish'?1:0;
-  const petData=data.petGrowth[petIndex],oldLevel=petData.level;
+  const petData=data.petGrowth[petIndex];
+  const oldLevel=petData.level;
+
   petData.xp+=10;
   while(petData.xp>=petData.level*100){
    petData.xp-=petData.level*100;
    petData.level++;
   }
+
   playPetEat(petIndex);
-  hint((petIndex===0?'兔兔':'小狐狸')+'吃掉了'+item.name+'！金币 +5，宠物经验 +10'+(petData.level>oldLevel?'，升级至 Lv.'+petData.level:''));
+  hint(
+   (petIndex===0?'兔兔':'小狐狸')+
+   '吃掉了'+item.name+'！金币 +5，宠物经验 +10'+
+   (petData.level>oldLevel?'，升级至 Lv.'+petData.level:'')
+  );
  }
+
  target.group.visible=false;
- saveData();stats();renderCollection();renderPetPanel();
- nearbyTarget=null;interact.style.display='none';
+ saveData();
+ stats();
+ renderCollection();
+ renderPetPanel();
+ nearbyTarget=null;
+ document.getElementById('interact').style.display='none';
 }
-function collect(){if(data.chestClaimed)return;data.xp+=50;data.gems+=1;data.coins+=30;data.chestClaimed=true;opened=true;saveData();stats();lid.rotation.x=-1.05;chestLight.intensity=2.8;interact.style.display='none';const gem=new THREE.Mesh(new THREE.OctahedronGeometry(.34),gold);gem.position.set(4,1.65,-1);scene.add(gem);document.getElementById('reward').style.display='block';showRewardHint()}
-document.getElementById('rewardOK').onclick=()=>document.getElementById('reward').style.display='none';interact.onclick=()=>{
- if(nearbyTarget?.type==='chest')collect();
- else if(nearbyTarget?.type==='pickup')collectPickup(nearbyTarget.object);
- else if(nearbyTarget?.type==='task')openFamilyTasks();
- else if(nearbyTarget?.type==='shop')openMagicShop();
+
+// ===== 50 EXPLORATION PROGRESS NODES =====
+if(!Array.isArray(data.progressNodes))data.progressNodes=[];
+
+const progressObjects=[];
+for(let i=0;i<50;i++){
+ const angle=i*2.399;
+ const radius=10+(i%5)*1.65;
+ const x=Math.cos(angle)*radius;
+ const z=Math.sin(angle)*radius;
+
+ const group=new THREE.Group();
+ group.position.set(x,0,z);
+
+ const crystal=new THREE.Mesh(
+  new THREE.OctahedronGeometry(.38),
+  new THREE.MeshStandardMaterial({
+   color:i%2===0?0xffd45c:0xb987ff,
+   emissive:i%2===0?0x754b12:0x46206e,
+   emissiveIntensity:.65
+  })
+ );
+ crystal.position.y=.9;
+ group.add(crystal);
+
+ const ring=new THREE.Mesh(
+  new THREE.TorusGeometry(.55,.045,8,24),
+  gold
+ );
+ ring.rotation.x=Math.PI/2;
+ ring.position.y=.12;
+ group.add(ring);
+
+ scene.add(group);
+
+ if(data.progressNodes.includes(i)){
+  group.visible=false;
+ }
+
+ progressObjects.push({id:i,group});
+}
+
+function collectProgressNode(node){
+ if(data.progressNodes.includes(node.id))return;
+
+ data.progressNodes.push(node.id);
+ data.xp+=5;
+ data.characterCoins[active]+=2;
+ node.group.visible=false;
+
+ saveData();
+ stats();
+
+ hint('探索节点 '+(node.id+1)+'/50 完成！获得 5 XP 和 2 金币！');
+}
+
+// ===== BOSS ARENA DECORATION =====
+const bossNames=[
+ 'Rage Monster',
+ 'Delay Slime',
+ 'Trash Goblin',
+ 'Sleep Zombie',
+ 'Chaos Dragon',
+ 'Slow Eater',
+ 'Lazy Titan'
+];
+
+const bossArena=new THREE.Group();
+bossArena.position.set(0,0,-17);
+scene.add(bossArena);
+
+const arenaFloor=new THREE.Mesh(
+ new THREE.CylinderGeometry(5,5,.25,40),
+ mat(0x65518e)
+);
+arenaFloor.position.y=.05;
+bossArena.add(arenaFloor);
+
+bossNames.forEach((name,i)=>{
+ const a=i*Math.PI*2/7;
+ const x=Math.cos(a)*3.5;
+ const z=Math.sin(a)*3.5;
+
+ const crystal=new THREE.Mesh(
+  new THREE.OctahedronGeometry(.42),
+  mat(i%2===0?0xff6c8e:0x9a78ff)
+ );
+ crystal.position.set(x,.85,z);
+ bossArena.add(crystal);
+});
+
+// ===== CHEST REWARD =====
+let opened=!!data.chestClaimed;
+
+if(opened){
+ lid.rotation.x=-1.05;
+ chestLight.intensity=2.8;
+}
+
+function collect(){
+ if(data.chestClaimed)return;
+
+ data.xp+=50;
+ data.gems+=1;
+
+ // 每位姐妹各获得 30 金币
+ data.characterCoins.姐姐+=30;
+ data.characterCoins.妹妹+=30;
+
+ data.chestClaimed=true;
+ opened=true;
+
+ saveData();
+ stats();
+
+ lid.rotation.x=-1.05;
+ chestLight.intensity=2.8;
+ document.getElementById('interact').style.display='none';
+ document.getElementById('reward').style.display='flex';
+}
+
+document.getElementById('rewardOK').onclick=()=>{
+ document.getElementById('reward').style.display='none';
+ hint('宝箱奖励已领取，继续探索小岛！');
 };
-let mx=0,my=0,angle=0,pitch=.23,vy=0,onGround=true;
-const joy=document.getElementById('joystick'),stick=document.getElementById('stick');let jp=null,cx=0,cy=0;
-joy.onpointerdown=e=>{e.preventDefault();jp=e.pointerId;const r=joy.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;joy.setPointerCapture(e.pointerId);joyMove(e)};
-function joyMove(e){if(jp!==e.pointerId)return;const dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),k=len>42?42/len:1;mx=dx*k/42;my=dy*k/42;stick.style.transform=`translate(${dx*k}px,${dy*k}px)`}
-joy.onpointermove=joyMove;function joyEnd(e){if(jp!==e.pointerId)return;jp=null;mx=my=0;stick.style.transform='translate(0,0)'}joy.onpointerup=joyEnd;joy.onpointercancel=joyEnd;
-let lp=null,lx=0,ly=0,downX=0,downY=0;renderer.domElement.onpointerdown=e=>{if(e.clientX<innerWidth*.38)return;lp=e.pointerId;lx=e.clientX;ly=e.clientY;downX=e.clientX;downY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)};
-renderer.domElement.onpointermove=e=>{if(lp!==e.pointerId)return;angle-=(e.clientX-lx)*.006;pitch=THREE.MathUtils.clamp(pitch+(e.clientY-ly)*.003,-.05,.65);lx=e.clientX;ly=e.clientY};
+
+// ===== INTERACTION =====
+document.getElementById('interact').onclick=()=>{
+ if(!nearbyTarget)return;
+
+ if(nearbyTarget.type==='chest'){
+  collect();
+ }else if(nearbyTarget.type==='pickup'){
+  collectPickup(nearbyTarget.object);
+ }else if(nearbyTarget.type==='task'){
+  openFamilyTasks();
+ }else if(nearbyTarget.type==='shop'){
+  openMagicShop();
+ }else if(nearbyTarget.type==='node'){
+  collectProgressNode(nearbyTarget.object);
+ }
+};
+
+// ===== SWITCH LEADER =====
+document.getElementById('switch').onclick=()=>{
+ [leader,follower]=[follower,leader];
+ active=active==='姐姐'?'妹妹':'姐姐';
+ stats();
+ hint(active+'带队，另一位自动跟随！');
+};
+
+// ===== JOYSTICK =====
+const joy=document.getElementById('joystick');
+const stick=document.getElementById('stick');
+let jp=null,cx=0,cy=0;
+
+joy.onpointerdown=e=>{
+ e.preventDefault();
+ jp=e.pointerId;
+ const r=joy.getBoundingClientRect();
+ cx=r.left+r.width/2;
+ cy=r.top+r.height/2;
+ joy.setPointerCapture(e.pointerId);
+ joyMove(e);
+};
+
+function joyMove(e){
+ if(jp!==e.pointerId)return;
+ const dx=e.clientX-cx;
+ const dy=e.clientY-cy;
+ const len=Math.hypot(dx,dy);
+ const k=len>42?42/len:1;
+ mx=dx*k/42;
+ my=dy*k/42;
+ stick.style.transform='translate('+dx*k+'px,'+dy*k+'px)';
+}
+
+joy.onpointermove=joyMove;
+
+function joyEnd(e){
+ if(jp!==e.pointerId)return;
+ jp=null;
+ mx=0;
+ my=0;
+ stick.style.transform='translate(0,0)';
+}
+joy.onpointerup=joyEnd;
+joy.onpointercancel=joyEnd;
+
+// ===== CAMERA TOUCH CONTROL =====
+let lp=null,lx=0,ly=0,downX=0,downY=0;
+
+renderer.domElement.onpointerdown=e=>{
+ if(e.clientX<innerWidth*.38)return;
+ lp=e.pointerId;
+ lx=e.clientX;
+ ly=e.clientY;
+ downX=e.clientX;
+ downY=e.clientY;
+ renderer.domElement.setPointerCapture(e.pointerId);
+};
+
+renderer.domElement.onpointermove=e=>{
+ if(lp!==e.pointerId)return;
+ angle-=(e.clientX-lx)*.006;
+ pitch=THREE.MathUtils.clamp(
+  pitch+(e.clientY-ly)*.003,-.05,.65
+ );
+ lx=e.clientX;
+ ly=e.clientY;
+};
+
 renderer.domElement.onpointerup=e=>{
  if(lp!==e.pointerId)return;
+
  const moved=Math.hypot(e.clientX-downX,e.clientY-downY);
+
  if(moved<12){
-  const rect=renderer.domElement.getBoundingClientRect(),pointer=new THREE.Vector2(
+  const rect=renderer.domElement.getBoundingClientRect();
+  const pointer=new THREE.Vector2(
    ((e.clientX-rect.left)/rect.width)*2-1,
    -((e.clientY-rect.top)/rect.height)*2+1
   );
-  const raycaster=new THREE.Raycaster();raycaster.setFromCamera(pointer,camera);
+
+  const raycaster=new THREE.Raycaster();
+  raycaster.setFromCamera(pointer,camera);
   const hit=raycaster.intersectObjects(petMeshes,false)[0];
-  if(hit&&Number.isInteger(hit.object.userData.petIndex))openPetPanel(hit.object.userData.petIndex);
+
+  if(hit&&Number.isInteger(hit.object.userData.petIndex)){
+   openPetPanel(hit.object.userData.petIndex);
+  }
  }
  lp=null;
 };
+
 renderer.domElement.onpointercancel=()=>lp=null;
-document.getElementById('jump').onpointerdown=e=>{e.preventDefault();if(onGround){vy=7.2;onGround=false}};
-document.getElementById('play').onclick=()=>{document.getElementById('start').style.display='none';if(screen.orientation?.lock)screen.orientation.lock('landscape').catch(()=>{})};
-loading.textContent='3D 引擎已准备好，请进入小岛';
+
+// ===== JUMP =====
+document.getElementById('jump').onpointerdown=e=>{
+ e.preventDefault();
+ if(onGround){
+  vy=7.2;
+  onGround=false;
+ }
+};
+
+// ===== START GAME =====
+document.getElementById('play').onclick=()=>{
+ document.getElementById('start').style.display='none';
+ if(screen.orientation?.lock){
+  screen.orientation.lock('landscape').catch(()=>{});
+ }
+};
+
 const clock=new THREE.Clock();
+let dailyDateCheck=Date.now();
+
+function refreshDailyCollection(){
+ const today=kualaLumpurDate();
+ if(data.dailyCollection.date!==today){
+  data.dailyCollection={
+   date:today,
+   collectedItems:[]
+  };
+
+  collectibleObjects.forEach(o=>o.group.visible=true);
+  saveData();
+  renderCollection();
+  hint('新的一天开始了！食物和宝石已经重新出现。');
+ }
+}
+
+// Add collection button
+const collectionBtn=document.createElement('button');
+collectionBtn.id='collectionBtn';
+collectionBtn.textContent='🎒 收藏';
+collectionBtn.style.cssText=
+ 'position:fixed;top:68px;right:10px;z-index:9;background:#7546a8;color:white';
+document.body.appendChild(collectionBtn);
+
+collectionBtn.onclick=()=>{
+ renderCollection();
+ document.getElementById('collectionPanel').style.display='flex';
+};
+
+// ===== MAIN GAME LOOP =====
 function animate(){
  requestAnimationFrame(animate);
- if(Date.now()-dailyDateCheck>1000){dailyDateCheck=Date.now();refreshDailyCollection()}
- const dt=Math.min(clock.getDelta(),.04),p=leader.group,forward=new THREE.Vector3(-Math.sin(angle),0,-Math.cos(angle)),right=new THREE.Vector3(Math.cos(angle),0,-Math.sin(angle)),move=new THREE.Vector3().addScaledVector(right,mx).addScaledVector(forward,-my),moving=move.lengthSq()>.015;
- if(moving){move.normalize();p.position.addScaledVector(move,5.2*dt);p.rotation.y=Math.atan2(move.x,move.z)}
- p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);vy-=18*dt;p.position.y+=vy*dt;if(p.position.y<=0){p.position.y=0;vy=0;onGround=true}
- const desired=p.position.clone().add(new THREE.Vector3(-Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)).multiplyScalar(1.65));desired.x=THREE.MathUtils.clamp(desired.x,-20,20);desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
- follower.group.lerp?null:null;
- follower.group.position.lerp(desired,Math.min(1,dt*4.5));
- // 跟随者与带队者保持相同朝向，避免妹妹背对前进方向。
- follower.group.rotation.y=p.rotation.y;
- const followMoving=follower.group.position.distanceTo(desired)>.12||moving,t=clock.elapsedTime;
- function walk(r,m,phase){const s=m?Math.sin(t*10+phase)*.65:0;r.legs[0].rotation.x=s;r.legs[1].rotation.x=-s;r.arms[0].rotation.x=-s*.7;r.arms[1].rotation.x=s*.7}
- walk(leader,moving,0);walk(follower,followMoving,1.2);
- pets.forEach((pet,i)=>{const owner=sisters[i].group,petGroup=pet.group,back=new THREE.Vector3(-Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y)),side=new THREE.Vector3(Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y)),petTarget=owner.position.clone().addScaledVector(back,1.25).addScaledVector(side,i===0?-.82:.82);
- petTarget.x=THREE.MathUtils.clamp(petTarget.x,-20,20);petTarget.z=THREE.MathUtils.clamp(petTarget.z,-20,19);
- petGroup.position.x+=(petTarget.x-petGroup.position.x)*Math.min(1,dt*5);petGroup.position.z+=(petTarget.z-petGroup.position.z)*Math.min(1,dt*5);
- const ownerMoving=owner===p?moving:followMoving;petGroup.position.y=.06+(ownerMoving?Math.abs(Math.sin(t*8+i))*.13:Math.sin(t*2+i)*.035);
- const dx=owner.position.x-petGroup.position.x,dz=owner.position.z-petGroup.position.z;if(Math.hypot(dx,dz)>.08)petGroup.rotation.y=Math.atan2(dx,dz);petGroup.rotation.z=ownerMoving?Math.sin(t*8+i)*.035:0;
- const action=petActions[i];
- if(t<action.until){
-  const progress=(t-action.start)/(action.until-action.start);
-  if(action.type==='hop'){
-   petGroup.position.y+=Math.sin(progress*Math.PI)*.95;
-   petGroup.rotation.z=Math.sin(progress*Math.PI*2)*.12;
-  }else if(action.type==='spin'){
- petGroup.rotation.y=action.baseRotation+progress*Math.PI*4;
- petGroup.position.y+=Math.sin(progress*Math.PI*2)*.12;
-}else if(action.type==='eat'){
- petGroup.position.y+=Math.sin(progress*Math.PI)*.16;
- petGroup.rotation.x=Math.sin(progress*Math.PI*4)*.12;
-}
- }else if(action.type){
- action.type='';
- petGroup.rotation.z=0;
- petGroup.rotation.x=0;
-}
- });
- for(let i=heartParticles.length-1;i>=0;i--){
- const h=heartParticles[i];
- h.life-=dt*1.15;
- h.mesh.position.y+=dt*1.25;
- h.mesh.material.opacity=Math.max(0,h.life);
- h.mesh.scale.multiplyScalar(1+dt*.18);
- if(h.life<=0){
-  scene.remove(h.mesh);
-  h.mesh.geometry.dispose();
-  h.mesh.material.dispose();
-  heartParticles.splice(i,1);
+
+ if(Date.now()-dailyDateCheck>1000){
+  dailyDateCheck=Date.now();
+  refreshDailyCollection();
  }
-}
- if(skillMarker.visible){
-  if(t>=skillMarkerExpires)skillMarker.visible=false;
-  else{markerRing.rotation.z=t*1.8;markerStar.rotation.y=t*2.6;markerStar.position.y=3.15+Math.sin(t*4)*.22;markerBeam.material.opacity=.28+Math.sin(t*5)*.12}
- }
- const target=new THREE.Vector3(p.position.x,p.position.y+1.45,p.position.z),dist=8.2,h=Math.cos(pitch)*dist,v=Math.sin(pitch)*dist+2.2;camera.position.set(target.x+Math.sin(angle)*h,target.y+v,target.z+Math.cos(angle)*h);camera.lookAt(target);
- let closest=null,closestDistance=Infinity;
- const taskDistance=Math.min(
- p.position.distanceTo(taskNPC.position),
- follower.group.position.distanceTo(taskNPC.position)
-);
-if(taskDistance<3.2){
- closest={type:'task'};
- closestDistance=taskDistance;
-}
- const shopDistance=Math.min(
-  p.position.distanceTo(magicShopPosition),
-  follower.group.position.distanceTo(magicShopPosition)
+
+ const dt=Math.min(clock.getDelta(),.04);
+ const t=clock.elapsedTime;
+ const p=leader.group;
+
+ const forward=new THREE.Vector3(
+  -Math.sin(angle),0,-Math.cos(angle)
  );
- if(shopDistance<3.5&&shopDistance<closestDistance){
-  closest={type:'shop'};
-  closestDistance=shopDistance;
- } 
- const chestDistance=Math.min(p.position.distanceTo(chest.position),follower.group.position.distanceTo(chest.position));
- if(!opened&&chestDistance<3){closest={type:'chest'};closestDistance=chestDistance}
- collectibleObjects.forEach(object=>{
-  if(!object.group.visible)return;
-  const d=Math.min(p.position.distanceTo(object.group.position),follower.group.position.distanceTo(object.group.position));
-  if(d<2.35&&d<closestDistance){closest={type:'pickup',object};closestDistance=d}
+ const right=new THREE.Vector3(
+  Math.cos(angle),0,-Math.sin(angle)
+ );
+
+ const move=new THREE.Vector3()
+  .addScaledVector(right,mx)
+  .addScaledVector(forward,-my);
+
+ const moving=move.lengthSq()>.015;
+
+ if(moving){
+  move.normalize();
+  p.position.addScaledVector(move,5.2*dt);
+  p.rotation.y=Math.atan2(move.x,move.z);
+ }
+
+ p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);
+ p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);
+
+ vy-=18*dt;
+ p.position.y+=vy*dt;
+
+ if(p.position.y<=0){
+  p.position.y=0;
+  vy=0;
+  onGround=true;
+ }
+
+ const desired=p.position.clone().add(
+  new THREE.Vector3(
+   -Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)
+  ).multiplyScalar(1.65)
+ );
+
+ desired.x=THREE.MathUtils.clamp(desired.x,-20,20);
+ desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
+
+ follower.group.position.lerp(
+  desired,Math.min(1,dt*4.5)
+ );
+ follower.group.rotation.y=p.rotation.y;
+
+ const followMoving=follower.group.position.distanceTo(desired)>.12||moving;
+
+ function walk(character,isMoving,phase){
+  const s=isMoving?Math.sin(t*10+phase)*.65:0;
+  character.legs[0].rotation.x=s;
+  character.legs[1].rotation.x=-s;
+  character.arms[0].rotation.x=-s*.7;
+  character.arms[1].rotation.x=s*.7;
+ }
+
+ walk(leader,moving,0);
+ walk(follower,followMoving,1.2);
+
+ // Pets follow their owners
+ pets.forEach((pet,i)=>{
+  const owner=sisters[i].group;
+  const petGroup=pet.group;
+
+  const back=new THREE.Vector3(
+   -Math.sin(owner.rotation.y),0,-Math.cos(owner.rotation.y)
+  );
+  const side=new THREE.Vector3(
+   Math.cos(owner.rotation.y),0,-Math.sin(owner.rotation.y)
+  );
+
+  const petTarget=owner.position.clone()
+   .addScaledVector(back,1.25)
+   .addScaledVector(side,i===0?-.82:.82);
+
+  petTarget.x=THREE.MathUtils.clamp(petTarget.x,-20,20);
+  petTarget.z=THREE.MathUtils.clamp(petTarget.z,-20,19);
+
+  petGroup.position.x+=(petTarget.x-petGroup.position.x)*Math.min(1,dt*5);
+  petGroup.position.z+=(petTarget.z-petGroup.position.z)*Math.min(1,dt*5);
+
+  const ownerMoving=owner===p?moving:followMoving;
+  petGroup.position.y=.06+
+   (ownerMoving?Math.abs(Math.sin(t*8+i))*.13:Math.sin(t*2+i)*.035);
+
+  const dx=owner.position.x-petGroup.position.x;
+  const dz=owner.position.z-petGroup.position.z;
+
+  if(Math.hypot(dx,dz)>.08){
+   petGroup.rotation.y=Math.atan2(dx,dz);
+  }
+
+  const action=petActions[i];
+
+  if(t<action.until){
+   const progress=(t-action.start)/(action.until-action.start);
+
+   if(action.type==='hop'){
+    petGroup.position.y+=Math.sin(progress*Math.PI)*.95;
+   }else if(action.type==='spin'){
+    petGroup.rotation.y=action.baseRotation+progress*Math.PI*4;
+   }else if(action.type==='eat'){
+    petGroup.position.y+=Math.sin(progress*Math.PI)*.16;
+    petGroup.rotation.x=Math.sin(progress*Math.PI*4)*.12;
+   }
+  }else if(action.type){
+   action.type='';
+   petGroup.rotation.x=0;
+  }
  });
+
+ // Heart particles
+ for(let i=heartParticles.length-1;i>=0;i--){
+  const h=heartParticles[i];
+  h.life-=dt*1.15;
+  h.mesh.position.y+=dt*1.25;
+  h.mesh.material.opacity=Math.max(0,h.life);
+
+  if(h.life<=0){
+   scene.remove(h.mesh);
+   h.mesh.geometry.dispose();
+   h.mesh.material.dispose();
+   heartParticles.splice(i,1);
+  }
+ }
+
+ // Skill marker animation
+ if(skillMarker.visible){
+  if(t>=skillMarkerExpires){
+   skillMarker.visible=false;
+  }else{
+   markerRing.rotation.z=t*1.8;
+   markerStar.rotation.y=t*2.6;
+   markerStar.position.y=3.15+Math.sin(t*4)*.22;
+   markerBeam.material.opacity=.28+Math.sin(t*5)*.12;
+  }
+ }
+
+ // Camera
+ const target=new THREE.Vector3(
+  p.position.x,p.position.y+1.45,p.position.z
+ );
+ const dist=8.2;
+ const h=Math.cos(pitch)*dist;
+ const v=Math.sin(pitch)*dist+2.2;
+
+ camera.position.set(
+  target.x+Math.sin(angle)*h,
+  target.y+v,
+  target.z+Math.cos(angle)*h
+ );
+ camera.lookAt(target);
+
+ // Find nearest interaction
+ let closest=null;
+ let closestDistance=Infinity;
+
+ function checkDistance(position,type,object,range){
+  const d=Math.min(
+   p.position.distanceTo(position),
+   follower.group.position.distanceTo(position)
+  );
+  if(d<range&&d<closestDistance){
+   closest={type,object};
+   closestDistance=d;
+  }
+ }
+
+ checkDistance(taskNPC.position,'task',null,3.2);
+ checkDistance(magicShopPosition,'shop',null,3.5);
+
+ if(!opened){
+  checkDistance(chest.position,'chest',null,3);
+ }
+
+ collectibleObjects.forEach(object=>{
+  if(object.group.visible){
+   checkDistance(object.group.position,'pickup',object,2.35);
+  }
+ });
+
+ progressObjects.forEach(object=>{
+  if(object.group.visible){
+   checkDistance(object.group.position,'node',object,2.1);
+   object.group.rotation.y=t*.8+object.id;
+   object.group.position.y=.08+Math.sin(t*2+object.id)*.12;
+  }
+ });
+
  nearbyTarget=closest;
+
+ const interact=document.getElementById('interact');
+
  if(closest){
- interact.style.display='block';
- interact.textContent=closest.type==='chest'?'开启宝箱':
- closest.type==='task'?'查看家庭任务':
-  closest.type==='shop'?'进入魔法商店': 
- '收集 '+closest.object.definition.emoji;
+  interact.style.display='block';
+
+  if(closest.type==='chest'){
+   interact.textContent='开启宝箱';
+  }else if(closest.type==='task'){
+   interact.textContent='查看家庭任务';
+  }else if(closest.type==='shop'){
+   interact.textContent='进入魔法商店';
+  }else if(closest.type==='pickup'){
+   interact.textContent='收集 '+closest.object.definition.emoji;
+  }else if(closest.type==='node'){
+   interact.textContent='探索节点 '+(closest.object.id+1)+'/50';
+  }
+ }else{
+  interact.style.display='none';
+ }
+
+ collectibleObjects.forEach((object,i)=>{
+  if(object.group.visible){
+   object.group.position.y=.08+Math.sin(t*2.2+i)*.12;
+   object.group.rotation.y=t*.65+i;
+  }
+ });
+
+ portal.rotation.y=Math.sin(t*.7)*.08;
+ renderer.render(scene,camera);
 }
- else{interact.style.display='none';interact.textContent='收集'}
- collectibleObjects.forEach((object,i)=>{if(object.group.visible){object.group.position.y=.08+Math.sin(t*2.2+i)*.12;object.group.rotation.y=t*.65+i}});
- if(!opened&&!closest)hint('当前'+active+'带队，探索小岛寻找食物和宝石');
- portal.rotation.y=Math.sin(t*.7)*.08;glow.material.opacity=.48+Math.sin(t*2)*.12;renderer.render(scene,camera)
-}
+
+stats();
+renderCollection();
+renderPetPanel();
+
+document.getElementById('loading').style.display='none';
+
 animate();
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));renderer.setSize(innerWidth,innerHeight)});
-}catch(err){loading.textContent='3D 场景启动失败：'+(err?.message||'未知错误');document.getElementById('play').disabled=true;document.getElementById('play').textContent='场景启动失败'}
+
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
+ renderer.setSize(innerWidth,innerHeight);
+});
+
+}catch(err){
+ document.getElementById('loading').textContent=
+  '3D 场景启动失败：'+(err?.message||'未知错误');
+ document.getElementById('play').disabled=true;
+ document.getElementById('play').textContent='场景启动失败';
+ console.error(err);
 }
 </script>
 </body>
