@@ -1228,7 +1228,9 @@ document.getElementById('interact').onclick=()=>{
   openFamilyTasks();
  }else if(nearbyTarget.type==='shop'){
   openMagicShop();
- }else if(nearbyTarget.type==='node'){
+}else if(nearbyTarget.type==='petCenter'){
+  openPetPanel(active==='姐姐'?0:1);
+}else if(nearbyTarget.type==='node'){
   collectProgressNode(nearbyTarget.object);
  }
 };
