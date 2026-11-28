@@ -235,6 +235,7 @@ const cityRoad=new THREE.Mesh(
 cityRoad.position.set(0,.16,-2);
 habitCity.add(cityRoad);
 
+
 const buildings=[
  {x:-6,z:-2,color:0xffb86b,label:'FAMILY TASK'},
  {x:0,z:-2,color:0x79b9e8,label:'MAGIC SHOP'},
@@ -242,8 +243,10 @@ const buildings=[
 ];
 
 buildings.forEach(b=>{
+ // Building body
  box(habitCity,2.5,3,2.5,mat(b.color),b.x,1.6,b.z);
 
+ // Roof
  const roof=new THREE.Mesh(
   new THREE.ConeGeometry(1.9,1.5,4),
   mat(0x7546a8)
@@ -252,8 +255,21 @@ buildings.forEach(b=>{
  roof.rotation.y=Math.PI/4;
  habitCity.add(roof);
 
+ // Original door
  box(habitCity,.65,1.35,.12,mat(0x70452e),b.x,.85,b.z+1.31);
 
+ // Golden entrance frame
+ const gold=mat(0xffd45c);
+
+ box(habitCity,.13,1.55,.16,gold,b.x-.48,.85,b.z+1.43);
+ box(habitCity,.13,1.55,.16,gold,b.x+.48,.85,b.z+1.43);
+ box(habitCity,1.1,.15,.18,gold,b.x,1.65,b.z+1.43);
+
+ // Entrance steps
+ box(habitCity,1.35,.16,.55,mat(0xc9b9a5),b.x,.12,b.z+1.85);
+ box(habitCity,1.55,.12,.55,mat(0xe2d4bd),b.x,.06,b.z+2.25);
+
+ // Original signboard
  const canvas=document.createElement('canvas');
  canvas.width=768;
  canvas.height=192;
@@ -280,6 +296,7 @@ buildings.forEach(b=>{
  sign.position.set(b.x,2.45,b.z+1.38);
  habitCity.add(sign);
 });
+
 
 const habitGate=new THREE.Group();
 habitGate.position.set(-4,0,3.2);
