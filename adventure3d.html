@@ -1437,17 +1437,22 @@ function animate(){
  const dt=Math.min(clock.getDelta(),.04);
  const t=clock.elapsedTime;
  const p=leader.group;
-// ===== AUTOMATIC BUILDING DOORS =====
+// ===== FRONT ENTRANCE AUTOMATIC DOORS =====
 buildingDoors.forEach(door=>{
  const doorPosition=new THREE.Vector3();
  door.group.getWorldPosition(doorPosition);
 
- const distance=Math.min(
-  p.position.distanceTo(doorPosition),
-  follower.group.position.distanceTo(doorPosition)
- );
+ const isNearFront=(character)=>{
+  const dx=Math.abs(character.position.x-doorPosition.x);
+  const dz=character.position.z-doorPosition.z;
 
- const shouldOpen=distance<3.8;
+  return dx<2.8 && dz>0 && dz<3.8;
+ };
+
+ const shouldOpen=
+  isNearFront(p) ||
+  isNearFront(follower.group);
+
  const targetAngle=shouldOpen?1.15:0;
  const speed=Math.min(1,dt*5);
 
