@@ -1535,39 +1535,88 @@ buildingDoors.forEach(door=>{
   .addScaledVector(right,mx)
   .addScaledVector(forward,-my);
 
- const moving=move.lengthSq()>.015;
+ 
+const moving=move.lengthSq()>.015;
 
- if(moving){
-  move.normalize();
-  p.position.addScaledVector(move,5.2*dt);
-  p.rotation.y=Math.atan2(move.x,move.z);
+// ===== BUILDING WALL COLLISION =====
+function canMoveRoom(previous,next){
+ for(const b of buildings){
+  const cx=habitCity.position.x+b.x;
+  const cz=habitCity.position.z+b.z;
+
+  const half=1.25;
+
+  const wasInside=
+   Math.abs(previous.x-cx)<half &&
+   Math.abs(previous.z-cz)<half;
+
+  const willInside=
+   Math.abs(next.x-cx)<half &&
+   Math.abs(next.z-cz)<half;
+
+  // Crossing a building wall
+  if(wasInside!==willInside){
+   const frontZ=cz+half;
+   const crossingFront=
+    (previous.z>frontZ && next.z<=frontZ) ||
+    (previous.z<=frontZ && next.z>frontZ);
+
+   const nearDoor=
+    Math.abs((previous.x+next.x)/2-cx)<.48;
+
+   if(!crossingFront || !nearDoor){
+    return false;
+   }
+  }
  }
+ return true;
+}
 
- p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);
- p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);
+if(moving){
+ move.normalize();
 
- vy-=18*dt;
- p.position.y+=vy*dt;
-
- if(p.position.y<=0){
-  p.position.y=0;
-  vy=0;
-  onGround=true;
- }
-
- const desired=p.position.clone().add(
-  new THREE.Vector3(
-   -Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)
-  ).multiplyScalar(1.65)
+ const next=p.position.clone().addScaledVector(
+  move,5.2*dt
  );
 
- desired.x=THREE.MathUtils.clamp(desired.x,-20,20);
- desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
+ if(canMoveRoom(p.position,next)){
+  p.position.copy(next);
+ }
 
- follower.group.position.lerp(
-  desired,Math.min(1,dt*4.5)
- );
- follower.group.rotation.y=p.rotation.y;
+ p.rotation.y=Math.atan2(move.x,move.z);
+}
+
+p.position.x=THREE.MathUtils.clamp(p.position.x,-20,20);
+p.position.z=THREE.MathUtils.clamp(p.position.z,-20,19);
+
+vy-=18*dt;
+p.position.y+=vy*dt;
+
+if(p.position.y<=0){
+ p.position.y=0;
+ vy=0;
+ onGround=true;
+}
+
+const desired=p.position.clone().add(
+ new THREE.Vector3(
+  -Math.sin(p.rotation.y),0,-Math.cos(p.rotation.y)
+ ).multiplyScalar(1.65)
+);
+
+desired.x=THREE.MathUtils.clamp(desired.x,-20,20);
+desired.z=THREE.MathUtils.clamp(desired.z,-20,19);
+
+const followerNext=follower.group.position.clone().lerp(
+ desired,Math.min(1,dt*4.5)
+);
+
+if(canMoveRoom(follower.group.position,followerNext)){
+ follower.group.position.copy(followerNext);
+}
+
+follower.group.rotation.y=p.rotation.y;
+
 
  const followMoving=follower.group.position.distanceTo(desired)>.12||moving;
 
