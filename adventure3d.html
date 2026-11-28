@@ -1590,8 +1590,10 @@ checkDistance(petCenterPosition,'petCenter',null,3.5);
   }else if(closest.type==='task'){
    interact.textContent='查看家庭任务';
   }else if(closest.type==='shop'){
-   interact.textContent='进入魔法商店';
-  }else if(closest.type==='pickup'){
+ interact.textContent='进入魔法商店';
+}else if(closest.type==='petCenter'){
+ interact.textContent='进入宠物中心';
+}else if(closest.type==='pickup'){
    interact.textContent='收集 '+closest.object.definition.emoji;
   }else if(closest.type==='node'){
    interact.textContent='探索节点 '+(closest.object.id+1)+'/50';
