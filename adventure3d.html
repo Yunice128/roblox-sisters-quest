@@ -244,7 +244,63 @@ const buildings=[
 const buildingDoors=[];
 buildings.forEach(b=>{
  // Building body
- box(habitCity,2.5,3,2.5,mat(b.color),b.x,1.6,b.z);
+ // ===== BUILDING INTERIOR WALLS =====
+
+// Interior floor
+box(
+ habitCity,
+ 2.36,.12,2.36,
+ mat(0xe8d9bd),
+ b.x,-.11,b.z
+);
+
+// Left wall
+box(
+ habitCity,
+ .14,3,2.5,
+ mat(b.color),
+ b.x-1.18,1.6,b.z
+);
+
+// Right wall
+box(
+ habitCity,
+ .14,3,2.5,
+ mat(b.color),
+ b.x+1.18,1.6,b.z
+);
+
+// Back wall
+box(
+ habitCity,
+ 2.5,3,.14,
+ mat(b.color),
+ b.x,1.6,b.z-1.18
+);
+
+// Front left wall
+box(
+ habitCity,
+ .84,3,.14,
+ mat(b.color),
+ b.x-.83,1.6,b.z+1.18
+);
+
+// Front right wall
+box(
+ habitCity,
+ .84,3,.14,
+ mat(b.color),
+ b.x+.83,1.6,b.z+1.18
+);
+
+// Wall above entrance
+box(
+ habitCity,
+ 2.5,1.5,.14,
+ mat(b.color),
+ b.x,2.35,b.z+1.18
+);
 
  // Roof
  const roof=new THREE.Mesh(
